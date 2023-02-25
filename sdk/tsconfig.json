@@ -5,6 +5,7 @@
       "es2018"
     ],
     "module": "commonjs",
+    "declaration": true,
     "resolveJsonModule": true,
     "outDir": "./dist",
     "esModuleInterop": true,
