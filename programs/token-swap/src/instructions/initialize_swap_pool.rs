@@ -10,21 +10,57 @@ use crate::types::*;
 #[derive(Accounts)]
 pub struct InitializeSwapPool<'info> {
     /// New Token-swap to create.
-    #[account(init, payer = payer, space = 8 + std::mem::size_of::<SwapPool>(), seeds = [SWAP_POOL_ACCOUNT_SEED, mint_a.key().as_ref(), mint_b.key().as_ref()], bump)]
+    #[account(init,
+        payer = payer,
+        space = 8 + std::mem::size_of::<SwapPool>(),
+        seeds = [
+            SWAP_POOL_ACCOUNT_SEED,
+            mint_a.key().as_ref(),
+            mint_b.key().as_ref()
+        ],
+        bump
+    )]
     pub swap_pool: Box<Account<'info, SwapPool>>,
 
     #[account(seeds = [swap_pool.key().as_ref()], bump)]
     /// CHECK:
     pub authority: UncheckedAccount<'info>,
 
-    #[account(init, payer = payer, seeds = [b"vault_a", swap_pool.key().as_ref()], bump, token::authority = authority, token::mint = mint_a)]
+    #[account(init,
+        payer = payer,
+        seeds = [
+            b"vault_a",
+            swap_pool.key().as_ref()
+        ],
+        bump,
+        token::authority = authority,
+        token::mint = mint_a
+    )]
     pub vault_a: Box<Account<'info, TokenAccount>>,
 
-    #[account(init, payer = payer, seeds = [b"vault_b", swap_pool.key().as_ref()], bump, token::authority = authority, token::mint = mint_b)]
+    #[account(init, 
+        payer = payer,
+        seeds = [
+            b"vault_b",
+            swap_pool.key().as_ref()
+        ],
+        bump,
+        token::authority = authority,
+        token::mint = mint_b
+    )]
     pub vault_b: Box<Account<'info, TokenAccount>>,
 
     /// Pool Token Mint. Must be empty, owned by swap authority.
-    #[account(init, payer = payer, seeds = [b"lpmint", swap_pool.key().as_ref()], bump, mint::authority = authority, mint::decimals = 0)]
+    #[account(init,
+        payer = payer,
+        seeds = [
+            b"lpmint",
+            swap_pool.key().as_ref()
+        ],
+        bump,
+        mint::authority = authority,
+        mint::decimals = 0
+    )]
     pub lpmint: Box<Account<'info, Mint>>,
 
     /// Pool Token Account to deposit trading and withdraw fees.
@@ -32,10 +68,8 @@ pub struct InitializeSwapPool<'info> {
     #[account(token::mint = lpmint)]
     pub fee_receiver: Box<Account<'info, TokenAccount>>,
 
-    #[account()]
     pub mint_a: Box<Account<'info, Mint>>,
 
-    #[account()]
     pub mint_b: Box<Account<'info, Mint>>,
 
     #[account(mut)]

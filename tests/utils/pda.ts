@@ -1,6 +1,7 @@
 import { Program } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 import { Resynth } from "../idl/resynth";
+import { TokenSwap } from "../idl/token_swap";
 
 export function syntheticAssetPDA(
   program: Program<Resynth>,
@@ -34,4 +35,39 @@ export function marginAccountPDA(
     ],
     program.programId
   )[0];
+}
+
+export function swapPoolPDA(
+  program: Program<TokenSwap>,
+  mintA: PublicKey,
+  mintB: PublicKey
+) {
+  const swapPool = PublicKey.findProgramAddressSync(
+    [Buffer.from("swap_pool"), mintA.toBuffer(), mintB.toBuffer()],
+    program.programId
+  )[0];
+  const authority = PublicKey.findProgramAddressSync(
+    [swapPool.toBuffer()],
+    program.programId
+  )[0];
+  const vaultA = PublicKey.findProgramAddressSync(
+    [Buffer.from("vault_a"), swapPool.toBuffer()],
+    program.programId
+  )[0];
+  const vaultB = PublicKey.findProgramAddressSync(
+    [Buffer.from("vault_b"), swapPool.toBuffer()],
+    program.programId
+  )[0];
+  const lpmint = PublicKey.findProgramAddressSync(
+    [Buffer.from("lpmint"), swapPool.toBuffer()],
+    program.programId
+  )[0];
+
+  return {
+    swapPool,
+    authority,
+    vaultA,
+    vaultB,
+    lpmint,
+  };
 }
