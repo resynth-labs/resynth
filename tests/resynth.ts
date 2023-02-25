@@ -16,9 +16,10 @@ import {
 } from "@solana/web3.js";
 import * as token from "@solana/spl-token";
 import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
-import { marginAccountPDA, syntheticAssetPDA } from "./utils/pda";
+import { marginAccountPDA, swapPoolPDA, syntheticAssetPDA } from "./utils/pda";
 import {
   AccountLayout,
+  createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddressSync,
   getOrCreateAssociatedTokenAccount,
   mintTo,
@@ -56,6 +57,7 @@ describe("resynth", () => {
 
   const tokenSwap = workspace.TokenSwap as Program<TokenSwap>;
   assert(tokenSwap);
+  console.log(tokenSwap.programId.toBase58());
 
   // The token program used by the synth amm
   const tokenProgram = TOKEN_PROGRAM_ID;
@@ -353,8 +355,95 @@ describe("resynth", () => {
       .rpc();
   }
 
-  async function initializeSwapPool() {
-    // await tokenSwap.methods.initializeSwapPool().accounts({}).rpc();
+  type SwapCurve =
+    | "ConstantProductCurve"
+    | "ConstantPriceCurve"
+    | "OffsetCurve";
+
+  interface Fees {
+    /// Trade fees are extra token amounts that are held inside the token
+    /// accounts during a trade, making the value of liquidity tokens rise.
+    /// Trade fee numerator
+    tradeFeeNumerator: BN;
+
+    /// Trade fee denominator
+    tradeFeeDenominator: BN;
+
+    /// Owner trading fees are extra token amounts that are held inside the token
+    /// accounts during a trade, with the equivalent in pool tokens minted to
+    /// the owner of the program.
+    /// Owner trade fee numerator
+    ownerTradeFeeNumerator: BN;
+
+    /// Owner trade fee denominator
+    ownerTradeFeeDenominator: BN;
+
+    /// Owner withdraw fees are extra liquidity pool token amounts that are
+    /// sent to the owner on every withdrawal.
+    /// Owner withdraw fee numerator
+    ownerWithdrawFeeNumerator: BN;
+
+    /// Owner withdraw fee denominator
+    ownerWithdrawFeeDenominator: BN;
+
+    /// Host fees are a proportion of the owner trading fees, sent to an
+    /// extra account provided during the trade.
+    /// Host trading fee numerator
+    hostFeeNumerator: BN;
+
+    /// Host trading fee denominator
+    hostFeeDenominator: BN;
+  }
+
+  async function initializeSwapPool(
+    mintA: PublicKey,
+    mintB: PublicKey,
+    feeReceiverWallet: PublicKey,
+    fees: Fees,
+    swapCurve: SwapCurve
+  ) {
+    const { swapPool, authority, vaultA, vaultB, lpmint } = swapPoolPDA(
+      tokenSwap,
+      mintA,
+      mintB
+    );
+
+    const feeReceiver = getAssociatedTokenAddressSync(
+      lpmint,
+      feeReceiverWallet,
+      true
+    );
+
+    console.log({ [swapCurve]: {} });
+    await tokenSwap.methods
+      .initializeSwapPool(fees, { ["constantProductCurve"]: {} })
+      .accountsStrict({
+        swapPool,
+        authority,
+
+        vaultA,
+        vaultB,
+        lpmint,
+
+        feeReceiver,
+
+        mintA,
+        mintB,
+
+        payer: payer.publicKey,
+
+        systemProgram,
+        tokenProgram,
+      })
+      .postInstructions([
+        createAssociatedTokenAccountInstruction(
+          payer.publicKey,
+          feeReceiver,
+          feeReceiverWallet,
+          lpmint
+        ),
+      ])
+      .rpc();
   }
 
   async function provideLiquidityToAMM() {}
@@ -412,5 +501,25 @@ describe("resynth", () => {
     await mintSyntheticAsset(userB, goldOracle, goldAsset, 100, 0.005);
   });
 
-  // it("User A provides liquidity to the AMM", async () => {});
+  it("Initialize gold swap pool", async () => {
+    const fees: Fees = {
+      tradeFeeNumerator: new BN(15),
+      tradeFeeDenominator: new BN(10_000),
+      ownerTradeFeeNumerator: new BN(5),
+      ownerTradeFeeDenominator: new BN(10_000),
+      ownerWithdrawFeeNumerator: new BN(0),
+      ownerWithdrawFeeDenominator: new BN(10_000),
+      hostFeeNumerator: new BN(5),
+      hostFeeDenominator: new BN(10_000),
+    };
+    await initializeSwapPool(
+      stablecoinMint,
+      goldMint,
+      payer.publicKey,
+      fees,
+      "ConstantProductCurve"
+    );
+  });
+
+  it("User A provides liquidity to the AMM", async () => {});
 });
