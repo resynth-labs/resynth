@@ -1,0 +1,26 @@
+[package]
+name = "token-swap"
+version = "0.1.0"
+description = "Fork of Solana Program Library Token Swap"
+license = "Apache-2.0"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "token_swap"
+
+[features]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+cpi = ["no-entrypoint"]
+default = []
+
+[dependencies]
+anchor-lang = "0.26.0"
+anchor-spl = "0.26.0"
+enum_dispatch = "0.3.11"
+spl-math = {version = "0.1.0", features = ["no-entrypoint"]}
+
+[dev-dependencies]
+proptest = "1.0.0"
