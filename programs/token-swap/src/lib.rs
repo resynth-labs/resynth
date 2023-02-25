@@ -60,25 +60,9 @@ pub mod token_swap {
         instructions::initialize_swap_pool::execute(ctx, fees, swap_curve)
     }
 
+    /// Swap the tokens in the pool.
     pub fn swap(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<()> {
         instructions::swap::execute(ctx, amount_in, minimum_amount_out)
-    }
-
-    /// Swap the tokens in the pool.
-    pub fn swap_a_to_b(
-        ctx: Context<SwapAToB>,
-        amount_in: u64,
-        minimum_amount_out: u64,
-    ) -> Result<()> {
-        instructions::swap_a_to_b::execute(ctx, amount_in, minimum_amount_out)
-    }
-
-    pub fn swap_b_to_a(
-        ctx: Context<SwapBToA>,
-        amount_in: u64,
-        minimum_amount_out: u64,
-    ) -> Result<()> {
-        instructions::swap_b_to_a::execute(ctx, amount_in, minimum_amount_out)
     }
 
     /// Withdraw both types of tokens from the pool at the current ratio, given

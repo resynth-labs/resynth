@@ -263,7 +263,7 @@ export type TokenSwap = {
       ]
     },
     {
-      "name": "swapAToB",
+      "name": "swap",
       "docs": [
         "Swap the tokens in the pool."
       ],
@@ -284,106 +284,22 @@ export type TokenSwap = {
           "isSigner": true
         },
         {
-          "name": "sourceTokenA",
+          "name": "sourceToken",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "sourceVaultA",
+          "name": "sourceVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "destVaultB",
+          "name": "destVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "destTokenB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "lpmint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "feeReceiver",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "hostFeeReceiver",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "Host fee account to receive additional trading fees"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "amountIn",
-          "type": "u64"
-        },
-        {
-          "name": "minimumAmountOut",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "swapBToA",
-      "accounts": [
-        {
-          "name": "swapPool",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userTransferAuthority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "sourceTokenB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sourceVaultB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "destVaultA",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "destTokenA",
+          "name": "destToken",
           "isMut": true,
           "isSigner": false
         },
@@ -394,17 +310,7 @@ export type TokenSwap = {
         },
         {
           "name": "feeReceiver",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1344,7 +1250,7 @@ export const IDL: TokenSwap = {
       ]
     },
     {
-      "name": "swapAToB",
+      "name": "swap",
       "docs": [
         "Swap the tokens in the pool."
       ],
@@ -1365,106 +1271,22 @@ export const IDL: TokenSwap = {
           "isSigner": true
         },
         {
-          "name": "sourceTokenA",
+          "name": "sourceToken",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "sourceVaultA",
+          "name": "sourceVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "destVaultB",
+          "name": "destVault",
           "isMut": true,
           "isSigner": false
         },
         {
-          "name": "destTokenB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "lpmint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "feeReceiver",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "hostFeeReceiver",
-          "isMut": true,
-          "isSigner": false,
-          "isOptional": true,
-          "docs": [
-            "Host fee account to receive additional trading fees"
-          ]
-        }
-      ],
-      "args": [
-        {
-          "name": "amountIn",
-          "type": "u64"
-        },
-        {
-          "name": "minimumAmountOut",
-          "type": "u64"
-        }
-      ]
-    },
-    {
-      "name": "swapBToA",
-      "accounts": [
-        {
-          "name": "swapPool",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "authority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "userTransferAuthority",
-          "isMut": false,
-          "isSigner": true
-        },
-        {
-          "name": "sourceTokenB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "sourceVaultB",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "destVaultA",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "destTokenA",
+          "name": "destToken",
           "isMut": true,
           "isSigner": false
         },
@@ -1475,17 +1297,7 @@ export const IDL: TokenSwap = {
         },
         {
           "name": "feeReceiver",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
