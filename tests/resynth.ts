@@ -6,7 +6,7 @@ import {
   BN,
 } from "@project-serum/anchor";
 import { Pyth } from "./idl/pyth";
-import { SynthAmm } from "./idl/synth_amm";
+import { Resynth } from "./idl/resynth";
 import {
   PublicKey,
   Keypair,
@@ -31,7 +31,7 @@ function sleep(ms: number): Promise<boolean> {
   });
 }
 
-describe("synth_amm", () => {
+describe("resynth", () => {
   // Configure the client to use the local cluster.
   const provider = AnchorProvider.env();
 
@@ -47,7 +47,7 @@ describe("synth_amm", () => {
   const pyth = workspace.Pyth as Program<Pyth>;
 
   // The main synth amm program
-  const synthAmm = workspace.SynthAmm as Program<SynthAmm>;
+  const resynth = workspace.Resynth as Program<Resynth>;
 
   // The token program used by the synth amm
   const tokenProgram = TOKEN_PROGRAM_ID;
@@ -236,11 +236,11 @@ describe("synth_amm", () => {
     const syntheticAsset = syntheticAssetKeypair.publicKey;
 
     let { collateralVault, syntheticMint, assetAuthority } = syntheticAssetPDA(
-      synthAmm,
+      resynth,
       syntheticAsset
     );
 
-    await synthAmm.methods
+    await resynth.methods
       .initializeSyntheticAsset(syntheticDecimals)
       .accountsStrict({
         syntheticAsset,
@@ -271,11 +271,11 @@ describe("synth_amm", () => {
     syntheticAsset: PublicKey
   ): Promise<void> {
     const marginAccount = marginAccountPDA(
-      synthAmm,
+      resynth,
       owner.wallet.publicKey,
       syntheticAsset
     );
-    synthAmm.methods
+    resynth.methods
       .initializeMarginAccount()
       .accountsStrict({
         payer: owner.wallet.publicKey,
@@ -306,9 +306,9 @@ describe("synth_amm", () => {
     mintAmount: number
   ): Promise<void> {
     const { collateralVault, syntheticMint, assetAuthority } =
-      syntheticAssetPDA(synthAmm, syntheticAsset);
+      syntheticAssetPDA(resynth, syntheticAsset);
     const marginAccount = marginAccountPDA(
-      synthAmm,
+      resynth,
       owner.wallet.publicKey,
       syntheticAsset
     );
@@ -323,7 +323,7 @@ describe("synth_amm", () => {
       owner.wallet.publicKey
     );
 
-    await synthAmm.methods
+    await resynth.methods
       .mintSyntheticAsset(new BN(collateralAmount), new BN(mintAmount))
       .accountsStrict({
         syntheticAsset,

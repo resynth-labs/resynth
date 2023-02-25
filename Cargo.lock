@@ -1598,6 +1598,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "resynth"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
+ "pyth-sdk-solana",
+]
+
+[[package]]
 name = "rustc-hash"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2104,15 +2113,6 @@ dependencies = [
  "quote",
  "syn",
  "unicode-xid",
-]
-
-[[package]]
-name = "synth_amm"
-version = "0.1.0"
-dependencies = [
- "anchor-lang",
- "anchor-spl",
- "pyth-sdk-solana",
 ]
 
 [[package]]

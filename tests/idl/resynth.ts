@@ -1,6 +1,6 @@
-export type SynthAmm = {
+export type Resynth = {
   "version": "0.1.0",
-  "name": "synth_amm",
+  "name": "resynth",
   "constants": [
     {
       "name": "AUTHORITY",
@@ -232,112 +232,9 @@ export type SynthAmm = {
           "type": "u64"
         }
       ]
-    },
-    {
-      "name": "initializeAmm",
-      "accounts": [
-        {
-          "name": "amm",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "baseVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "quoteVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "quoteOracle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "lpMint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ammAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "baseMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "quoteMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "lpDecimals",
-          "type": "u8"
-        }
-      ]
     }
   ],
   "accounts": [
-    {
-      "name": "amm",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "baseVault",
-            "type": "publicKey"
-          },
-          {
-            "name": "quoteVault",
-            "type": "publicKey"
-          },
-          {
-            "name": "quoteOracle",
-            "type": "publicKey"
-          },
-          {
-            "name": "lpMint",
-            "type": "publicKey"
-          },
-          {
-            "name": "ammAuthority",
-            "type": "publicKey"
-          },
-          {
-            "name": "ammAuthorityBump",
-            "type": {
-              "array": [
-                "u8",
-                1
-              ]
-            }
-          }
-        ]
-      }
-    },
     {
       "name": "marginAccount",
       "type": {
@@ -428,9 +325,9 @@ export type SynthAmm = {
   ]
 };
 
-export const IDL: SynthAmm = {
+export const IDL: Resynth = {
   "version": "0.1.0",
-  "name": "synth_amm",
+  "name": "resynth",
   "constants": [
     {
       "name": "AUTHORITY",
@@ -662,112 +559,9 @@ export const IDL: SynthAmm = {
           "type": "u64"
         }
       ]
-    },
-    {
-      "name": "initializeAmm",
-      "accounts": [
-        {
-          "name": "amm",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "baseVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "quoteVault",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "quoteOracle",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "lpMint",
-          "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "ammAuthority",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "baseMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "quoteMint",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "payer",
-          "isMut": true,
-          "isSigner": true
-        },
-        {
-          "name": "tokenProgram",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "systemProgram",
-          "isMut": false,
-          "isSigner": false
-        }
-      ],
-      "args": [
-        {
-          "name": "lpDecimals",
-          "type": "u8"
-        }
-      ]
     }
   ],
   "accounts": [
-    {
-      "name": "amm",
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "baseVault",
-            "type": "publicKey"
-          },
-          {
-            "name": "quoteVault",
-            "type": "publicKey"
-          },
-          {
-            "name": "quoteOracle",
-            "type": "publicKey"
-          },
-          {
-            "name": "lpMint",
-            "type": "publicKey"
-          },
-          {
-            "name": "ammAuthority",
-            "type": "publicKey"
-          },
-          {
-            "name": "ammAuthorityBump",
-            "type": {
-              "array": [
-                "u8",
-                1
-              ]
-            }
-          }
-        ]
-      }
-    },
     {
       "name": "marginAccount",
       "type": {

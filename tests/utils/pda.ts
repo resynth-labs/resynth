@@ -1,9 +1,9 @@
 import { Program } from "@project-serum/anchor";
 import { PublicKey } from "@solana/web3.js";
-import { SynthAmm } from "../idl/synth_amm";
+import { Resynth } from "../idl/resynth";
 
 export function syntheticAssetPDA(
-  program: Program<SynthAmm>,
+  program: Program<Resynth>,
   syntheticAsset: PublicKey
 ) {
   const collateralVault = PublicKey.findProgramAddressSync(
@@ -22,7 +22,7 @@ export function syntheticAssetPDA(
 }
 
 export function marginAccountPDA(
-  program: Program<SynthAmm>,
+  program: Program<Resynth>,
   owner: PublicKey,
   syntheticAsset: PublicKey
 ) {

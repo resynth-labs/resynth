@@ -13,7 +13,7 @@ pub use state::*;
 declare_id!("EMA4zANmhMuSUqRqj3wNvAkGwRGXLJk7WpXQdW7bSwX1");
 
 #[program]
-pub mod synth_amm {
+pub mod resynth {
     use super::*;
 
     pub fn initialize_synthetic_asset(
