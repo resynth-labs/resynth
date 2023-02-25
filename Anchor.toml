@@ -3,7 +3,7 @@ seeds = false
 skip-lint = false
 
 [programs.devnet]
-resynth = "EMA4zANmhMuSUqRqj3wNvAkGwRGXLJk7WpXQdW7bSwX1"
+resynth = "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs"
 pyth = "HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM"
 token_swap = "85aooyAumUJKEfcw84mnacWKGN5dTqb4EX5YQRp5SuLX"
 

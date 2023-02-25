@@ -1,14 +1,14 @@
 {
   "localnet": {
-    "programId": "EMA4zANmhMuSUqRqj3wNvAkGwRGXLJk7WpXQdW7bSwX1",
+    "programId": "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs",
     "url": "http://localhost:8899"
   },
   "devnet": {
-    "programId": "EMA4zANmhMuSUqRqj3wNvAkGwRGXLJk7WpXQdW7bSwX1",
+    "programId": "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs",
     "url": "https://api.devnet.solana.com"
   },
   "mainnet": {
-    "programId": "EMA4zANmhMuSUqRqj3wNvAkGwRGXLJk7WpXQdW7bSwX1",
+    "programId": "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs",
     "url": "https://api.mainnet-beta.solana.com"
   }
 }
