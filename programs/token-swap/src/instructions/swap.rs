@@ -49,10 +49,6 @@ pub struct Swap<'info> {
     )]
     pub fee_receiver: Box<Account<'info, TokenAccount>>,
 
-    pub mint_a: Box<Account<'info, Mint>>,
-
-    pub mint_b: Box<Account<'info, Mint>>,
-
     pub token_program: Program<'info, Token>,
 
     /// Host fee account to receive additional trading fees
