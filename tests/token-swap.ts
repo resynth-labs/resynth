@@ -2,7 +2,7 @@
 // import { splTokenProgram } from "@native-to-anchor/spl-token";
 // import { splTokenSwapProgram } from "@native-to-anchor/spl-token-swap";
 // import { Keypair, PublicKey, SYSVAR_RENT_PUBKEY } from "@solana/web3.js";
-// import { BN } from "@project-serum/anchor";
+// import { BN } from "@coral-xyz/anchor";
 
 // import { SPL_TOKEN_PROGRAM_ID, SPL_TOKEN_SWAP_PROGRAM_ID } from "../constants";
 // import {

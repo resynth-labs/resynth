@@ -4,7 +4,7 @@ import {
   AnchorProvider,
   setProvider,
   BN,
-} from "@project-serum/anchor";
+} from "@coral-xyz/anchor";
 import { Pyth } from "./idl/pyth";
 import { Resynth } from "./idl/resynth";
 import {
@@ -15,7 +15,7 @@ import {
   Transaction,
 } from "@solana/web3.js";
 import * as token from "@solana/spl-token";
-import NodeWallet from "@project-serum/anchor/dist/cjs/nodewallet";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { marginAccountPDA, syntheticAssetPDA } from "./utils/pda";
 import {
   AccountLayout,
