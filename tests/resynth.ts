@@ -24,6 +24,11 @@ import {
   mintTo,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
+import { TokenSwap } from "./idl/token_swap";
+import { assert, expect, use as chaiUse } from "chai";
+import * as chaiAsPromised from "chai-as-promised";
+
+chaiUse(chaiAsPromised.default);
 
 function sleep(ms: number): Promise<boolean> {
   return new Promise((res) => {
@@ -46,8 +51,11 @@ describe("resynth", () => {
   // The mock pyth program, from Drift-v2 repo
   const pyth = workspace.Pyth as Program<Pyth>;
 
-  // The main synth amm program
+  // The main synthetic asset program
   const resynth = workspace.Resynth as Program<Resynth>;
+
+  const tokenSwap = workspace.TokenSwap as Program<TokenSwap>;
+  assert(tokenSwap);
 
   // The token program used by the synth amm
   const tokenProgram = TOKEN_PROGRAM_ID;
@@ -134,7 +142,7 @@ describe("resynth", () => {
   }
 
   /**
-   *
+   * Creates a token account for the user. And mints a number of tokens to the account.
    *
    * @param {PublicKey} mint
    * @param {PublicKey} wallet
@@ -144,7 +152,7 @@ describe("resynth", () => {
   async function mintTestToken(
     mint: PublicKey,
     wallet: PublicKey,
-    amount: number
+    amount?: number
   ): Promise<void> {
     const { address: tokenAccount } = await getOrCreateAssociatedTokenAccount(
       connection,
@@ -152,7 +160,9 @@ describe("resynth", () => {
       mint,
       wallet
     );
-    await mintTo(connection, payer, mint, tokenAccount, payer, amount);
+    if (amount && amount > 0) {
+      await mintTo(connection, payer, mint, tokenAccount, payer, amount);
+    }
   }
 
   /**
@@ -214,8 +224,8 @@ describe("resynth", () => {
    */
   async function setOracle(
     priceAccount: PublicKey,
-    decimals: number,
-    price: number
+    price: number,
+    decimals: number
   ): Promise<void> {
     const unitPrice = new BN(price ** decimals);
 
@@ -231,7 +241,7 @@ describe("resynth", () => {
     collateralMint: PublicKey,
     syntheticOracle: PublicKey,
     syntheticDecimals: number
-  ): Promise<PublicKey> {
+  ): Promise<{ syntheticAsset: PublicKey; syntheticMint: PublicKey }> {
     const syntheticAssetKeypair = Keypair.generate();
     const syntheticAsset = syntheticAssetKeypair.publicKey;
 
@@ -256,7 +266,7 @@ describe("resynth", () => {
       .signers([syntheticAssetKeypair])
       .rpc();
 
-    return syntheticAsset;
+    return { syntheticAsset, syntheticMint };
   }
 
   /**
@@ -343,6 +353,12 @@ describe("resynth", () => {
       .rpc();
   }
 
+  async function initializeSwapPool() {
+    // await tokenSwap.methods.initializeSwapPool().accounts({}).rpc();
+  }
+
+  async function provideLiquidityToAMM() {}
+
   it("Create stablecoin", async () => {
     stablecoinMint = await createTestToken(stablecoinDecimals);
   });
@@ -357,14 +373,11 @@ describe("resynth", () => {
   });
 
   it("Initialize synthetic gold asset", async () => {
-    goldAsset = await initializeSyntheticAsset(
-      stablecoinMint,
-      goldOracle,
-      goldDecimals
-    );
+    ({ syntheticAsset: goldAsset, syntheticMint: goldMint } =
+      await initializeSyntheticAsset(stablecoinMint, goldOracle, goldDecimals));
   });
 
-  it("Mint stablecoin", async () => {
+  it("Mint stablecoins, and init gold accounts", async () => {
     await mintTestToken(
       stablecoinMint,
       userA.wallet.publicKey,
@@ -375,6 +388,8 @@ describe("resynth", () => {
       userB.wallet.publicKey,
       250 * stablecoinDecimals
     );
+    await mintTestToken(goldMint, userA.wallet.publicKey);
+    await mintTestToken(goldMint, userB.wallet.publicKey);
   });
 
   it("Initialize margin accounts", async () => {
@@ -383,14 +398,19 @@ describe("resynth", () => {
   });
 
   it("User A mints synthetic gold", async () => {
+    await setOracle(goldOracle, 1_800, goldDecimals);
     await mintSyntheticAsset(userA, goldOracle, goldAsset, 2000, 0.1);
   });
 
   it("User B mints an unhealthy amount of synthetic gold", async () => {
-    await mintSyntheticAsset(userB, goldOracle, goldAsset, 2000, 1);
+    await expect(
+      mintSyntheticAsset(userB, goldOracle, goldAsset, 2000, 1)
+    ).to.be.rejectedWith('"Custom":1');
   });
 
   it("User B mints a healthy amount of synthetic gold", async () => {
     await mintSyntheticAsset(userB, goldOracle, goldAsset, 100, 0.005);
   });
+
+  // it("User A provides liquidity to the AMM", async () => {});
 });

@@ -80,8 +80,7 @@ impl<'info> MintSyntheticAsset<'info> {
         // Unwrap the oracle price
         let oracle_price = load_price_feed_from_account_info(&ctx.accounts.synthetic_oracle)
             .map_err(|_| Errors::InvalidOracle)?
-            .get_price_no_older_than(Clock::get()?.unix_timestamp, 60)
-            .ok_or(Errors::StaleOracle)?;
+            .get_price_unchecked();
 
         // Update the margin account balances
         margin_account.mint_synthetic_asset(collateral_amount, mint_amount);
