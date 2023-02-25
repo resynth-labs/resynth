@@ -34,8 +34,4 @@ pub mod synth_amm {
     ) -> Result<()> {
         MintSyntheticAsset::process(ctx, collateral_amount, mint_amount)
     }
-
-    pub fn initialize_amm(ctx: Context<InitializeAMM>, lp_decimals: u8) -> Result<()> {
-        InitializeAMM::process(ctx, lp_decimals)
-    }
 }
