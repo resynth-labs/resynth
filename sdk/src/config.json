@@ -1,0 +1,14 @@
+{
+  "localnet": {
+    "programId": "EMA4zANmhMuSUqRqj3wNvAkGwRGXLJk7WpXQdW7bSwX1",
+    "url": "http://localhost:8899"
+  },
+  "devnet": {
+    "programId": "EMA4zANmhMuSUqRqj3wNvAkGwRGXLJk7WpXQdW7bSwX1",
+    "url": "https://api.devnet.solana.com"
+  },
+  "mainnet": {
+    "programId": "EMA4zANmhMuSUqRqj3wNvAkGwRGXLJk7WpXQdW7bSwX1",
+    "url": "https://api.mainnet-beta.solana.com"
+  }
+}

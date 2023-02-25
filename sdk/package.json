@@ -1,0 +1,19 @@
+{
+  "name": "@resynth/resynth",
+  "version": "0.0.1",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "compile": "tsc --noEmit",
+    "cli": "ts-node src/cli.ts"
+  },
+  "keywords": [],
+  "dependencies": {
+    "@coral-xyz/anchor": "^0.26.0",
+    "@solana/spl-token": "^0.3.7"
+  },
+  "devDependencies": {
+    "@types/bn.js": "^5.1.0"
+  }
+}
