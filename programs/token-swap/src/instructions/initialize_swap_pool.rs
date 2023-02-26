@@ -65,8 +65,19 @@ pub struct InitializeSwapPool<'info> {
 
     /// Pool Token Account to deposit trading and withdraw fees.
     /// Must be empty, not owned by swap authority
-    #[account(token::mint = lpmint)]
+    /// FIXME! Freeze expoit: Nothing is stopping the fee receiver from closing the account, freezing the pool funds 
+    #[account(init,
+        seeds = [
+            b"fee_receiver",
+            swap_pool.key().as_ref(),
+        ],
+        bump,
+        payer = payer,
+        token::authority = fee_receiver_wallet,
+        token::mint = lpmint,
+    )]
     pub fee_receiver: Box<Account<'info, TokenAccount>>,
+    pub fee_receiver_wallet: AccountInfo<'info>,
 
     pub mint_a: Box<Account<'info, Mint>>,
 
