@@ -12,7 +12,8 @@
     "access": "public"
   },
   "files": [
-    "lib"
+    "dist",
+    "src"
   ],
   "scripts": {
     "build": "tsc",
