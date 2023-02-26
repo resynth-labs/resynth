@@ -3,7 +3,6 @@ import {
   BN,
   BorshAccountsCoder,
   BorshCoder,
-  Idl,
   Instruction,
   Program,
   ProgramAccount,
@@ -11,10 +10,10 @@ import {
 } from "@coral-xyz/anchor";
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
+  ConfirmOptions,
   Connection,
   PublicKey,
   SystemProgram,
-  SYSVAR_RENT_PUBKEY,
   TransactionSignature,
 } from "@solana/web3.js";
 import RESYNTH_CONFIG from "./config.json";
@@ -23,33 +22,29 @@ import { MarginAccount, SyntheticAsset } from "./types";
 
 export class ResynthClient {
   accountDiscriminators: Record<string, string> = {};
-  cluster: "devnet" | "localnet" | "mainnet";
   coder: BorshCoder;
   config: any;
-  connection: Connection;
   program: Program<Resynth>;
   programId: PublicKey;
   provider: AnchorProvider;
   url: string;
-  wallet: Wallet;
 
   constructor(
-    cluster: "devnet" | "localnet" | "mainnet",
-    connection?: Connection,
-    wallet?: Wallet
+    public cluster: "devnet" | "localnet" | "mainnet",
+    public connection?: Connection,
+    public wallet?: Wallet,
+    opts?: ConfirmOptions
   ) {
     this.cluster = cluster;
     this.config = RESYNTH_CONFIG[this.cluster];
     this.programId = new PublicKey(this.config.programId);
     this.url = this.config.url;
 
-    this.connection = connection
-      ? connection
-      : new Connection(this.url, "confirmed");
+    this.connection ??= new Connection(this.url, "confirmed");
 
-    this.wallet = wallet ? wallet : ({} as unknown as any);
+    this.wallet ??= {} as unknown as any;
 
-    const opts = AnchorProvider.defaultOptions();
+    opts ??= AnchorProvider.defaultOptions();
     this.provider = new AnchorProvider(connection, wallet, opts);
     this.program = new Program<Resynth>(IDL, this.programId, this.provider);
 
