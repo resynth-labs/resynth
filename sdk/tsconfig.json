@@ -5,7 +5,7 @@
     "module": "commonjs",
     "declaration": true,
     "resolveJsonModule": true,
-    "outDir": "./lib",
+    "outDir": "./dist",
     "esModuleInterop": true,
     "noImplicitAny": true,
     "skipLibCheck": true

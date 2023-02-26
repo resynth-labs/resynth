@@ -1,6 +1,6 @@
 {
   "name": "@resynth/resynth-sdk",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "SDK for interacting with the resynth on-chain programs",
   "keywords": [
     "solana",
@@ -12,8 +12,7 @@
     "access": "public"
   },
   "files": [
-    "dist",
-    "src"
+    "dist"
   ],
   "scripts": {
     "build": "tsc",
