@@ -57,7 +57,6 @@ describe("resynth", () => {
 
   const tokenSwap = workspace.TokenSwap as Program<TokenSwap>;
   assert(tokenSwap);
-  console.log(tokenSwap.programId.toBase58());
 
   // The token program used by the synth amm
   const tokenProgram = TOKEN_PROGRAM_ID;
@@ -356,9 +355,9 @@ describe("resynth", () => {
   }
 
   type SwapCurve =
-    | "ConstantProductCurve"
-    | "ConstantPriceCurve"
-    | "OffsetCurve";
+    | "constantProductCurve"
+    | "constantPriceCurve"
+    | "offsetCurve";
 
   interface Fees {
     /// Trade fees are extra token amounts that are held inside the token
@@ -402,21 +401,11 @@ describe("resynth", () => {
     fees: Fees,
     swapCurve: SwapCurve
   ) {
-    const { swapPool, authority, vaultA, vaultB, lpmint } = swapPoolPDA(
-      tokenSwap,
-      mintA,
-      mintB
-    );
+    const { swapPool, authority, vaultA, vaultB, lpmint, feeReceiver } =
+      swapPoolPDA(tokenSwap, mintA, mintB);
 
-    const feeReceiver = getAssociatedTokenAddressSync(
-      lpmint,
-      feeReceiverWallet,
-      true
-    );
-
-    console.log({ [swapCurve]: {} });
     await tokenSwap.methods
-      .initializeSwapPool(fees, { ["constantProductCurve"]: {} })
+      .initializeSwapPool(fees, { [swapCurve]: {} })
       .accountsStrict({
         swapPool,
         authority,
@@ -426,6 +415,7 @@ describe("resynth", () => {
         lpmint,
 
         feeReceiver,
+        feeReceiverWallet: feeReceiverWallet,
 
         mintA,
         mintB,
@@ -435,14 +425,6 @@ describe("resynth", () => {
         systemProgram,
         tokenProgram,
       })
-      .postInstructions([
-        createAssociatedTokenAccountInstruction(
-          payer.publicKey,
-          feeReceiver,
-          feeReceiverWallet,
-          lpmint
-        ),
-      ])
       .rpc();
   }
 
@@ -517,7 +499,7 @@ describe("resynth", () => {
       goldMint,
       payer.publicKey,
       fees,
-      "ConstantProductCurve"
+      "constantProductCurve"
     );
   });
 

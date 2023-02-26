@@ -62,6 +62,10 @@ export function swapPoolPDA(
     [Buffer.from("lpmint"), swapPool.toBuffer()],
     program.programId
   )[0];
+  const feeReceiver = PublicKey.findProgramAddressSync(
+    [Buffer.from("fee_receiver"), swapPool.toBuffer()],
+    program.programId
+  )[0];
 
   return {
     swapPool,
@@ -69,5 +73,6 @@ export function swapPoolPDA(
     vaultA,
     vaultB,
     lpmint,
+    feeReceiver,
   };
 }
