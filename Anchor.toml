@@ -2,7 +2,7 @@
 seeds = false
 skip-lint = false
 
-[programs.devnet]
+[programs.localnet]
 resynth = "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs"
 pyth = "HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM"
 token_faucet = "73ZZXhTSpH2nrm347fzoaRcjyCuMJ3u4jPq9jsrotin2"
@@ -12,8 +12,8 @@ token_swap = "85aooyAumUJKEfcw84mnacWKGN5dTqb4EX5YQRp5SuLX"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "devnet"
-wallet = "./keys/wallet.json"
+cluster = "localnet"
+wallet = "~/.config/solana/id.json"
 
 [workspace]
 types = "tests/idl/"

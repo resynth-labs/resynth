@@ -1604,6 +1604,7 @@ dependencies = [
  "anchor-lang",
  "anchor-spl",
  "pyth-sdk-solana",
+ "solana-program",
 ]
 
 [[package]]
@@ -2201,6 +2202,14 @@ dependencies = [
  "enum_dispatch",
  "proptest",
  "spl-math",
+]
+
+[[package]]
+name = "token_faucet"
+version = "0.1.0"
+dependencies = [
+ "anchor-lang",
+ "anchor-spl",
 ]
 
 [[package]]

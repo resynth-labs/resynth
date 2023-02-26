@@ -43,6 +43,7 @@ pub struct InitializeSyntheticAsset<'info> {
     pub synthetic_mint: Box<Account<'info, Mint>>,
 
     /// The synthetic asset oracle price feed, to determine margin account health
+    /// CHECK:
     pub synthetic_oracle: AccountInfo<'info>,
 
     /// The mint authority that can mint synthetic assets and transfer vault collateral
@@ -53,6 +54,7 @@ pub struct InitializeSyntheticAsset<'info> {
       ],
       bump,
     )]
+    /// CHECK:
     pub asset_authority: AccountInfo<'info>,
 
     /// The payer of rent for various accounts

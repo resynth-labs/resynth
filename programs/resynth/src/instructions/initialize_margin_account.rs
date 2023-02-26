@@ -8,6 +8,7 @@ pub struct InitializeMarginAccount<'info> {
     pub payer: Signer<'info>,
 
     /// The owner of the margin account, who can mint assets
+    /// CHECK:
     pub owner: AccountInfo<'info>,
 
     /// The synthetic asset the margin account is associated with

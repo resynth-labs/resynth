@@ -20,8 +20,10 @@ pub struct MintSyntheticAsset<'info> {
     #[account(mut)]
     pub synthetic_mint: Box<Account<'info, Mint>>,
     /// The oracle price feed, to determine margin account health
+    /// CHECK:
     pub synthetic_oracle: AccountInfo<'info>,
     /// The mint authority that can mint synthetic assets and transfer vault collateral
+    /// CHECK:
     pub asset_authority: AccountInfo<'info>,
 
     /// The receiver of the synthetic asset
