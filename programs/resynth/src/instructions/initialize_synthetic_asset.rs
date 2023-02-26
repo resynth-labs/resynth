@@ -75,7 +75,7 @@ impl<'info> InitializeSyntheticAsset<'info> {
             .map_err(|_| Errors::InvalidOracle)?;
 
         // The USD price of one unit of collateral is hard coded to 1,
-        // so the conversion between one token and one unit must be constant.
+        // so the conversion between one token and one lamport must be constant.
         require!(
             ctx.accounts.collateral_mint.decimals == 6,
             Errors::InvalidCollateralMintDecimals
