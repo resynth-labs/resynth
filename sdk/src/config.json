@@ -1,0 +1,23 @@
+{
+  "mainnet": {
+    "url": "https://api.mainnet-beta.solana.com",
+    "resynthProgramId": "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs",
+    "pythProgramId": "HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM",
+    "tokenFaucetProgramId": "73ZZXhTSpH2nrm347fzoaRcjyCuMJ3u4jPq9jsrotin2",
+    "tokenSwapProgramId": "85aooyAumUJKEfcw84mnacWKGN5dTqb4EX5YQRp5SuLX"
+  },
+  "devnet": {
+    "url": "https://api.devnet.solana.com",
+    "resynthProgramId": "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs",
+    "pythProgramId": "HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM",
+    "tokenFaucetProgramId": "73ZZXhTSpH2nrm347fzoaRcjyCuMJ3u4jPq9jsrotin2",
+    "tokenSwapProgramId": "85aooyAumUJKEfcw84mnacWKGN5dTqb4EX5YQRp5SuLX"
+  },
+  "localnet": {
+    "url": "http://localhost:8899",
+    "resynthProgramId": "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs",
+    "pythProgramId": "HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM",
+    "tokenFaucetProgramId": "73ZZXhTSpH2nrm347fzoaRcjyCuMJ3u4jPq9jsrotin2",
+    "tokenSwapProgramId": "85aooyAumUJKEfcw84mnacWKGN5dTqb4EX5YQRp5SuLX"
+  }
+}

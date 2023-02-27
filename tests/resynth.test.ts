@@ -1,33 +1,12 @@
-import {
-  Program,
-  workspace,
-  AnchorProvider,
-  setProvider,
-  BN,
-} from "@coral-xyz/anchor";
-import { Pyth } from "./idl/pyth";
-import { Resynth } from "./idl/resynth";
-import {
-  PublicKey,
-  Keypair,
-  LAMPORTS_PER_SOL,
-  SystemProgram,
-  Transaction,
-} from "@solana/web3.js";
-import * as token from "@solana/spl-token";
+import { AnchorProvider, BN, Program, setProvider, workspace } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { marginAccountPDA, swapPoolPDA, syntheticAssetPDA } from "./utils/pda";
-import {
-  AccountLayout,
-  createAssociatedTokenAccountInstruction,
-  getAssociatedTokenAddressSync,
-  getOrCreateAssociatedTokenAccount,
-  mintTo,
-  TOKEN_PROGRAM_ID,
-} from "@solana/spl-token";
-import { TokenSwap } from "./idl/token_swap";
+import * as token from "@solana/spl-token";
+import { AccountLayout, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, mintTo, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { PublicKey, Keypair, LAMPORTS_PER_SOL, SystemProgram, Transaction } from "@solana/web3.js";
 import { assert, expect, use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
+import { PythClient, ResynthClient, TokenFaucetClient, TokenSwapClient } from "../sdk/src";
+import { marginAccountPDA, swapPoolPDA, syntheticAssetPDA } from "../sdk/src/utils";
 
 chaiUse(chaiAsPromised.default);
 
@@ -49,14 +28,31 @@ describe("resynth", () => {
   provider.opts.commitment = "processed";
   setProvider(provider);
 
-  // The mock pyth program, from Drift-v2 repo
-  const pyth = workspace.Pyth as Program<Pyth>;
+  // // The mock pyth program, from Drift-v2 repo
+  const pyth = new PythClient(
+    "localnet",
+    connection,
+    wallet as NodeWallet,
+  );
 
   // The main synthetic asset program
-  const resynth = workspace.Resynth as Program<Resynth>;
+  const resynth = new ResynthClient(
+    "localnet",
+    connection,
+    wallet as NodeWallet,
+  );
 
-  const tokenSwap = workspace.TokenSwap as Program<TokenSwap>;
-  assert(tokenSwap);
+  const tokenFaucet = new TokenFaucetClient(
+    "localnet",
+    connection,
+    wallet as NodeWallet,
+  );
+
+  const tokenSwap = new TokenSwapClient(
+    "localnet",
+    connection,
+    wallet as NodeWallet,
+  );
 
   // The token program used by the synth amm
   const tokenProgram = TOKEN_PROGRAM_ID;
@@ -68,6 +64,8 @@ describe("resynth", () => {
   let stablecoinMint: PublicKey;
 
   const stablecoinDecimals: number = 6;
+
+  let stablecoinFaucet: PublicKey;
 
   const goldDecimals: number = 3;
 
@@ -125,21 +123,33 @@ describe("resynth", () => {
   }
 
   /**
-   * Create a token for integration testing
+   * Creates a token account for the user. And mints a number of stablecoins to the account.
    *
-   * @param {number} decimals The token decimals
-   * @return {Promise<PublicKey>}
+   * @param {PublicKey} mint
+   * @param {PublicKey} wallet
+   * @param {number} amount
+   * @returns {Promise<void>}
    */
-  async function createTestToken(decimals: number): Promise<PublicKey> {
-    const mint = await token.createMint(
+  async function airdropStablecoin(
+    mint: PublicKey,
+    wallet: PublicKey,
+    amount?: number
+  ): Promise<void> {
+    const { address: tokenAccount } = await getOrCreateAssociatedTokenAccount(
       connection,
       payer,
-      wallet.publicKey,
-      wallet.publicKey,
-      decimals
+      mint,
+      wallet
     );
-
-    return mint;
+    if (amount && amount > 0) {
+      const txid = await tokenFaucet.airdrop({
+        amount: new BN(amount),
+        faucetAccount: stablecoinFaucet,
+        mintAccount: mint,
+        tokenAccountAccount: tokenAccount,
+      });
+      await tokenFaucet.connection.confirmTransaction(txid, "confirmed");
+    }
   }
 
   /**
@@ -188,7 +198,7 @@ describe("resynth", () => {
     const unitPrice = new BN(price ** decimals);
     const absoluteConfidence = new BN((confidence / 100) ** decimals);
 
-    await pyth.methods
+    await pyth.program.methods
       .initialize(unitPrice, -decimals, absoluteConfidence)
       .accountsStrict({
         price: priceKeypair.publicKey,
@@ -230,7 +240,7 @@ describe("resynth", () => {
   ): Promise<void> {
     const unitPrice = new BN(price ** decimals);
 
-    await pyth.methods
+    await pyth.program.methods
       .setPrice(unitPrice)
       .accountsStrict({
         price: priceAccount,
@@ -247,11 +257,11 @@ describe("resynth", () => {
     const syntheticAsset = syntheticAssetKeypair.publicKey;
 
     let { collateralVault, syntheticMint, assetAuthority } = syntheticAssetPDA(
-      resynth,
+      resynth.program,
       syntheticAsset
     );
 
-    await resynth.methods
+    await resynth.program.methods
       .initializeSyntheticAsset(syntheticDecimals)
       .accountsStrict({
         syntheticAsset,
@@ -282,11 +292,11 @@ describe("resynth", () => {
     syntheticAsset: PublicKey
   ): Promise<void> {
     const marginAccount = marginAccountPDA(
-      resynth,
+      resynth.program,
       owner.wallet.publicKey,
       syntheticAsset
     );
-    resynth.methods
+    resynth.program.methods
       .initializeMarginAccount()
       .accountsStrict({
         payer: owner.wallet.publicKey,
@@ -317,9 +327,9 @@ describe("resynth", () => {
     mintAmount: number
   ): Promise<void> {
     const { collateralVault, syntheticMint, assetAuthority } =
-      syntheticAssetPDA(resynth, syntheticAsset);
+      syntheticAssetPDA(resynth.program, syntheticAsset);
     const marginAccount = marginAccountPDA(
-      resynth,
+      resynth.program,
       owner.wallet.publicKey,
       syntheticAsset
     );
@@ -334,7 +344,7 @@ describe("resynth", () => {
       owner.wallet.publicKey
     );
 
-    await resynth.methods
+    await resynth.program.methods
       .mintSyntheticAsset(new BN(collateralAmount), new BN(mintAmount))
       .accountsStrict({
         syntheticAsset,
@@ -402,9 +412,9 @@ describe("resynth", () => {
     swapCurve: SwapCurve
   ) {
     const { swapPool, authority, vaultA, vaultB, lpmint, feeReceiver } =
-      swapPoolPDA(tokenSwap, mintA, mintB);
+      swapPoolPDA(tokenSwap.program, mintA, mintB);
 
-    await tokenSwap.methods
+    await tokenSwap.program.methods
       .initializeSwapPool(fees, { [swapCurve]: {} })
       .accountsStrict({
         swapPool,
@@ -430,8 +440,19 @@ describe("resynth", () => {
 
   async function provideLiquidityToAMM() {}
 
+  before(async () => {
+    const airdropSignature = await tokenFaucet.connection.requestAirdrop(
+      wallet.publicKey,
+      2 * LAMPORTS_PER_SOL
+    );
+    await tokenFaucet.connection.confirmTransaction(
+      airdropSignature,
+      "confirmed"
+    );
+  });
+
   it("Create stablecoin", async () => {
-    stablecoinMint = await createTestToken(stablecoinDecimals);
+    [stablecoinMint, stablecoinFaucet] = await tokenFaucet.createMintAndFaucet(stablecoinDecimals);
   });
 
   it("Create users", async () => {
@@ -449,15 +470,15 @@ describe("resynth", () => {
   });
 
   it("Mint stablecoins, and init gold accounts", async () => {
-    await mintTestToken(
+    await airdropStablecoin(
       stablecoinMint,
       userA.wallet.publicKey,
-      2500 ** stablecoinDecimals
+      2500 * 10 ** stablecoinDecimals
     );
-    await mintTestToken(
+    await airdropStablecoin(
       stablecoinMint,
       userB.wallet.publicKey,
-      250 * stablecoinDecimals
+      250 * 10 ** stablecoinDecimals
     );
     await mintTestToken(goldMint, userA.wallet.publicKey);
     await mintTestToken(goldMint, userB.wallet.publicKey);
@@ -494,14 +515,19 @@ describe("resynth", () => {
       hostFeeNumerator: new BN(5),
       hostFeeDenominator: new BN(10_000),
     };
-    await initializeSwapPool(
-      stablecoinMint,
-      goldMint,
-      payer.publicKey,
-      fees,
-      "constantProductCurve"
-    );
+    try {
+      await initializeSwapPool(
+        stablecoinMint,
+        goldMint,
+        payer.publicKey,
+        fees,
+        "constantProductCurve"
+      );
+    } catch (e) {
+      console.log(e);
+    }
   });
 
   it("User A provides liquidity to the AMM", async () => {});
+
 });

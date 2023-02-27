@@ -11,7 +11,7 @@ import {
 } from "@solana/web3.js";
 import { BN } from "bn.js";
 import { assert } from "chai";
-import { TokenFaucetClient } from "../sdk/token-faucet/src/client";
+import { TokenFaucetClient } from "../sdk/src";
 
 describe("token faucet", () => {
   let tokenFaucet: TokenFaucetClient;

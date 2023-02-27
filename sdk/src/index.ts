@@ -1,3 +1,3 @@
 export * from "./client";
-export * from "./idl";
 export * from "./types";
+export * from "./utils";

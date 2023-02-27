@@ -6,4 +6,4 @@ import { PublicKey } from "@solana/web3.js";
 export type Faucet = {
   mint: PublicKey;
   bump: number;
-};
+}
