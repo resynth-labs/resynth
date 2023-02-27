@@ -3,6 +3,6 @@
 .DS_Store
 target
 node_modules
-dist
+lib
 build
 test-ledger

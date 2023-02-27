@@ -6,17 +6,18 @@
     "solana",
     "resynth"
   ],
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "publishConfig": {
     "access": "public"
   },
   "files": [
-    "lib"
+    "lib",
+    "src"
   ],
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf dist/",
+    "clean": "rm -rf lib/",
     "compile": "tsc --noEmit"
   },
   "dependencies": {
