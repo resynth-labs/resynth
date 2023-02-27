@@ -55,9 +55,15 @@ pub mod token_swap {
     pub fn initialize_swap_pool(
         ctx: Context<InitializeSwapPool>,
         fees: Fees,
-        swap_curve: SwapCurve,
+        swap_curve_type: SwapCurveType,
+        token_b_price_or_offset: u64,
     ) -> Result<()> {
-        instructions::initialize_swap_pool::execute(ctx, fees, swap_curve)
+        instructions::initialize_swap_pool::execute(
+            ctx,
+            fees,
+            swap_curve_type,
+            token_b_price_or_offset,
+        )
     }
 
     /// Swap the tokens in the pool.

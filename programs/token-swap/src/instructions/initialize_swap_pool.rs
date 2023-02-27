@@ -1,4 +1,5 @@
 use anchor_lang::prelude::*;
+use anchor_spl::token::{MintTo, self, Transfer, transfer};
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::constants::*;
@@ -84,6 +85,24 @@ pub struct InitializeSwapPool<'info> {
 
     pub mint_b: Box<Account<'info, Mint>>,
 
+    pub source: Signer<'info>,
+
+    pub source_a: Box<Account<'info, TokenAccount>>,
+
+    pub source_b: Box<Account<'info, TokenAccount>>,
+    
+    #[account(init,
+        seeds = [
+            b"destination_lp",
+            swap_pool.key().as_ref(),
+        ],
+        bump,
+        payer = payer,
+        token::authority = fee_receiver_wallet,
+        token::mint = lpmint,
+    )]
+    pub destination_lp: Box<Account<'info, TokenAccount>>,
+
     #[account(mut)]
     pub payer: Signer<'info>,
 
@@ -92,22 +111,30 @@ pub struct InitializeSwapPool<'info> {
     pub token_program: Program<'info, Token>,
 }
 
-pub fn execute(ctx: Context<InitializeSwapPool>, fees: Fees, swap_curve: SwapCurve) -> Result<()> {
-    let (authority, authority_bump) =
-        Pubkey::find_program_address(&[&ctx.accounts.swap_pool.key().to_bytes()], ctx.program_id);
-    if *ctx.accounts.authority.key != authority {
-        return Err(error!(TokenSwapError::InvalidAuthority));
+impl<'info> InitializeSwapPool<'info> {
+    pub fn transfer_source_a_context(&self) -> CpiContext<'_,'_,'_, 'info, Transfer<'info>> {
+        CpiContext::new(self.token_program.to_account_info(), Transfer {
+             from: self.source_a.to_account_info(), 
+             to: self.vault_a.to_account_info(), 
+             authority: self.payer.to_account_info(),
+        })
     }
+    pub fn transfer_source_b_context(&self) -> CpiContext<'_,'_,'_, 'info, Transfer<'info>> {
+        CpiContext::new(self.token_program.to_account_info(), Transfer {
+             from: self.source_b.to_account_info(), 
+             to: self.vault_b.to_account_info(), 
+             authority: self.payer.to_account_info(),
+        })
+    }
+}
+
+pub fn execute(ctx: Context<InitializeSwapPool>, fees: Fees, swap_curve_type: SwapCurveType, token_b_price_or_offset: u64) -> Result<()> {
     if *ctx.accounts.authority.key != ctx.accounts.lpmint.mint_authority.unwrap() {
         return Err(TokenSwapError::InvalidOwner.into());
     }
-
     if ctx.accounts.vault_a.mint == ctx.accounts.vault_b.mint {
         return Err(error!(TokenSwapError::RepeatedMint));
     }
-
-    swap_curve.validate_supply(ctx.accounts.vault_a.amount, ctx.accounts.vault_b.amount)?;
-
     if ctx.accounts.vault_a.delegate.is_some() {
         return Err(TokenSwapError::InvalidDelegate.into());
     }
@@ -120,7 +147,6 @@ pub fn execute(ctx: Context<InitializeSwapPool>, fees: Fees, swap_curve: SwapCur
     if ctx.accounts.vault_b.close_authority.is_some() {
         return Err(TokenSwapError::InvalidCloseAuthority.into());
     }
-
     if ctx.accounts.lpmint.supply != 0 {
         return Err(TokenSwapError::InvalidSupply.into());
     }
@@ -128,40 +154,49 @@ pub fn execute(ctx: Context<InitializeSwapPool>, fees: Fees, swap_curve: SwapCur
         return Err(TokenSwapError::InvalidFreezeAuthority.into());
     }
 
+    let swap_curve = swap_curve_type.try_into_swap_curve(token_b_price_or_offset)?;
+    swap_curve.validate_supply(ctx.accounts.source_a.amount, ctx.accounts.source_b.amount)?;
+    
     fees.validate()?;
     swap_curve.validate()?;
 
-    // let initial_amount = u64::try_from(swap_curve.new_pool_supply()).unwrap();
+    // This is a departure from the non-anchor spl-token-swap.
+    // Because vaults aren't preinitialized with a balance,
+    // they must be seeded before validating a supply.
+    transfer(ctx.accounts.transfer_source_a_context(), ctx.accounts.source_a.amount)?;
+    transfer(ctx.accounts.transfer_source_b_context(), ctx.accounts.source_b.amount)?;
 
-    //TODO DELETE
-    // token::mint_to(
-    //   CpiContext::new(
-    //     ctx.accounts.token_program.to_account_info().clone(),
-    //     MintTo {
-    //       mint: ctx.accounts.lpmint.to_account_info().clone(),
-    //       to: ctx.accounts.lptoken.to_account_info().clone(),
-    //       authority: ctx.accounts.authority.to_account_info().clone(),
-    //     },
-    //   ),
-    //   initial_amount,
-    // )?;
+    let initial_amount = u64::try_from(swap_curve.new_pool_supply()).unwrap();
 
-    let swap_pool = &mut ctx.accounts.swap_pool;
-    if swap_pool.is_initialized {
-        return Err(TokenSwapError::AlreadyInitialized.into());
-    }
-    swap_pool.is_initialized = true;
-    swap_pool.bump = *ctx.bumps.get("swap_pool").unwrap();
-    swap_pool.authority_bump = authority_bump;
-    swap_pool.token_program = *ctx.accounts.token_program.key;
-    swap_pool.vault_a = ctx.accounts.vault_a.key();
-    swap_pool.vault_b = ctx.accounts.vault_b.key();
-    swap_pool.lpmint = ctx.accounts.lpmint.key();
-    swap_pool.mint_a = ctx.accounts.mint_a.key();
-    swap_pool.mint_b = ctx.accounts.mint_b.key();
-    swap_pool.fee_receiver = ctx.accounts.fee_receiver.key();
-    swap_pool.fees = fees;
-    swap_pool.swap_curve = swap_curve;
+    token::mint_to(
+      CpiContext::new(
+        ctx.accounts.token_program.to_account_info().clone(),
+        MintTo {
+          mint: ctx.accounts.lpmint.to_account_info().clone(),
+          to: ctx.accounts.destination_lp.to_account_info().clone(),
+          authority: ctx.accounts.authority.to_account_info().clone(),
+        },
+      ),
+      initial_amount,
+    )?;
+
+    **ctx.accounts.swap_pool = SwapPool {
+        version: 1,
+        bump: ctx.bumps["swap_pool"],
+        authority_bump: ctx.bumps["authority"],
+        vault_a_bump: ctx.bumps["vault_a"],
+        vault_b_bump: ctx.bumps["vault_b"],
+        lpmint_bump: ctx.bumps["lpmint"],
+        token_program: *ctx.accounts.token_program.key,
+        vault_a: ctx.accounts.vault_a.key(),
+        vault_b: ctx.accounts.vault_b.key(),
+        lpmint: ctx.accounts.lpmint.key(),
+        mint_a: ctx.accounts.mint_a.key(),
+        mint_b: ctx.accounts.mint_b.key(),
+        fee_receiver: ctx.accounts.fee_receiver.key(),
+        fees: fees,
+        swap_curve: swap_curve,
+    };
 
     Ok(())
 }

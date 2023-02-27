@@ -238,6 +238,26 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
+          "name": "source",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "sourceA",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "sourceB",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "destinationLp",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "payer",
           "isMut": true,
           "isSigner": true
@@ -261,10 +281,14 @@ export type TokenSwap = {
           }
         },
         {
-          "name": "swapCurve",
+          "name": "swapCurveType",
           "type": {
-            "defined": "SwapCurve"
+            "defined": "SwapCurveType"
           }
+        },
+        {
+          "name": "tokenBPriceOrOffset",
+          "type": "u64"
         }
       ]
     },
@@ -531,14 +555,15 @@ export type TokenSwap = {
         "kind": "struct",
         "fields": [
           {
-            "name": "isInitialized",
-            "docs": [
-              "Initialized state."
-            ],
-            "type": "bool"
+            "name": "version",
+            "type": "u8"
           },
           {
             "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "authorityBump",
             "docs": [
               "Bump seed used in program address.",
               "The program address is created deterministically with the bump seed,",
@@ -546,10 +571,6 @@ export type TokenSwap = {
               "authority over the swap's token A account, token B account, and pool",
               "token mint."
             ],
-            "type": "u8"
-          },
-          {
-            "name": "authorityBump",
             "type": "u8"
           },
           {
@@ -832,6 +853,23 @@ export type TokenSwap = {
           },
           {
             "name": "Ceiling"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapCurveType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "ConstantProductCurve"
+          },
+          {
+            "name": "ConstantPriceCurve"
+          },
+          {
+            "name": "OffsetCurve"
           }
         ]
       }
@@ -1231,6 +1269,26 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
+          "name": "source",
+          "isMut": false,
+          "isSigner": true
+        },
+        {
+          "name": "sourceA",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "sourceB",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "destinationLp",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
           "name": "payer",
           "isMut": true,
           "isSigner": true
@@ -1254,10 +1312,14 @@ export const IDL: TokenSwap = {
           }
         },
         {
-          "name": "swapCurve",
+          "name": "swapCurveType",
           "type": {
-            "defined": "SwapCurve"
+            "defined": "SwapCurveType"
           }
+        },
+        {
+          "name": "tokenBPriceOrOffset",
+          "type": "u64"
         }
       ]
     },
@@ -1524,14 +1586,15 @@ export const IDL: TokenSwap = {
         "kind": "struct",
         "fields": [
           {
-            "name": "isInitialized",
-            "docs": [
-              "Initialized state."
-            ],
-            "type": "bool"
+            "name": "version",
+            "type": "u8"
           },
           {
             "name": "bump",
+            "type": "u8"
+          },
+          {
+            "name": "authorityBump",
             "docs": [
               "Bump seed used in program address.",
               "The program address is created deterministically with the bump seed,",
@@ -1539,10 +1602,6 @@ export const IDL: TokenSwap = {
               "authority over the swap's token A account, token B account, and pool",
               "token mint."
             ],
-            "type": "u8"
-          },
-          {
-            "name": "authorityBump",
             "type": "u8"
           },
           {
@@ -1825,6 +1884,23 @@ export const IDL: TokenSwap = {
           },
           {
             "name": "Ceiling"
+          }
+        ]
+      }
+    },
+    {
+      "name": "SwapCurveType",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "ConstantProductCurve"
+          },
+          {
+            "name": "ConstantPriceCurve"
+          },
+          {
+            "name": "OffsetCurve"
           }
         ]
       }
