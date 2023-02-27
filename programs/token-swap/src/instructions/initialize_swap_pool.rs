@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{MintTo, self, Transfer, transfer};
+use anchor_spl::associated_token::{AssociatedToken, Create};
+use anchor_spl::token::{self, transfer, MintTo, Transfer};
 use anchor_spl::token::{Mint, Token, TokenAccount};
 
 use crate::constants::*;
@@ -90,18 +91,9 @@ pub struct InitializeSwapPool<'info> {
     pub source_a: Box<Account<'info, TokenAccount>>,
 
     pub source_b: Box<Account<'info, TokenAccount>>,
-    
-    #[account(init,
-        seeds = [
-            b"destination_lp",
-            swap_pool.key().as_ref(),
-        ],
-        bump,
-        payer = payer,
-        token::authority = fee_receiver_wallet,
-        token::mint = lpmint,
-    )]
-    pub destination_lp: Box<Account<'info, TokenAccount>>,
+
+    /// CHECK: This associated token account will be created during execution
+    pub lptoken: SystemAccount<'info>,
 
     #[account(mut)]
     pub payer: Signer<'info>,
@@ -109,26 +101,53 @@ pub struct InitializeSwapPool<'info> {
     pub system_program: Program<'info, System>,
 
     pub token_program: Program<'info, Token>,
+
+    pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
 impl<'info> InitializeSwapPool<'info> {
-    pub fn transfer_source_a_context(&self) -> CpiContext<'_,'_,'_, 'info, Transfer<'info>> {
-        CpiContext::new(self.token_program.to_account_info(), Transfer {
-             from: self.source_a.to_account_info(), 
-             to: self.vault_a.to_account_info(), 
-             authority: self.payer.to_account_info(),
-        })
+    pub fn transfer_source_a_context(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
+        CpiContext::new(
+            self.token_program.to_account_info(),
+            Transfer {
+                from: self.source_a.to_account_info(),
+                to: self.vault_a.to_account_info(),
+                authority: self.payer.to_account_info(),
+            },
+        )
     }
-    pub fn transfer_source_b_context(&self) -> CpiContext<'_,'_,'_, 'info, Transfer<'info>> {
-        CpiContext::new(self.token_program.to_account_info(), Transfer {
-             from: self.source_b.to_account_info(), 
-             to: self.vault_b.to_account_info(), 
-             authority: self.payer.to_account_info(),
-        })
+    pub fn transfer_source_b_context(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
+        CpiContext::new(
+            self.token_program.to_account_info(),
+            Transfer {
+                from: self.source_b.to_account_info(),
+                to: self.vault_b.to_account_info(),
+                authority: self.payer.to_account_info(),
+            },
+        )
+    }
+
+    pub fn create_lptoken_context(&self) -> CpiContext<'_, '_, '_, 'info, Create<'info>> {
+        CpiContext::new(
+            self.associated_token_program.to_account_info(),
+            Create {
+                payer: self.payer.to_account_info(),
+                associated_token: self.lptoken.to_account_info(),
+                authority: self.source.to_account_info(),
+                mint: self.lpmint.to_account_info(),
+                system_program: self.system_program.to_account_info(),
+                token_program: self.token_program.to_account_info(),
+            },
+        )
     }
 }
 
-pub fn execute(ctx: Context<InitializeSwapPool>, fees: Fees, swap_curve_type: SwapCurveType, token_b_price_or_offset: u64) -> Result<()> {
+pub fn execute(
+    ctx: Context<InitializeSwapPool>,
+    fees: Fees,
+    swap_curve_type: SwapCurveType,
+    token_b_price_or_offset: u64,
+) -> Result<()> {
     if *ctx.accounts.authority.key != ctx.accounts.lpmint.mint_authority.unwrap() {
         return Err(TokenSwapError::InvalidOwner.into());
     }
@@ -156,28 +175,33 @@ pub fn execute(ctx: Context<InitializeSwapPool>, fees: Fees, swap_curve_type: Sw
 
     let swap_curve = swap_curve_type.try_into_swap_curve(token_b_price_or_offset)?;
     swap_curve.validate_supply(ctx.accounts.source_a.amount, ctx.accounts.source_b.amount)?;
-    
+
     fees.validate()?;
     swap_curve.validate()?;
 
     // This is a departure from the non-anchor spl-token-swap.
     // Because vaults aren't preinitialized with a balance,
     // they must be seeded before validating a supply.
-    transfer(ctx.accounts.transfer_source_a_context(), ctx.accounts.source_a.amount)?;
-    transfer(ctx.accounts.transfer_source_b_context(), ctx.accounts.source_b.amount)?;
-
-    let initial_amount = u64::try_from(swap_curve.new_pool_supply()).unwrap();
-
+    transfer(
+        ctx.accounts.transfer_source_a_context(),
+        ctx.accounts.source_a.amount,
+    )?;
+    transfer(
+        ctx.accounts.transfer_source_b_context(),
+        ctx.accounts.source_b.amount,
+    )?;
+    anchor_spl::associated_token::create(ctx.accounts.create_lptoken_context())?;
+    let initial_lp_amount = u64::try_from(swap_curve.new_pool_supply()).unwrap();
     token::mint_to(
-      CpiContext::new(
-        ctx.accounts.token_program.to_account_info().clone(),
-        MintTo {
-          mint: ctx.accounts.lpmint.to_account_info().clone(),
-          to: ctx.accounts.destination_lp.to_account_info().clone(),
-          authority: ctx.accounts.authority.to_account_info().clone(),
-        },
-      ),
-      initial_amount,
+        CpiContext::new(
+            ctx.accounts.token_program.to_account_info().clone(),
+            MintTo {
+                mint: ctx.accounts.lpmint.to_account_info().clone(),
+                to: ctx.accounts.lptoken.to_account_info().clone(),
+                authority: ctx.accounts.authority.to_account_info().clone(),
+            },
+        ),
+        initial_lp_amount,
     )?;
 
     **ctx.accounts.swap_pool = SwapPool {
@@ -194,8 +218,8 @@ pub fn execute(ctx: Context<InitializeSwapPool>, fees: Fees, swap_curve_type: Sw
         mint_a: ctx.accounts.mint_a.key(),
         mint_b: ctx.accounts.mint_b.key(),
         fee_receiver: ctx.accounts.fee_receiver.key(),
-        fees: fees,
-        swap_curve: swap_curve,
+        fees,
+        swap_curve,
     };
 
     Ok(())

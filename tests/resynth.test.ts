@@ -2,6 +2,7 @@ import { AnchorProvider, BN, setProvider } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import {
   AccountLayout,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
   getOrCreateAssociatedTokenAccount,
   mintTo,
@@ -70,11 +71,14 @@ describe("resynth", () => {
     wallet as NodeWallet
   );
 
+  // Sytem program
+  const systemProgram = SystemProgram.programId;
+
   // The token program used by the synth amm
   const tokenProgram = TOKEN_PROGRAM_ID;
 
-  // Sytem program
-  const systemProgram = SystemProgram.programId;
+  // The associated token program
+  const associatedTokenProgram = ASSOCIATED_TOKEN_PROGRAM_ID;
 
   // The stablecoin as the base pair of the amm
   let stablecoinMint: PublicKey;
@@ -423,7 +427,7 @@ describe("resynth", () => {
   async function initializeSwapPool(
     mintA: PublicKey,
     mintB: PublicKey,
-    source: PublicKey,
+    source: Keypair,
     feeReceiverWallet: PublicKey,
     fees: Fees,
     swapCurveType: SwapCurveType,
@@ -435,20 +439,15 @@ describe("resynth", () => {
       connection,
       payer,
       mintA,
-      source
+      source.publicKey
     );
     const { address: sourceB } = await getOrCreateAssociatedTokenAccount(
       connection,
       payer,
       mintB,
-      source
+      source.publicKey
     );
-    const { address: destinationLp } = await getOrCreateAssociatedTokenAccount(
-      connection,
-      payer,
-      lpmint,
-      source
-    );
+    const lptoken = getAssociatedTokenAddressSync(lpmint, source.publicKey);
 
     await tokenSwap.program.methods
       .initializeSwapPool(fees, { [swapCurveType]: {} }, tokenBPriceOrOffset)
@@ -468,13 +467,15 @@ describe("resynth", () => {
         source: userA.wallet.publicKey,
         sourceA,
         sourceB,
-        destinationLp,
+        lptoken,
 
         payer: payer.publicKey,
 
         systemProgram,
         tokenProgram,
+        associatedTokenProgram,
       })
+      .signers([source])
       .rpc();
   }
 
@@ -561,7 +562,7 @@ describe("resynth", () => {
       await initializeSwapPool(
         stablecoinMint,
         goldMint,
-        userA.wallet.publicKey,
+        userA.wallet,
         payer.publicKey,
         fees,
         "constantProductCurve",
@@ -569,6 +570,7 @@ describe("resynth", () => {
       );
     } catch (e) {
       console.log(e);
+      throw e; // fail the test
     }
   });
 

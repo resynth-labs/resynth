@@ -253,8 +253,8 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "destinationLp",
-          "isMut": true,
+          "name": "lptoken",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -269,6 +269,11 @@ export type TokenSwap = {
         },
         {
           "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
         }
@@ -1284,8 +1289,8 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "destinationLp",
-          "isMut": true,
+          "name": "lptoken",
+          "isMut": false,
           "isSigner": false
         },
         {
@@ -1300,6 +1305,11 @@ export const IDL: TokenSwap = {
         },
         {
           "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "associatedTokenProgram",
           "isMut": false,
           "isSigner": false
         }
