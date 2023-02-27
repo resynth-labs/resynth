@@ -22,13 +22,13 @@ import {
   Transaction,
   TransactionSignature,
 } from "@solana/web3.js";
-import CONFIG from '../config.json';
-import { IDL, TokenFaucet } from '../idl/token_faucet';
+import CONFIG from "../config.json";
+import { IDL, TokenFaucet } from "../idl/token_faucet";
 import { Faucet } from "../types";
 
 export class TokenFaucetClient {
   accountDiscriminators: Record<string, string> = {};
-  cluster: 'devnet' | 'localnet' | 'mainnet';
+  cluster: "devnet" | "localnet" | "mainnet";
   coder: BorshCoder;
   config: any;
   connection: Connection;
@@ -38,15 +38,21 @@ export class TokenFaucetClient {
   url: string;
   wallet: Wallet;
 
-  constructor(cluster: 'devnet' | 'localnet' | 'mainnet', connection?: Connection, wallet?: Wallet) {
+  constructor(
+    cluster: "devnet" | "localnet" | "mainnet",
+    connection?: Connection,
+    wallet?: Wallet
+  ) {
     this.cluster = cluster;
-    this.config = CONFIG[this.cluster]
+    this.config = CONFIG[this.cluster];
     this.programId = new PublicKey(this.config.tokenFaucetProgramId);
     this.url = this.config.url;
 
-    this.connection = connection ? connection : new Connection(this.url, 'confirmed');
+    this.connection = connection
+      ? connection
+      : new Connection(this.url, "confirmed");
 
-    this.wallet = wallet ? wallet : {} as unknown as any;
+    this.wallet = wallet ? wallet : ({} as unknown as any);
 
     const opts = AnchorProvider.defaultOptions();
     this.provider = new AnchorProvider(this.connection, this.wallet, opts);
@@ -55,7 +61,9 @@ export class TokenFaucetClient {
     // @ts-ignore
     this.coder = this.program._coder;
 
-    this.accountDiscriminators[BorshAccountsCoder.accountDiscriminator("Faucet").toString('base64')] = "Faucet";
+    this.accountDiscriminators[
+      BorshAccountsCoder.accountDiscriminator("Faucet").toString("base64")
+    ] = "Faucet";
   }
 
   async createMintAndFaucet(decimals: number): Promise<[PublicKey, PublicKey]> {
@@ -102,7 +110,7 @@ export class TokenFaucetClient {
   // Accounts -----------------------------------------------------------------
 
   decodeAccountName(buffer: Buffer): string {
-    const accountDiscriminator = buffer.slice(0, 8).toString('base64');
+    const accountDiscriminator = buffer.slice(0, 8).toString("base64");
     return this.accountDiscriminators[accountDiscriminator];
   }
 
@@ -126,11 +134,14 @@ export class TokenFaucetClient {
   }
 
   async fetchAllFaucets(): Promise<ProgramAccount<Faucet>[]> {
-    return await this.program.account.faucet.all() as ProgramAccount<Faucet>[];
+    return (await this.program.account.faucet.all()) as ProgramAccount<Faucet>[];
   }
 
   async fetchFaucet(address: PublicKey): Promise<ProgramAccount<Faucet>> {
-    return { publicKey: address, account: await this.program.account.faucet.fetch(address) } as ProgramAccount<Faucet>;
+    return {
+      publicKey: address,
+      account: await this.program.account.faucet.fetch(address),
+    } as ProgramAccount<Faucet>;
   }
 
   // Instructions -------------------------------------------------------------
@@ -140,41 +151,35 @@ export class TokenFaucetClient {
   }
 
   async airdrop(params: {
-    amount: BN,
-    faucetAccount: PublicKey,
-    mintAccount: PublicKey,
-    tokenAccountAccount: PublicKey,
+    amount: BN;
+    faucetAccount: PublicKey;
+    mintAccount: PublicKey;
+    tokenAccountAccount: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.airdrop(
-      params.amount,
-      {
-        accounts: {
-          faucet: params.faucetAccount,
-          mint: params.mintAccount,
-          tokenAccount: params.tokenAccountAccount,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        },
-      }
-    )
+    return this.program.rpc.airdrop(params.amount, {
+      accounts: {
+        faucet: params.faucetAccount,
+        mint: params.mintAccount,
+        tokenAccount: params.tokenAccountAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      },
+    });
   }
 
   async initializeFaucet(params: {
-    faucetAccount: PublicKey,
-    payerAccount: PublicKey,
-    mintAccount: PublicKey,
+    faucetAccount: PublicKey;
+    payerAccount: PublicKey;
+    mintAccount: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.initializeFaucet(
-      {
-        accounts: {
-          faucet: params.faucetAccount,
-          payer: params.payerAccount,
-          mint: params.mintAccount,
-          rent: SYSVAR_RENT_PUBKEY,
-          systemProgram: SystemProgram.programId,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        },
-      }
-    )
+    return this.program.rpc.initializeFaucet({
+      accounts: {
+        faucet: params.faucetAccount,
+        payer: params.payerAccount,
+        mint: params.mintAccount,
+        rent: SYSVAR_RENT_PUBKEY,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      },
+    });
   }
-
 }

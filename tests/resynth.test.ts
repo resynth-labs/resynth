@@ -1,12 +1,39 @@
-import { AnchorProvider, BN, Program, setProvider, workspace } from "@coral-xyz/anchor";
+import {
+  AnchorProvider,
+  BN,
+  Program,
+  setProvider,
+  workspace,
+} from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import * as token from "@solana/spl-token";
-import { AccountLayout, getAssociatedTokenAddressSync, getOrCreateAssociatedTokenAccount, mintTo, TOKEN_PROGRAM_ID } from "@solana/spl-token";
-import { PublicKey, Keypair, LAMPORTS_PER_SOL, SystemProgram, Transaction } from "@solana/web3.js";
+import {
+  AccountLayout,
+  getAssociatedTokenAddressSync,
+  getOrCreateAssociatedTokenAccount,
+  mintTo,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
+import {
+  PublicKey,
+  Keypair,
+  LAMPORTS_PER_SOL,
+  SystemProgram,
+  Transaction,
+} from "@solana/web3.js";
 import { assert, expect, use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
-import { PythClient, ResynthClient, TokenFaucetClient, TokenSwapClient } from "../sdk/src";
-import { marginAccountPDA, swapPoolPDA, syntheticAssetPDA } from "../sdk/src/utils";
+import {
+  PythClient,
+  ResynthClient,
+  TokenFaucetClient,
+  TokenSwapClient,
+} from "../sdk/src";
+import {
+  marginAccountPDA,
+  swapPoolPDA,
+  syntheticAssetPDA,
+} from "../sdk/src/utils";
 
 chaiUse(chaiAsPromised.default);
 
@@ -29,29 +56,25 @@ describe("resynth", () => {
   setProvider(provider);
 
   // // The mock pyth program, from Drift-v2 repo
-  const pyth = new PythClient(
-    "localnet",
-    connection,
-    wallet as NodeWallet,
-  );
+  const pyth = new PythClient("localnet", connection, wallet as NodeWallet);
 
   // The main synthetic asset program
   const resynth = new ResynthClient(
     "localnet",
     connection,
-    wallet as NodeWallet,
+    wallet as NodeWallet
   );
 
   const tokenFaucet = new TokenFaucetClient(
     "localnet",
     connection,
-    wallet as NodeWallet,
+    wallet as NodeWallet
   );
 
   const tokenSwap = new TokenSwapClient(
     "localnet",
     connection,
-    wallet as NodeWallet,
+    wallet as NodeWallet
   );
 
   // The token program used by the synth amm
@@ -452,7 +475,9 @@ describe("resynth", () => {
   });
 
   it("Create stablecoin", async () => {
-    [stablecoinMint, stablecoinFaucet] = await tokenFaucet.createMintAndFaucet(stablecoinDecimals);
+    [stablecoinMint, stablecoinFaucet] = await tokenFaucet.createMintAndFaucet(
+      stablecoinDecimals
+    );
   });
 
   it("Create users", async () => {
@@ -529,5 +554,4 @@ describe("resynth", () => {
   });
 
   it("User A provides liquidity to the AMM", async () => {});
-
 });

@@ -1,14 +1,41 @@
-import { AnchorProvider, BN, BorshAccountsCoder, BorshCoder, Idl, Instruction, Program, ProgramAccount, Wallet } from "@coral-xyz/anchor";
-import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { Connection, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, TransactionSignature } from "@solana/web3.js";
-import CONFIG from '../config.json';
-import { IDL, TokenSwap } from '../idl/token_swap';
+import {
+  AnchorProvider,
+  BN,
+  BorshAccountsCoder,
+  BorshCoder,
+  Idl,
+  Instruction,
+  Program,
+  ProgramAccount,
+  Wallet,
+} from "@coral-xyz/anchor";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  Connection,
+  PublicKey,
+  SystemProgram,
+  SYSVAR_RENT_PUBKEY,
+  TransactionSignature,
+} from "@solana/web3.js";
+import CONFIG from "../config.json";
+import { IDL, TokenSwap } from "../idl/token_swap";
 import { SwapPool } from "../types";
-import { ConstantPriceCurve, ConstantProductCurve, OffsetCurve, ConstantPriceCurve, ConstantProductCurve, Fees, OffsetCurve, RoundDirection, SwapCurve, TradeDirection } from "../types";
+import {
+  ConstantPriceCurve,
+  ConstantProductCurve,
+  OffsetCurve,
+  ConstantPriceCurve,
+  ConstantProductCurve,
+  Fees,
+  OffsetCurve,
+  RoundDirection,
+  SwapCurve,
+  TradeDirection,
+} from "../types";
 
 export class TokenSwapClient {
   accountDiscriminators: Record<string, string> = {};
-  cluster: 'devnet' | 'localnet' | 'mainnet';
+  cluster: "devnet" | "localnet" | "mainnet";
   coder: BorshCoder;
   config: any;
   connection: Connection;
@@ -18,15 +45,21 @@ export class TokenSwapClient {
   url: string;
   wallet: Wallet;
 
-  constructor(cluster: 'devnet' | 'localnet' | 'mainnet', connection?: Connection, wallet?: Wallet) {
+  constructor(
+    cluster: "devnet" | "localnet" | "mainnet",
+    connection?: Connection,
+    wallet?: Wallet
+  ) {
     this.cluster = cluster;
-    this.config = CONFIG[this.cluster]
+    this.config = CONFIG[this.cluster];
     this.programId = new PublicKey(this.config.tokenSwapProgramId);
     this.url = this.config.url;
 
-    this.connection = connection ? connection : new Connection(this.url, 'confirmed');
+    this.connection = connection
+      ? connection
+      : new Connection(this.url, "confirmed");
 
-    this.wallet = wallet ? wallet : {} as unknown as any;
+    this.wallet = wallet ? wallet : ({} as unknown as any);
 
     const opts = AnchorProvider.defaultOptions();
     this.provider = new AnchorProvider(this.connection, this.wallet, opts);
@@ -35,13 +68,15 @@ export class TokenSwapClient {
     // @ts-ignore
     this.coder = this.program._coder;
 
-    this.accountDiscriminators[BorshAccountsCoder.accountDiscriminator("SwapPool").toString('base64')] = "SwapPool";
+    this.accountDiscriminators[
+      BorshAccountsCoder.accountDiscriminator("SwapPool").toString("base64")
+    ] = "SwapPool";
   }
 
   // Accounts -----------------------------------------------------------------
 
   decodeAccountName(buffer: Buffer): string {
-    const accountDiscriminator = buffer.slice(0, 8).toString('base64');
+    const accountDiscriminator = buffer.slice(0, 8).toString("base64");
     return this.accountDiscriminators[accountDiscriminator];
   }
 
@@ -65,11 +100,14 @@ export class TokenSwapClient {
   }
 
   async fetchAllSwapPools(): Promise<ProgramAccount<SwapPool>[]> {
-    return await this.program.account.swapPool.all() as ProgramAccount<SwapPool>[];
+    return (await this.program.account.swapPool.all()) as ProgramAccount<SwapPool>[];
   }
 
   async fetchSwapPool(address: PublicKey): Promise<ProgramAccount<SwapPool>> {
-    return { publicKey: address, account: await this.program.account.swapPool.fetch(address) } as ProgramAccount<SwapPool>;
+    return {
+      publicKey: address,
+      account: await this.program.account.swapPool.fetch(address),
+    } as ProgramAccount<SwapPool>;
   }
 
   // Instructions -------------------------------------------------------------
@@ -84,20 +122,20 @@ export class TokenSwapClient {
   // the current ratio.
   //
   async depositAllTokenTypes(params: {
-    poolTokenAmount: BN,
-    maximumTokenAAmount: BN,
-    maximumTokenBAmount: BN,
-    swapPoolAccount: PublicKey,
-    authorityAccount: PublicKey,
-    userTransferAuthorityAccount: PublicKey,
-    tokenAAccount: PublicKey,
-    tokenBAccount: PublicKey,
-    vaultAAccount: PublicKey,
-    vaultBAccount: PublicKey,
-    lpmintAccount: PublicKey,
-    lptokenAccount: PublicKey,
-    mintAAccount: PublicKey,
-    mintBAccount: PublicKey,
+    poolTokenAmount: BN;
+    maximumTokenAAmount: BN;
+    maximumTokenBAmount: BN;
+    swapPoolAccount: PublicKey;
+    authorityAccount: PublicKey;
+    userTransferAuthorityAccount: PublicKey;
+    tokenAAccount: PublicKey;
+    tokenBAccount: PublicKey;
+    vaultAAccount: PublicKey;
+    vaultBAccount: PublicKey;
+    lpmintAccount: PublicKey;
+    lptokenAccount: PublicKey;
+    mintAAccount: PublicKey;
+    mintBAccount: PublicKey;
   }): Promise<TransactionSignature> {
     return this.program.rpc.depositAllTokenTypes(
       params.poolTokenAmount,
@@ -119,7 +157,7 @@ export class TokenSwapClient {
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       }
-    )
+    );
   }
 
   //
@@ -128,19 +166,19 @@ export class TokenSwapClient {
   // a swap and deposit all token types were performed.
   //
   async depositSingleTokenTypeExactAmountIn(params: {
-    sourceTokenAmount: BN,
-    minimumPoolTokenAmount: BN,
-    swapPoolAccount: PublicKey,
-    authorityAccount: PublicKey,
-    userTransferAuthorityAccount: PublicKey,
-    tokenAAccount: PublicKey,
-    tokenBAccount: PublicKey,
-    vaultAAccount: PublicKey,
-    vaultBAccount: PublicKey,
-    lpmintAccount: PublicKey,
-    lptokenAccount: PublicKey,
-    mintAAccount: PublicKey,
-    mintBAccount: PublicKey,
+    sourceTokenAmount: BN;
+    minimumPoolTokenAmount: BN;
+    swapPoolAccount: PublicKey;
+    authorityAccount: PublicKey;
+    userTransferAuthorityAccount: PublicKey;
+    tokenAAccount: PublicKey;
+    tokenBAccount: PublicKey;
+    vaultAAccount: PublicKey;
+    vaultBAccount: PublicKey;
+    lpmintAccount: PublicKey;
+    lptokenAccount: PublicKey;
+    mintAAccount: PublicKey;
+    mintBAccount: PublicKey;
   }): Promise<TransactionSignature> {
     return this.program.rpc.depositSingleTokenTypeExactAmountIn(
       params.sourceTokenAmount,
@@ -161,84 +199,76 @@ export class TokenSwapClient {
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       }
-    )
+    );
   }
 
   //
   // Initializes a new swap
   //
   async initializeSwapPool(params: {
-    fees: Fees,
-    swapCurve: SwapCurve,
-    swapPoolAccount: PublicKey,
-    authorityAccount: PublicKey,
-    vaultAAccount: PublicKey,
-    vaultBAccount: PublicKey,
-    lpmintAccount: PublicKey,
-    feeReceiverAccount: PublicKey,
-    feeReceiverWalletAccount: PublicKey,
-    mintAAccount: PublicKey,
-    mintBAccount: PublicKey,
-    payerAccount: PublicKey,
+    fees: Fees;
+    swapCurve: SwapCurve;
+    swapPoolAccount: PublicKey;
+    authorityAccount: PublicKey;
+    vaultAAccount: PublicKey;
+    vaultBAccount: PublicKey;
+    lpmintAccount: PublicKey;
+    feeReceiverAccount: PublicKey;
+    feeReceiverWalletAccount: PublicKey;
+    mintAAccount: PublicKey;
+    mintBAccount: PublicKey;
+    payerAccount: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.initializeSwapPool(
-      params.fees,
-      params.swapCurve,
-      {
-        accounts: {
-          swapPool: params.swapPoolAccount,
-          authority: params.authorityAccount,
-          vaultA: params.vaultAAccount,
-          vaultB: params.vaultBAccount,
-          lpmint: params.lpmintAccount,
-          feeReceiver: params.feeReceiverAccount,
-          feeReceiverWallet: params.feeReceiverWalletAccount,
-          mintA: params.mintAAccount,
-          mintB: params.mintBAccount,
-          payer: params.payerAccount,
-          systemProgram: SystemProgram.programId,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        },
-      }
-    )
+    return this.program.rpc.initializeSwapPool(params.fees, params.swapCurve, {
+      accounts: {
+        swapPool: params.swapPoolAccount,
+        authority: params.authorityAccount,
+        vaultA: params.vaultAAccount,
+        vaultB: params.vaultBAccount,
+        lpmint: params.lpmintAccount,
+        feeReceiver: params.feeReceiverAccount,
+        feeReceiverWallet: params.feeReceiverWalletAccount,
+        mintA: params.mintAAccount,
+        mintB: params.mintBAccount,
+        payer: params.payerAccount,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      },
+    });
   }
 
   //
   // Swap the tokens in the pool.
   //
   async swap(params: {
-    amountIn: BN,
-    minimumAmountOut: BN,
-    swapPoolAccount: PublicKey,
-    authorityAccount: PublicKey,
-    userTransferAuthorityAccount: PublicKey,
-    sourceTokenAccount: PublicKey,
-    sourceVaultAccount: PublicKey,
-    destVaultAccount: PublicKey,
-    destTokenAccount: PublicKey,
-    lpmintAccount: PublicKey,
-    feeReceiverAccount: PublicKey,
-    hostFeeReceiverAccount: PublicKey,
+    amountIn: BN;
+    minimumAmountOut: BN;
+    swapPoolAccount: PublicKey;
+    authorityAccount: PublicKey;
+    userTransferAuthorityAccount: PublicKey;
+    sourceTokenAccount: PublicKey;
+    sourceVaultAccount: PublicKey;
+    destVaultAccount: PublicKey;
+    destTokenAccount: PublicKey;
+    lpmintAccount: PublicKey;
+    feeReceiverAccount: PublicKey;
+    hostFeeReceiverAccount: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.swap(
-      params.amountIn,
-      params.minimumAmountOut,
-      {
-        accounts: {
-          swapPool: params.swapPoolAccount,
-          authority: params.authorityAccount,
-          userTransferAuthority: params.userTransferAuthorityAccount,
-          sourceToken: params.sourceTokenAccount,
-          sourceVault: params.sourceVaultAccount,
-          destVault: params.destVaultAccount,
-          destToken: params.destTokenAccount,
-          lpmint: params.lpmintAccount,
-          feeReceiver: params.feeReceiverAccount,
-          tokenProgram: TOKEN_PROGRAM_ID,
-          hostFeeReceiver: params.hostFeeReceiverAccount,
-        },
-      }
-    )
+    return this.program.rpc.swap(params.amountIn, params.minimumAmountOut, {
+      accounts: {
+        swapPool: params.swapPoolAccount,
+        authority: params.authorityAccount,
+        userTransferAuthority: params.userTransferAuthorityAccount,
+        sourceToken: params.sourceTokenAccount,
+        sourceVault: params.sourceVaultAccount,
+        destVault: params.destVaultAccount,
+        destToken: params.destTokenAccount,
+        lpmint: params.lpmintAccount,
+        feeReceiver: params.feeReceiverAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        hostFeeReceiver: params.hostFeeReceiverAccount,
+      },
+    });
   }
 
   //
@@ -247,21 +277,21 @@ export class TokenSwapClient {
   // amount of token A and B.
   //
   async withdrawAllTokenTypes(params: {
-    poolTokenAmount: BN,
-    minimumTokenAAmount: BN,
-    minimumTokenBAmount: BN,
-    swapPoolAccount: PublicKey,
-    authorityAccount: PublicKey,
-    userTransferAuthorityAccount: PublicKey,
-    lpmintAccount: PublicKey,
-    lptokenAccount: PublicKey,
-    vaultAAccount: PublicKey,
-    vaultBAccount: PublicKey,
-    tokenAAccount: PublicKey,
-    tokenBAccount: PublicKey,
-    feeReceiverAccount: PublicKey,
-    mintAAccount: PublicKey,
-    mintBAccount: PublicKey,
+    poolTokenAmount: BN;
+    minimumTokenAAmount: BN;
+    minimumTokenBAmount: BN;
+    swapPoolAccount: PublicKey;
+    authorityAccount: PublicKey;
+    userTransferAuthorityAccount: PublicKey;
+    lpmintAccount: PublicKey;
+    lptokenAccount: PublicKey;
+    vaultAAccount: PublicKey;
+    vaultBAccount: PublicKey;
+    tokenAAccount: PublicKey;
+    tokenBAccount: PublicKey;
+    feeReceiverAccount: PublicKey;
+    mintAAccount: PublicKey;
+    mintBAccount: PublicKey;
   }): Promise<TransactionSignature> {
     return this.program.rpc.withdrawAllTokenTypes(
       params.poolTokenAmount,
@@ -284,7 +314,7 @@ export class TokenSwapClient {
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       }
-    )
+    );
   }
 
   //
@@ -292,20 +322,20 @@ export class TokenSwapClient {
   // exact amount out expected.
   //
   async withdrawSingleTokenTypeExactAmountOut(params: {
-    destinationTokenAmount: BN,
-    maximumPoolTokenAmount: BN,
-    swapPoolAccount: PublicKey,
-    authorityAccount: PublicKey,
-    userTransferAuthorityAccount: PublicKey,
-    lpmintAccount: PublicKey,
-    lptokenAccount: PublicKey,
-    vaultAAccount: PublicKey,
-    vaultBAccount: PublicKey,
-    tokenAAccount: PublicKey,
-    tokenBAccount: PublicKey,
-    feeReceiverAccount: PublicKey,
-    mintAAccount: PublicKey,
-    mintBAccount: PublicKey,
+    destinationTokenAmount: BN;
+    maximumPoolTokenAmount: BN;
+    swapPoolAccount: PublicKey;
+    authorityAccount: PublicKey;
+    userTransferAuthorityAccount: PublicKey;
+    lpmintAccount: PublicKey;
+    lptokenAccount: PublicKey;
+    vaultAAccount: PublicKey;
+    vaultBAccount: PublicKey;
+    tokenAAccount: PublicKey;
+    tokenBAccount: PublicKey;
+    feeReceiverAccount: PublicKey;
+    mintAAccount: PublicKey;
+    mintBAccount: PublicKey;
   }): Promise<TransactionSignature> {
     return this.program.rpc.withdrawSingleTokenTypeExactAmountOut(
       params.destinationTokenAmount,
@@ -327,7 +357,6 @@ export class TokenSwapClient {
           tokenProgram: TOKEN_PROGRAM_ID,
         },
       }
-    )
+    );
   }
-
 }
