@@ -10,6 +10,38 @@ use crate::{
     types::*,
 };
 
+#[repr(u8)]
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
+pub enum SwapCurveType {
+    /// Uniswap-style constant product curve, invariant = token_a_amount * token_b_amount
+    ConstantProductCurve,
+    /// Flat line, always providing 1:1 from one token to another
+    ConstantPriceCurve,
+    /// Offset curve, like Uniswap, but the token B side has a faked offset
+    OffsetCurve,
+}
+
+impl SwapCurveType {
+    pub fn try_into_swap_curve(&self, token_b_price_or_offset: u64) -> Result<SwapCurve> {
+        let swap_curve = match self {
+            SwapCurveType::ConstantProductCurve => {
+                assert!(token_b_price_or_offset == 0);
+                SwapCurve::ConstantProductCurve(ConstantProductCurve::new())
+            }
+            SwapCurveType::ConstantPriceCurve => {
+                SwapCurve::ConstantPriceCurve(ConstantPriceCurve {
+                    token_b_price: token_b_price_or_offset,
+                })
+            }
+            SwapCurveType::OffsetCurve => SwapCurve::OffsetCurve(OffsetCurve {
+                token_b_offset: token_b_price_or_offset,
+            }),
+        };
+
+        Ok(swap_curve)
+    }
+}
+
 #[enum_dispatch]
 #[repr(C)]
 #[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]

@@ -2,9 +2,6 @@ use anchor_lang::prelude::*;
 pub mod pc;
 use pc::Price;
 
-#[cfg(feature = "mainnet-beta")]
-declare_id!("HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM");
-#[cfg(not(feature = "mainnet-beta"))]
 declare_id!("HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM");
 
 #[program]

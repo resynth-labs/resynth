@@ -1,14 +1,8 @@
-import {
-  AnchorProvider,
-  BN,
-  Program,
-  setProvider,
-  workspace,
-} from "@coral-xyz/anchor";
+import { AnchorProvider, BN, setProvider } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import * as token from "@solana/spl-token";
 import {
   AccountLayout,
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
   getOrCreateAssociatedTokenAccount,
   mintTo,
@@ -21,7 +15,7 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
-import { assert, expect, use as chaiUse } from "chai";
+import { expect, use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import {
   PythClient,
@@ -77,11 +71,14 @@ describe("resynth", () => {
     wallet as NodeWallet
   );
 
+  // Sytem program
+  const systemProgram = SystemProgram.programId;
+
   // The token program used by the synth amm
   const tokenProgram = TOKEN_PROGRAM_ID;
 
-  // Sytem program
-  const systemProgram = SystemProgram.programId;
+  // The associated token program
+  const associatedTokenProgram = ASSOCIATED_TOKEN_PROGRAM_ID;
 
   // The stablecoin as the base pair of the amm
   let stablecoinMint: PublicKey;
@@ -387,7 +384,7 @@ describe("resynth", () => {
       .rpc();
   }
 
-  type SwapCurve =
+  type SwapCurveType =
     | "constantProductCurve"
     | "constantPriceCurve"
     | "offsetCurve";
@@ -430,15 +427,30 @@ describe("resynth", () => {
   async function initializeSwapPool(
     mintA: PublicKey,
     mintB: PublicKey,
+    source: Keypair,
     feeReceiverWallet: PublicKey,
     fees: Fees,
-    swapCurve: SwapCurve
+    swapCurveType: SwapCurveType,
+    tokenBPriceOrOffset: BN
   ) {
     const { swapPool, authority, vaultA, vaultB, lpmint, feeReceiver } =
       swapPoolPDA(tokenSwap.program, mintA, mintB);
+    const { address: sourceA } = await getOrCreateAssociatedTokenAccount(
+      connection,
+      payer,
+      mintA,
+      source.publicKey
+    );
+    const { address: sourceB } = await getOrCreateAssociatedTokenAccount(
+      connection,
+      payer,
+      mintB,
+      source.publicKey
+    );
+    const lptoken = getAssociatedTokenAddressSync(lpmint, source.publicKey);
 
     await tokenSwap.program.methods
-      .initializeSwapPool(fees, { [swapCurve]: {} })
+      .initializeSwapPool(fees, { [swapCurveType]: {} }, tokenBPriceOrOffset)
       .accountsStrict({
         swapPool,
         authority,
@@ -448,16 +460,22 @@ describe("resynth", () => {
         lpmint,
 
         feeReceiver,
-        feeReceiverWallet: feeReceiverWallet,
+        feeReceiverWallet,
 
         mintA,
         mintB,
+        source: userA.wallet.publicKey,
+        sourceA,
+        sourceB,
+        lptoken,
 
         payer: payer.publicKey,
 
         systemProgram,
         tokenProgram,
+        associatedTokenProgram,
       })
+      .signers([source])
       .rpc();
   }
 
@@ -544,12 +562,15 @@ describe("resynth", () => {
       await initializeSwapPool(
         stablecoinMint,
         goldMint,
+        userA.wallet,
         payer.publicKey,
         fees,
-        "constantProductCurve"
+        "constantProductCurve",
+        new BN(0)
       );
     } catch (e) {
       console.log(e);
+      throw e; // fail the test
     }
   });
 

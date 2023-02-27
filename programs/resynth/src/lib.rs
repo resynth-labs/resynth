@@ -10,7 +10,7 @@ pub use instructions::*;
 pub use seeds::*;
 pub use state::*;
 
-declare_id!("BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs");
+declare_id!("synttWtyx32zPvSm7gioaHUGJ4ZFsZUmnviEvjtoyoa");
 
 #[program]
 pub mod resynth {

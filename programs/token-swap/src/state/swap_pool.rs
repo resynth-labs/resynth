@@ -9,16 +9,15 @@ use crate::{
 #[account]
 #[derive(Default)]
 pub struct SwapPool {
-    /// Initialized state.
-    pub is_initialized: bool,
+    pub version: u8,
+
+    pub bump: u8,
 
     /// Bump seed used in program address.
     /// The program address is created deterministically with the bump seed,
     /// swap program id, and swap account pubkey.  This program address has
     /// authority over the swap's token A account, token B account, and pool
     /// token mint.
-    pub bump: u8,
-
     pub authority_bump: u8,
 
     pub vault_a_bump: u8,
@@ -68,9 +67,6 @@ impl SwapPool {
         token_b_info: Option<AccountInfo>,
         fee_receiver_info: Option<AccountInfo>,
     ) -> Result<()> {
-        if !self.is_initialized {
-            return Err(TokenSwapError::NotInitialized.into());
-        }
         if *vault_a_info.key != self.vault_a {
             return Err(TokenSwapError::IncorrectSwapAccount.into());
         }

@@ -48,21 +48,6 @@ export type SwapPool = {
 // Types --------------------------------------------------------------------
 
 //
-// ConstantPriceCurve struct implementing CurveCalculator
-//
-export type ConstantPriceCurve = {
-  // Amount of token A required to get 1 token B
-  tokenBPrice: BN;
-};
-
-//
-// ConstantProductCurve struct implementing CurveCalculator
-//
-export type ConstantProductCurve = {
-  unused: number;
-};
-
-//
 // Offset curve, uses ConstantProduct under the hood, but adds an offset to
 // one side on swap calculations
 //
@@ -115,15 +100,6 @@ export type Fees = {
   hostFeeNumerator: BN;
   // Host trading fee denominator
   hostFeeDenominator: BN;
-};
-
-//
-// Offset curve, uses ConstantProduct under the hood, but adds an offset to
-// one side on swap calculations
-//
-export type OffsetCurve = {
-  // Amount to offset the token B liquidity account
-  tokenBOffset: BN;
 };
 
 //

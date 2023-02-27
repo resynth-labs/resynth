@@ -1,23 +1,23 @@
 {
   "mainnet": {
-    "url": "https://api.mainnet-beta.solana.com",
-    "resynthProgramId": "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs",
-    "pythProgramId": "HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM",
+    "url": "https://mango.rpcpool.com/946ef7337da3f5b8d3e4a34e7f8",
+    "resynthProgramId": "synttWtyx32zPvSm7gioaHUGJ4ZFsZUmnviEvjtoyoa",
+    "pythProgramId": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH",
     "tokenFaucetProgramId": "73ZZXhTSpH2nrm347fzoaRcjyCuMJ3u4jPq9jsrotin2",
-    "tokenSwapProgramId": "85aooyAumUJKEfcw84mnacWKGN5dTqb4EX5YQRp5SuLX"
+    "tokenSwapProgramId": "swapuaCjB4Esqxk3P4Lq9HoHebe7Jj3q8hCe1j5bcay"
   },
   "devnet": {
     "url": "https://api.devnet.solana.com",
-    "resynthProgramId": "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs",
+    "resynthProgramId": "synttWtyx32zPvSm7gioaHUGJ4ZFsZUmnviEvjtoyoa",
     "pythProgramId": "HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM",
     "tokenFaucetProgramId": "73ZZXhTSpH2nrm347fzoaRcjyCuMJ3u4jPq9jsrotin2",
-    "tokenSwapProgramId": "85aooyAumUJKEfcw84mnacWKGN5dTqb4EX5YQRp5SuLX"
+    "tokenSwapProgramId": "swapuaCjB4Esqxk3P4Lq9HoHebe7Jj3q8hCe1j5bcay"
   },
   "localnet": {
     "url": "http://localhost:8899",
-    "resynthProgramId": "BWxFf9EizbS1hxKPKJguxmvvxSggaVNK6V3TogPhuzAs",
+    "resynthProgramId": "synttWtyx32zPvSm7gioaHUGJ4ZFsZUmnviEvjtoyoa",
     "pythProgramId": "HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM",
     "tokenFaucetProgramId": "73ZZXhTSpH2nrm347fzoaRcjyCuMJ3u4jPq9jsrotin2",
-    "tokenSwapProgramId": "85aooyAumUJKEfcw84mnacWKGN5dTqb4EX5YQRp5SuLX"
+    "tokenSwapProgramId": "swapuaCjB4Esqxk3P4Lq9HoHebe7Jj3q8hCe1j5bcay"
   }
 }
