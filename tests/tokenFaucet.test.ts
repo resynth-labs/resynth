@@ -1,3 +1,4 @@
+import { BN } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import {
   createAssociatedTokenAccountInstruction,
@@ -9,7 +10,6 @@ import {
   PublicKey,
   Transaction,
 } from "@solana/web3.js";
-import { BN } from "bn.js";
 import { assert } from "chai";
 import { TokenFaucetClient } from "../sdk/src";
 
