@@ -5,8 +5,12 @@ import { TokenSwap } from "../idl/token_swap";
 
 export function syntheticAssetPDA(
   program: Program<Resynth>,
-  syntheticAsset: PublicKey
+  syntheticOracle: PublicKey
 ) {
+  const syntheticAsset = PublicKey.findProgramAddressSync(
+    [Buffer.from("asset"), syntheticOracle.toBuffer()],
+    program.programId
+  )[0];
   const collateralVault = PublicKey.findProgramAddressSync(
     [Buffer.from("vault"), syntheticAsset.toBuffer()],
     program.programId
@@ -19,7 +23,7 @@ export function syntheticAssetPDA(
     [Buffer.from("authority"), syntheticAsset.toBuffer()],
     program.programId
   )[0];
-  return { collateralVault, syntheticMint, assetAuthority };
+  return { syntheticAsset, collateralVault, syntheticMint, assetAuthority };
 }
 
 export function marginAccountPDA(

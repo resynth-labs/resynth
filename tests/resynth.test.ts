@@ -255,13 +255,10 @@ describe("resynth", () => {
    */
   async function setOracle(
     priceAccount: PublicKey,
-    price: number,
-    decimals: number
+    price: number
   ): Promise<void> {
-    const unitPrice = new BN(price ** decimals);
-
     await pyth.program.methods
-      .setPrice(unitPrice)
+      .setPrice(new BN(price))
       .accountsStrict({
         price: priceAccount,
       })
@@ -272,14 +269,9 @@ describe("resynth", () => {
     collateralMint: PublicKey,
     syntheticOracle: PublicKey,
     syntheticDecimals: number
-  ): Promise<{ syntheticAsset: PublicKey; syntheticMint: PublicKey }> {
-    const syntheticAssetKeypair = Keypair.generate();
-    const syntheticAsset = syntheticAssetKeypair.publicKey;
-
-    let { collateralVault, syntheticMint, assetAuthority } = syntheticAssetPDA(
-      resynth.program,
-      syntheticAsset
-    );
+  ): Promise<void> {
+    let { syntheticAsset, collateralVault, syntheticMint, assetAuthority } =
+      syntheticAssetPDA(resynth.program, syntheticOracle);
 
     await resynth.program.methods
       .initializeSyntheticAsset(syntheticDecimals)
@@ -294,10 +286,7 @@ describe("resynth", () => {
         tokenProgram,
         systemProgram,
       })
-      .signers([syntheticAssetKeypair])
       .rpc();
-
-    return { syntheticAsset, syntheticMint };
   }
 
   /**
@@ -342,12 +331,12 @@ describe("resynth", () => {
   async function mintSyntheticAsset(
     owner: TestUser,
     syntheticOracle: PublicKey,
-    syntheticAsset: PublicKey,
+    collateralMint: PublicKey,
     collateralAmount: number,
     mintAmount: number
   ): Promise<void> {
-    const { collateralVault, syntheticMint, assetAuthority } =
-      syntheticAssetPDA(resynth.program, syntheticAsset);
+    const { syntheticAsset, collateralVault, syntheticMint, assetAuthority } =
+      syntheticAssetPDA(resynth.program, syntheticOracle);
     const marginAccount = marginAccountPDA(
       resynth.program,
       owner.wallet.publicKey,
@@ -355,12 +344,12 @@ describe("resynth", () => {
     );
 
     const collateralAccount = getAssociatedTokenAddressSync(
-      stablecoinMint,
+      collateralMint,
       owner.wallet.publicKey
     );
 
     const syntheticAccount = getAssociatedTokenAddressSync(
-      goldMint,
+      syntheticMint,
       owner.wallet.publicKey
     );
 
@@ -468,8 +457,12 @@ describe("resynth", () => {
   });
 
   it("Initialize synthetic gold asset", async () => {
-    ({ syntheticAsset: goldAsset, syntheticMint: goldMint } =
-      await initializeSyntheticAsset(stablecoinMint, goldOracle, goldDecimals));
+    await initializeSyntheticAsset(stablecoinMint, goldOracle, goldDecimals);
+
+    ({ syntheticAsset: goldAsset, syntheticMint: goldMint } = syntheticAssetPDA(
+      resynth.program,
+      goldOracle
+    ));
   });
 
   it("Mint stablecoins, and init gold accounts", async () => {
@@ -493,8 +486,14 @@ describe("resynth", () => {
   });
 
   it("User A mints synthetic gold", async () => {
-    await setOracle(goldOracle, 1_800, goldDecimals);
-    await mintSyntheticAsset(userA, goldOracle, goldAsset, 2000, 0.1);
+    await setOracle(goldOracle, 1_800 * 10 ** goldDecimals);
+    await mintSyntheticAsset(
+      userA,
+      goldOracle,
+      stablecoinMint,
+      2000 * 10 ** stablecoinDecimals,
+      0.1 * 10 ** goldDecimals
+    );
   });
 
   // it("User B mints an unhealthy amount of synthetic gold", async () => {
@@ -504,35 +503,41 @@ describe("resynth", () => {
   // });
 
   it("User B mints a healthy amount of synthetic gold", async () => {
-    await mintSyntheticAsset(userB, goldOracle, goldAsset, 100, 0.005);
+    await mintSyntheticAsset(
+      userB,
+      goldOracle,
+      stablecoinMint,
+      100 * 10 ** stablecoinDecimals,
+      0.005 * 10 ** goldDecimals
+    );
   });
 
-  // it("Initialize gold swap pool", async () => {
-  //   const fees: Fees = {
-  //     tradeFeeNumerator: new BN(15),
-  //     tradeFeeDenominator: new BN(10_000),
-  //     ownerTradeFeeNumerator: new BN(5),
-  //     ownerTradeFeeDenominator: new BN(10_000),
-  //     ownerWithdrawFeeNumerator: new BN(0),
-  //     ownerWithdrawFeeDenominator: new BN(10_000),
-  //     hostFeeNumerator: new BN(5),
-  //     hostFeeDenominator: new BN(10_000),
-  //   };
-  //   try {
-  //     await initializeSwapPool(
-  //       stablecoinMint,
-  //       goldMint,
-  //       userA.wallet,
-  //       payer.publicKey,
-  //       fees,
-  //       SwapCurve.ConstantProductCurve,
-  //       new BN(0)
-  //     );
-  //   } catch (e) {
-  //     console.log(e);
-  //     throw e; // fail the test
-  //   }
-  // });
+  it("Initialize gold swap pool", async () => {
+    const fees: Fees = {
+      tradeFeeNumerator: new BN(15),
+      tradeFeeDenominator: new BN(10_000),
+      ownerTradeFeeNumerator: new BN(5),
+      ownerTradeFeeDenominator: new BN(10_000),
+      ownerWithdrawFeeNumerator: new BN(0),
+      ownerWithdrawFeeDenominator: new BN(10_000),
+      hostFeeNumerator: new BN(5),
+      hostFeeDenominator: new BN(10_000),
+    };
+    try {
+      await initializeSwapPool(
+        stablecoinMint,
+        goldMint,
+        userA.wallet,
+        payer.publicKey,
+        fees,
+        SwapCurve.ConstantProductCurve,
+        new BN(0)
+      );
+    } catch (e) {
+      console.log(e);
+      throw e; // fail the test
+    }
+  });
 
   // it("User A provides liquidity to the AMM", async () => {});
 });

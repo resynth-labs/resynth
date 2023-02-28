@@ -18,7 +18,7 @@ pub struct SwapPool {
     /// swap program id, and swap account pubkey.  This program address has
     /// authority over the swap's token A account, token B account, and pool
     /// token mint.
-    pub authority_bump: u8,
+    pub authority_bump: [u8; 1],
 
     pub vault_a_bump: u8,
 
@@ -26,8 +26,9 @@ pub struct SwapPool {
 
     pub lpmint_bump: u8,
 
-    /// Program ID of the tokens being exchanged.
-    pub token_program: Pubkey,
+    pub swap_pool: Pubkey,
+
+    pub authority: Pubkey,
 
     /// Mint information for token A
     pub mint_a: Pubkey,
@@ -47,6 +48,9 @@ pub struct SwapPool {
 
     /// Pool token account to receive trading and / or withdrawal fees
     pub fee_receiver: Pubkey,
+
+    /// Program ID of the tokens being exchanged.
+    pub token_program: Pubkey,
 
     /// All fee information
     pub fees: Fees,
@@ -95,5 +99,12 @@ impl SwapPool {
             }
         }
         Ok(())
+    }
+
+    pub fn signer_seeds(&self) -> [&[u8]; 2] {
+        [
+            self.swap_pool.as_ref().clone(),
+            self.authority_bump.as_ref().clone(),
+        ]
     }
 }

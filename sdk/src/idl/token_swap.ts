@@ -244,17 +244,17 @@ export type TokenSwap = {
         },
         {
           "name": "sourceA",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "sourceB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "lptoken",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -576,7 +576,12 @@ export type TokenSwap = {
               "authority over the swap's token A account, token B account, and pool",
               "token mint."
             ],
-            "type": "u8"
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
           },
           {
             "name": "vaultABump",
@@ -589,6 +594,14 @@ export type TokenSwap = {
           {
             "name": "lpmintBump",
             "type": "u8"
+          },
+          {
+            "name": "swapPool",
+            "type": "publicKey"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
           },
           {
             "name": "tokenProgram",
@@ -1280,17 +1293,17 @@ export const IDL: TokenSwap = {
         },
         {
           "name": "sourceA",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "sourceB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "lptoken",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1612,7 +1625,12 @@ export const IDL: TokenSwap = {
               "authority over the swap's token A account, token B account, and pool",
               "token mint."
             ],
-            "type": "u8"
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
           },
           {
             "name": "vaultABump",
@@ -1625,6 +1643,14 @@ export const IDL: TokenSwap = {
           {
             "name": "lpmintBump",
             "type": "u8"
+          },
+          {
+            "name": "swapPool",
+            "type": "publicKey"
+          },
+          {
+            "name": "authority",
+            "type": "publicKey"
           },
           {
             "name": "tokenProgram",

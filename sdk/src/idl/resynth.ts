@@ -3,9 +3,29 @@ export type Resynth = {
   "name": "resynth",
   "constants": [
     {
+      "name": "ASSET",
+      "type": "string",
+      "value": "\"asset\""
+    },
+    {
       "name": "AUTHORITY",
       "type": "string",
       "value": "\"authority\""
+    },
+    {
+      "name": "VAULT",
+      "type": "string",
+      "value": "\"vault\""
+    },
+    {
+      "name": "MINT",
+      "type": "string",
+      "value": "\"mint\""
+    },
+    {
+      "name": "MARGIN_ACCOUNT",
+      "type": "string",
+      "value": "\"margin_account\""
     }
   ],
   "instructions": [
@@ -18,7 +38,7 @@ export type Resynth = {
         {
           "name": "syntheticAsset",
           "isMut": true,
-          "isSigner": true,
+          "isSigner": false,
           "docs": [
             "The synthetic asset account to initialize"
           ]
@@ -97,6 +117,9 @@ export type Resynth = {
     },
     {
       "name": "initializeMarginAccount",
+      "docs": [
+        "Initialize a new margin account"
+      ],
       "accounts": [
         {
           "name": "payer",
@@ -144,10 +167,7 @@ export type Resynth = {
     {
       "name": "mintSyntheticAsset",
       "docs": [
-        "this instruction allows the user to deposit stable coin",
-        "collateral and mint synthetic asset. The user should be able to choose how",
-        "much they can mint but it should be restricted with a collateralization ratio such",
-        "that collateral_value / (oracle_price * minted_amount) >= 1.5"
+        "Mint a synthetic asset"
       ],
       "accounts": [
         {
@@ -339,9 +359,29 @@ export const IDL: Resynth = {
   "name": "resynth",
   "constants": [
     {
+      "name": "ASSET",
+      "type": "string",
+      "value": "\"asset\""
+    },
+    {
       "name": "AUTHORITY",
       "type": "string",
       "value": "\"authority\""
+    },
+    {
+      "name": "VAULT",
+      "type": "string",
+      "value": "\"vault\""
+    },
+    {
+      "name": "MINT",
+      "type": "string",
+      "value": "\"mint\""
+    },
+    {
+      "name": "MARGIN_ACCOUNT",
+      "type": "string",
+      "value": "\"margin_account\""
     }
   ],
   "instructions": [
@@ -354,7 +394,7 @@ export const IDL: Resynth = {
         {
           "name": "syntheticAsset",
           "isMut": true,
-          "isSigner": true,
+          "isSigner": false,
           "docs": [
             "The synthetic asset account to initialize"
           ]
@@ -433,6 +473,9 @@ export const IDL: Resynth = {
     },
     {
       "name": "initializeMarginAccount",
+      "docs": [
+        "Initialize a new margin account"
+      ],
       "accounts": [
         {
           "name": "payer",
@@ -480,10 +523,7 @@ export const IDL: Resynth = {
     {
       "name": "mintSyntheticAsset",
       "docs": [
-        "this instruction allows the user to deposit stable coin",
-        "collateral and mint synthetic asset. The user should be able to choose how",
-        "much they can mint but it should be restricted with a collateralization ratio such",
-        "that collateral_value / (oracle_price * minted_amount) >= 1.5"
+        "Mint a synthetic asset"
       ],
       "accounts": [
         {

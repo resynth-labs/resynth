@@ -15,7 +15,7 @@ pub struct Swap<'info> {
 
     #[account(
         seeds = [swap_pool.key().as_ref()],
-        bump = swap_pool.authority_bump,
+        bump = swap_pool.authority_bump[0],
     )]
     /// CHECK:
     pub authority: UncheckedAccount<'info>,
