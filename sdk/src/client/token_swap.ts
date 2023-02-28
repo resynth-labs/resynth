@@ -24,11 +24,9 @@ import {
   ConstantPriceCurve,
   ConstantProductCurve,
   OffsetCurve,
-  ConstantPriceCurve,
-  ConstantProductCurve,
   Fees,
-  OffsetCurve,
   RoundDirection,
+  SwapCurveType,
   SwapCurve,
   TradeDirection,
 } from "../types";
@@ -207,7 +205,8 @@ export class TokenSwapClient {
   //
   async initializeSwapPool(params: {
     fees: Fees;
-    swapCurve: SwapCurve;
+    swapCurveType: SwapCurveType;
+    tokenBPriceOrOffset: BN;
     swapPoolAccount: PublicKey;
     authorityAccount: PublicKey;
     vaultAAccount: PublicKey;
@@ -217,24 +216,39 @@ export class TokenSwapClient {
     feeReceiverWalletAccount: PublicKey;
     mintAAccount: PublicKey;
     mintBAccount: PublicKey;
+    sourceAccount: PublicKey;
+    sourceAAccount: PublicKey;
+    sourceBAccount: PublicKey;
+    lptokenAccount: PublicKey;
     payerAccount: PublicKey;
+    associatedTokenProgramAccount: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.initializeSwapPool(params.fees, params.swapCurve, {
-      accounts: {
-        swapPool: params.swapPoolAccount,
-        authority: params.authorityAccount,
-        vaultA: params.vaultAAccount,
-        vaultB: params.vaultBAccount,
-        lpmint: params.lpmintAccount,
-        feeReceiver: params.feeReceiverAccount,
-        feeReceiverWallet: params.feeReceiverWalletAccount,
-        mintA: params.mintAAccount,
-        mintB: params.mintBAccount,
-        payer: params.payerAccount,
-        systemProgram: SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      },
-    });
+    return this.program.rpc.initializeSwapPool(
+      params.fees,
+      params.swapCurveType,
+      params.tokenBPriceOrOffset,
+      {
+        accounts: {
+          swapPool: params.swapPoolAccount,
+          authority: params.authorityAccount,
+          vaultA: params.vaultAAccount,
+          vaultB: params.vaultBAccount,
+          lpmint: params.lpmintAccount,
+          feeReceiver: params.feeReceiverAccount,
+          feeReceiverWallet: params.feeReceiverWalletAccount,
+          mintA: params.mintAAccount,
+          mintB: params.mintBAccount,
+          source: params.sourceAccount,
+          sourceA: params.sourceAAccount,
+          sourceB: params.sourceBAccount,
+          lptoken: params.lptokenAccount,
+          payer: params.payerAccount,
+          systemProgram: SystemProgram.programId,
+          tokenProgram: TOKEN_PROGRAM_ID,
+          associatedTokenProgram: params.associatedTokenProgramAccount,
+        },
+      }
+    );
   }
 
   //

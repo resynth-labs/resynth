@@ -9,17 +9,12 @@ import {
   ProgramAccount,
   Wallet,
 } from "@coral-xyz/anchor";
-import {
-  createInitializeMintInstruction,
-  TOKEN_PROGRAM_ID,
-} from "@solana/spl-token";
+import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Connection,
-  Keypair,
   PublicKey,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
-  Transaction,
   TransactionSignature,
 } from "@solana/web3.js";
 import CONFIG from "../config.json";
@@ -64,47 +59,6 @@ export class TokenFaucetClient {
     this.accountDiscriminators[
       BorshAccountsCoder.accountDiscriminator("Faucet").toString("base64")
     ] = "Faucet";
-  }
-
-  async createMintAndFaucet(decimals: number): Promise<[PublicKey, PublicKey]> {
-    const mint = Keypair.generate();
-    const faucet = PublicKey.findProgramAddressSync(
-      [Buffer.from("faucet"), mint.publicKey.toBuffer()],
-      this.program.programId
-    )[0];
-
-    const transaction = new Transaction();
-    transaction.add(
-      SystemProgram.createAccount({
-        fromPubkey: this.wallet.publicKey,
-        newAccountPubkey: mint.publicKey,
-        space: 82,
-        lamports: await this.connection.getMinimumBalanceForRentExemption(82),
-        programId: TOKEN_PROGRAM_ID,
-      }),
-      createInitializeMintInstruction(
-        mint.publicKey,
-        decimals,
-        this.wallet.publicKey,
-        null
-      ),
-      await this.program.methods
-        .initializeFaucet()
-        .accounts({
-          faucet,
-          payer: this.wallet.publicKey,
-          mint: mint.publicKey,
-          rent: SYSVAR_RENT_PUBKEY,
-          systemProgram: SystemProgram.programId,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        })
-        .instruction()
-    );
-    await this.provider.sendAndConfirm(transaction, [mint], {
-      commitment: "confirmed",
-    });
-
-    return [mint.publicKey, faucet];
   }
 
   // Accounts -----------------------------------------------------------------
