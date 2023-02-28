@@ -196,75 +196,6 @@ describe("resynth", () => {
     }
   }
 
-  /**
-   * Initialize a pyth price account for a token
-   *
-   * @param {PublicKey} mint the token mint to get decimals from
-   * @param {number} price The price of a token in USD
-   * @param {number} confidence The price confidence in percentage terms
-   * @return {Promise<PublicKey>}
-   */
-  async function createOracle(
-    decimals: number,
-    price: number,
-    confidence: number
-  ): Promise<PublicKey> {
-    const priceKeypair = Keypair.generate();
-
-    const PYTH_PRICE_SIZE = 3312;
-
-    console.log("price", price ** decimals);
-    console.log("confidence", (confidence / 100) * price ** decimals);
-    const unitPrice = new BN(price ** decimals);
-    const absoluteConfidence = new BN((confidence / 100) ** decimals);
-
-    await pyth.program.methods
-      .initialize(unitPrice, -decimals, absoluteConfidence)
-      .accountsStrict({
-        price: priceKeypair.publicKey,
-      })
-      .preInstructions([
-        SystemProgram.createAccount({
-          /** The account that will transfer lamports to the created account */
-          fromPubkey: payer.publicKey,
-          /** Public key of the created account */
-          newAccountPubkey: priceKeypair.publicKey,
-          /** Amount of lamports to transfer to the created account */
-          lamports: await connection.getMinimumBalanceForRentExemption(
-            PYTH_PRICE_SIZE
-          ),
-          /** Amount of space in bytes to allocate to the created account */
-          space: PYTH_PRICE_SIZE,
-          /** Public key of the program to assign as the owner of the created account */
-          programId: pyth.programId,
-        }),
-      ])
-      .signers([priceKeypair])
-      .rpc();
-
-    return priceKeypair.publicKey;
-  }
-
-  /**
-   * Set the price of a pyth account
-   *
-   * @param {PublicKey} priceAccount
-   * @param {number} decimals
-   * @param {number} price
-   * @returns {Promise<void>}
-   */
-  async function setOracle(
-    priceAccount: PublicKey,
-    price: number
-  ): Promise<void> {
-    await pyth.program.methods
-      .setPrice(new BN(price))
-      .accountsStrict({
-        price: priceAccount,
-      })
-      .rpc();
-  }
-
   async function initializeSyntheticAsset(
     collateralMint: PublicKey,
     syntheticOracle: PublicKey,
@@ -428,7 +359,7 @@ describe("resynth", () => {
       .rpc();
   }
 
-  async function provideLiquidityToAMM() {}
+  async function provideLiquidityToAMM() { }
 
   before(async () => {
     const airdropSignature = await tokenFaucet.connection.requestAirdrop(
@@ -453,7 +384,11 @@ describe("resynth", () => {
   });
 
   it("Initialize synthetic gold price oracle", async () => {
-    goldOracle = await createOracle(goldDecimals, 1_800, 1);
+    goldOracle = await pyth.initialize({
+      price: 1_800,
+      expo: goldDecimals,
+      conf: 1,
+    });
   });
 
   it("Initialize synthetic gold asset", async () => {
@@ -486,7 +421,10 @@ describe("resynth", () => {
   });
 
   it("User A mints synthetic gold", async () => {
-    await setOracle(goldOracle, 1_800 * 10 ** goldDecimals);
+    await pyth.setPrice({
+      price: new BN(1_800 * 10 ** goldDecimals),
+      priceAccount: goldOracle,
+    });
     await mintSyntheticAsset(
       userA,
       goldOracle,

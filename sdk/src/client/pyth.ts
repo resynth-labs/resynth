@@ -12,6 +12,7 @@ import {
 import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Connection,
+  Keypair,
   PublicKey,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
@@ -63,19 +64,55 @@ export class PythClient {
     return this.coder.instruction.decode(str, "base58");
   }
 
+  /**
+   * Initialize a pyth price account for a token
+   *
+   * @param {PublicKey} mint the token mint to get decimals from
+   * @param {number} price The price of a token in USD
+   * @param {number} confidence The price confidence in percentage terms
+   * @return {Promise<PublicKey>}
+   */
   async initialize(params: {
-    price: BN;
+    price: number;
     expo: number;
-    conf: BN;
-    priceAccount: PublicKey;
-  }): Promise<TransactionSignature> {
-    return this.program.rpc.initialize(params.price, params.expo, params.conf, {
-      accounts: {
-        price: params.priceAccount,
-      },
-    });
+    conf: number;
+  }): Promise<PublicKey> {
+    const priceKeypair = Keypair.generate();
+    const PYTH_PRICE_SIZE = 3312;
+    await this.program.methods
+      .initialize(new BN(params.price * 10 ** -params.expo), -params.expo, new BN(params.conf * 10 ** -params.expo))
+      .accountsStrict({
+        price: priceKeypair.publicKey,
+      })
+      .preInstructions([
+        SystemProgram.createAccount({
+          /** The account that will transfer lamports to the created account */
+          fromPubkey: this.wallet.publicKey,
+          /** Public key of the created account */
+          newAccountPubkey: priceKeypair.publicKey,
+          /** Amount of lamports to transfer to the created account */
+          lamports: await this.connection.getMinimumBalanceForRentExemption(
+            PYTH_PRICE_SIZE
+          ),
+          /** Amount of space in bytes to allocate to the created account */
+          space: PYTH_PRICE_SIZE,
+          /** Public key of the program to assign as the owner of the created account */
+          programId: this.program.programId,
+        }),
+      ])
+      .signers([priceKeypair])
+      .rpc();
+    return priceKeypair.publicKey;
   }
 
+  /**
+   * Set the price of a pyth account
+   *
+   * @param {PublicKey} priceAccount
+   * @param {number} decimals
+   * @param {number} price
+   * @returns {Promise<void>}
+   */
   async setPrice(params: {
     price: BN;
     priceAccount: PublicKey;
