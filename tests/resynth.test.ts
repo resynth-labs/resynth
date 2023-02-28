@@ -386,7 +386,7 @@ describe("resynth", () => {
   it("Initialize synthetic gold price oracle", async () => {
     goldOracle = await pyth.initialize({
       price: 1_800,
-      expo: goldDecimals,
+      expo: -goldDecimals,
       conf: 1,
     });
   });
@@ -434,6 +434,7 @@ describe("resynth", () => {
     );
   });
 
+  //TODO: Fix this test
   // it("User B mints an unhealthy amount of synthetic gold", async () => {
   //   await expect(
   //     mintSyntheticAsset(userB, goldOracle, goldAsset, 2000, 1)
@@ -461,21 +462,16 @@ describe("resynth", () => {
       hostFeeNumerator: new BN(5),
       hostFeeDenominator: new BN(10_000),
     };
-    try {
-      await initializeSwapPool(
-        stablecoinMint,
-        goldMint,
-        userA.wallet,
-        payer.publicKey,
-        fees,
-        SwapCurve.ConstantProductCurve,
-        new BN(0)
-      );
-    } catch (e) {
-      console.log(e);
-      throw e; // fail the test
-    }
+    await initializeSwapPool(
+      stablecoinMint,
+      goldMint,
+      userA.wallet,
+      payer.publicKey,
+      fees,
+      SwapCurve.ConstantProductCurve,
+      new BN(0)
+    );
   });
 
-  // it("User A provides liquidity to the AMM", async () => {});
+  it("User A provides liquidity to the AMM", async () => { });
 });

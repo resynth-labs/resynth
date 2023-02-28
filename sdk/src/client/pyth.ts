@@ -80,7 +80,7 @@ export class PythClient {
     const priceKeypair = Keypair.generate();
     const PYTH_PRICE_SIZE = 3312;
     await this.program.methods
-      .initialize(new BN(params.price * 10 ** -params.expo), -params.expo, new BN(params.conf * 10 ** -params.expo))
+      .initialize(new BN(params.price * 10 ** -params.expo), params.expo, new BN(params.conf * 10 ** -params.expo))
       .accountsStrict({
         price: priceKeypair.publicKey,
       })
@@ -101,7 +101,7 @@ export class PythClient {
         }),
       ])
       .signers([priceKeypair])
-      .rpc();
+      .rpc({ commitment: "confirmed", skipPreflight: true });
     return priceKeypair.publicKey;
   }
 
@@ -116,12 +116,13 @@ export class PythClient {
   async setPrice(params: {
     price: BN;
     priceAccount: PublicKey;
-  }): Promise<TransactionSignature> {
-    return this.program.rpc.setPrice(params.price, {
+  }): Promise<void> {
+    const txid = await this.program.rpc.setPrice(params.price, {
       accounts: {
         price: params.priceAccount,
       },
     });
+    await this.connection.confirmTransaction(txid, "confirmed");
   }
 
   async setPriceInfo(params: {
