@@ -271,7 +271,7 @@ describe("resynth", () => {
     syntheticDecimals: number
   ): Promise<void> {
     let { syntheticAsset, collateralVault, syntheticMint, assetAuthority } =
-      syntheticAssetPDA(resynth.program, syntheticOracle);
+      syntheticAssetPDA(resynth.programId, syntheticOracle);
 
     await resynth.program.methods
       .initializeSyntheticAsset(syntheticDecimals)
@@ -301,7 +301,7 @@ describe("resynth", () => {
     syntheticAsset: PublicKey
   ): Promise<void> {
     const marginAccount = marginAccountPDA(
-      resynth.program,
+      resynth.programId,
       owner.wallet.publicKey,
       syntheticAsset
     );
@@ -336,9 +336,9 @@ describe("resynth", () => {
     mintAmount: number
   ): Promise<void> {
     const { syntheticAsset, collateralVault, syntheticMint, assetAuthority } =
-      syntheticAssetPDA(resynth.program, syntheticOracle);
+      syntheticAssetPDA(resynth.programId, syntheticOracle);
     const marginAccount = marginAccountPDA(
-      resynth.program,
+      resynth.programId,
       owner.wallet.publicKey,
       syntheticAsset
     );
@@ -383,7 +383,7 @@ describe("resynth", () => {
     tokenBPriceOrOffset: BN
   ) {
     const { swapPool, authority, vaultA, vaultB, lpmint, feeReceiver } =
-      swapPoolPDA(tokenSwap.program, mintA, mintB);
+      swapPoolPDA(tokenSwap.programId, mintA, mintB);
     const { address: sourceA } = await getOrCreateAssociatedTokenAccount(
       connection,
       payer,
@@ -460,7 +460,7 @@ describe("resynth", () => {
     await initializeSyntheticAsset(stablecoinMint, goldOracle, goldDecimals);
 
     ({ syntheticAsset: goldAsset, syntheticMint: goldMint } = syntheticAssetPDA(
-      resynth.program,
+      resynth.programId,
       goldOracle
     ));
   });
