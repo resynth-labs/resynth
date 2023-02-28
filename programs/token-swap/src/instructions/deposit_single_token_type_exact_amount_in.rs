@@ -10,15 +10,15 @@ use crate::{
 #[derive(Accounts)]
 pub struct DepositSingleTokenTypeExactAmountIn<'info> {
     #[account(
-      seeds = [SWAP_POOL_ACCOUNT_SEED, mint_a.key().as_ref(), mint_b.key().as_ref()],
-      bump = swap_pool.bump,
-      constraint = swap_pool.token_program.key() == token_program.key() @ TokenSwapError::InvalidTokenProgram,
-  )]
-    pub swap_pool: Box<Account<'info, SwapPool>>,
+        seeds = [SWAP_POOL_ACCOUNT_SEED, mint_a.key().as_ref(), mint_b.key().as_ref()],
+        bump = swap_pool.load().unwrap().bump,
+        constraint = swap_pool.load().unwrap().token_program.key() == token_program.key() @ TokenSwapError::InvalidTokenProgram,
+    )]
+    pub swap_pool: AccountLoader<'info, SwapPool>,
 
     #[account(
         seeds = [swap_pool.key().as_ref()],
-        bump = swap_pool.authority_bump[0],
+        bump = swap_pool.load().unwrap().authority_bump[0],
     )]
     /// CHECK:
     pub authority: UncheckedAccount<'info>,
@@ -29,44 +29,44 @@ pub struct DepositSingleTokenTypeExactAmountIn<'info> {
     #[account(
         mut,
         token::authority = user_transfer_authority,
-        token::mint = swap_pool.mint_a,
+        token::mint = swap_pool.load().unwrap().mint_a,
     )]
     pub token_a: Option<Box<Account<'info, TokenAccount>>>,
 
     #[account(
         mut,
         token::authority = user_transfer_authority,
-        token::mint = swap_pool.mint_b,
+        token::mint = swap_pool.load().unwrap().mint_b,
     )]
     pub token_b: Option<Box<Account<'info, TokenAccount>>>,
 
     #[account(
         mut,
         seeds = [b"vault_a", swap_pool.key().as_ref()],
-        bump = swap_pool.vault_a_bump,
-        token::mint = swap_pool.mint_a,
+        bump = swap_pool.load().unwrap().vault_a_bump,
+        token::mint = swap_pool.load().unwrap().mint_a,
     )]
     pub vault_a: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
         seeds = [b"vault_b", swap_pool.key().as_ref()],
-        bump = swap_pool.vault_b_bump,
-        token::mint = swap_pool.mint_b,
+        bump = swap_pool.load().unwrap().vault_b_bump,
+        token::mint = swap_pool.load().unwrap().mint_b,
     )]
     pub vault_b: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
         seeds = [b"lpmint", swap_pool.key().as_ref()],
-        bump = swap_pool.lpmint_bump,
+        bump = swap_pool.load().unwrap().lpmint_bump,
         mint::authority = authority,
     )]
     pub lpmint: Box<Account<'info, Mint>>,
 
     #[account(
         mut,
-        token::mint = swap_pool.lpmint,
+        token::mint = swap_pool.load().unwrap().lpmint,
     )]
     pub lptoken: Box<Account<'info, TokenAccount>>,
 
@@ -85,7 +85,7 @@ pub fn execute(
     source_token_amount: u64,
     minimum_pool_token_amount: u64,
 ) -> Result<()> {
-    let swap_pool = &ctx.accounts.swap_pool;
+    let swap_pool = ctx.accounts.swap_pool.load()?;
 
     let trade_direction = if ctx.accounts.token_a.is_some() {
         TradeDirection::AtoB
@@ -119,7 +119,7 @@ pub fn execute(
     let pool_mint_supply = u128::try_from(ctx.accounts.lpmint.supply).unwrap();
     let pool_token_amount = if pool_mint_supply > 0 {
         swap_pool
-            .swap_curve
+            .swap_curve()?
             .deposit_single_token_type(
                 u128::try_from(source_token_amount).unwrap(),
                 u128::try_from(ctx.accounts.vault_a.amount).unwrap(),
@@ -130,7 +130,7 @@ pub fn execute(
             )
             .ok_or(TokenSwapError::ZeroTradingTokens)?
     } else {
-        swap_pool.swap_curve.new_pool_supply()
+        swap_pool.swap_curve()?.new_pool_supply()
     };
 
     let pool_token_amount = u64::try_from(pool_token_amount).unwrap();

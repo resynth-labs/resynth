@@ -11,7 +11,7 @@ use crate::{
 };
 
 #[repr(u8)]
-#[derive(AnchorSerialize, AnchorDeserialize, Clone, Debug, PartialEq)]
+#[derive(AnchorSerialize, AnchorDeserialize, Copy, Clone, Debug, PartialEq)]
 pub enum SwapCurveType {
     /// Uniswap-style constant product curve, invariant = token_a_amount * token_b_amount
     ConstantProductCurve,

@@ -3,7 +3,7 @@ use anchor_lang::prelude::*;
 use crate::curve::fees::*;
 
 /// Encapsulates all fee information and calculations for swap operations
-#[derive(AnchorDeserialize, AnchorSerialize, Clone, Copy, Debug, Default, PartialEq)]
+#[derive(AnchorSerialize, AnchorDeserialize, Copy, Clone, Default)]
 pub struct Fees {
     /// Trade fees are extra token amounts that are held inside the token
     /// accounts during a trade, making the value of liquidity tokens rise.

@@ -2,12 +2,14 @@ use anchor_lang::prelude::*;
 
 use crate::{
     errors::TokenSwapError,
-    types::{Fees, SwapCurve},
+    types::{
+        swap_curve::{SwapCurve, SwapCurveType},
+        Fees,
+    },
 };
 
 /// A token swap pool.
-#[account]
-#[derive(Default)]
+#[account(zero_copy)]
 pub struct SwapPool {
     pub version: u8,
 
@@ -57,7 +59,9 @@ pub struct SwapPool {
 
     /// Swap curve parameters, to be unpacked and used by the SwapCurve, which
     /// calculates swaps, deposits, and withdrawals
-    pub swap_curve: SwapCurve,
+    pub swap_curve_type: SwapCurveType,
+
+    pub token_b_price_or_offset: u64,
 }
 
 impl SwapPool {
@@ -106,5 +110,10 @@ impl SwapPool {
             self.swap_pool.as_ref().clone(),
             self.authority_bump.as_ref().clone(),
         ]
+    }
+
+    pub fn swap_curve(&self) -> Result<SwapCurve> {
+        self.swap_curve_type
+            .try_into_swap_curve(self.token_b_price_or_offset)
     }
 }

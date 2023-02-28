@@ -22,7 +22,7 @@ pub struct InitializeSwapPool<'info> {
         ],
         bump
     )]
-    pub swap_pool: Box<Account<'info, SwapPool>>,
+    pub swap_pool: AccountLoader<'info, SwapPool>,
 
     #[account(seeds = [swap_pool.key().as_ref()], bump)]
     /// CHECK:
@@ -195,7 +195,8 @@ pub fn execute(
 
     let initial_lp_amount = u64::try_from(swap_curve.new_pool_supply()).unwrap();
 
-    **ctx.accounts.swap_pool = SwapPool {
+    let mut swap_pool = ctx.accounts.swap_pool.load_init()?;
+    *swap_pool = SwapPool {
         version: 1,
         bump: ctx.bumps["swap_pool"],
         authority_bump: [ctx.bumps["authority"]],
@@ -212,10 +213,11 @@ pub fn execute(
         mint_b: ctx.accounts.mint_b.key(),
         fee_receiver: ctx.accounts.fee_receiver.key(),
         fees,
-        swap_curve,
+        swap_curve_type,
+        token_b_price_or_offset,
     };
 
-    let signer_seeds: &[&[&[u8]]] = &[&ctx.accounts.swap_pool.signer_seeds()];
+    let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
 
     // This is a departure from the non-anchor spl-token-swap.
     // Because vaults aren't preinitialized with a balance,

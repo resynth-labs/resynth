@@ -604,13 +604,6 @@ export type TokenSwap = {
             "type": "publicKey"
           },
           {
-            "name": "tokenProgram",
-            "docs": [
-              "Program ID of the tokens being exchanged."
-            ],
-            "type": "publicKey"
-          },
-          {
             "name": "mintA",
             "docs": [
               "Mint information for token A"
@@ -654,6 +647,13 @@ export type TokenSwap = {
             "type": "publicKey"
           },
           {
+            "name": "tokenProgram",
+            "docs": [
+              "Program ID of the tokens being exchanged."
+            ],
+            "type": "publicKey"
+          },
+          {
             "name": "fees",
             "docs": [
               "All fee information"
@@ -663,14 +663,18 @@ export type TokenSwap = {
             }
           },
           {
-            "name": "swapCurve",
+            "name": "swapCurveType",
             "docs": [
               "Swap curve parameters, to be unpacked and used by the SwapCurve, which",
               "calculates swaps, deposits, and withdrawals"
             ],
             "type": {
-              "defined": "SwapCurve"
+              "defined": "SwapCurveType"
             }
+          },
+          {
+            "name": "tokenBPriceOrOffset",
+            "type": "u64"
           }
         ]
       }
@@ -1653,13 +1657,6 @@ export const IDL: TokenSwap = {
             "type": "publicKey"
           },
           {
-            "name": "tokenProgram",
-            "docs": [
-              "Program ID of the tokens being exchanged."
-            ],
-            "type": "publicKey"
-          },
-          {
             "name": "mintA",
             "docs": [
               "Mint information for token A"
@@ -1703,6 +1700,13 @@ export const IDL: TokenSwap = {
             "type": "publicKey"
           },
           {
+            "name": "tokenProgram",
+            "docs": [
+              "Program ID of the tokens being exchanged."
+            ],
+            "type": "publicKey"
+          },
+          {
             "name": "fees",
             "docs": [
               "All fee information"
@@ -1712,14 +1716,18 @@ export const IDL: TokenSwap = {
             }
           },
           {
-            "name": "swapCurve",
+            "name": "swapCurveType",
             "docs": [
               "Swap curve parameters, to be unpacked and used by the SwapCurve, which",
               "calculates swaps, deposits, and withdrawals"
             ],
             "type": {
-              "defined": "SwapCurve"
+              "defined": "SwapCurveType"
             }
+          },
+          {
+            "name": "tokenBPriceOrOffset",
+            "type": "u64"
           }
         ]
       }

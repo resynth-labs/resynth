@@ -11,14 +11,14 @@ use crate::types::*;
 pub struct DepositAllTokenTypes<'info> {
     #[account(
         seeds = [SWAP_POOL_ACCOUNT_SEED, mint_a.key().as_ref(), mint_b.key().as_ref()],
-        bump = swap_pool.bump,
-        constraint = swap_pool.token_program.key() == token_program.key() @ TokenSwapError::InvalidTokenProgram,
+        bump = swap_pool.load().unwrap().bump,
+        constraint = swap_pool.load().unwrap().token_program.key() == token_program.key() @ TokenSwapError::InvalidTokenProgram,
     )]
-    pub swap_pool: Box<Account<'info, SwapPool>>,
+    pub swap_pool: AccountLoader<'info, SwapPool>,
 
     #[account(
         seeds = [swap_pool.key().as_ref()],
-        bump = swap_pool.authority_bump[0],
+        bump = swap_pool.load().unwrap().authority_bump[0],
     )]
     /// CHECK:
     pub authority: UncheckedAccount<'info>,
@@ -29,44 +29,44 @@ pub struct DepositAllTokenTypes<'info> {
     #[account(
         mut,
         token::authority = user_transfer_authority,
-        token::mint = swap_pool.mint_a,
+        token::mint = swap_pool.load().unwrap().mint_a,
     )]
     pub token_a: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
         token::authority = user_transfer_authority,
-        token::mint = swap_pool.mint_b,
+        token::mint = swap_pool.load().unwrap().mint_b,
     )]
     pub token_b: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
         seeds = [b"vault_a", swap_pool.key().as_ref()],
-        bump = swap_pool.vault_a_bump,
-        token::mint = swap_pool.mint_a,
+        bump = swap_pool.load().unwrap().vault_a_bump,
+        token::mint = swap_pool.load().unwrap().mint_a,
     )]
     pub vault_a: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
         seeds = [b"vault_b", swap_pool.key().as_ref()],
-        bump = swap_pool.vault_b_bump,
-        token::mint = swap_pool.mint_b,
+        bump = swap_pool.load().unwrap().vault_b_bump,
+        token::mint = swap_pool.load().unwrap().mint_b,
     )]
     pub vault_b: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
         seeds = [b"lpmint", swap_pool.key().as_ref()],
-        bump = swap_pool.lpmint_bump,
+        bump = swap_pool.load().unwrap().lpmint_bump,
         mint::authority = authority,
     )]
     pub lpmint: Box<Account<'info, Mint>>,
 
     #[account(
         mut,
-        token::mint = swap_pool.lpmint,
+        token::mint = swap_pool.load().unwrap().lpmint,
     )]
     pub lptoken: Box<Account<'info, TokenAccount>>,
 
@@ -86,11 +86,11 @@ pub fn execute(
     maximum_token_a_amount: u64,
     maximum_token_b_amount: u64,
 ) -> Result<()> {
-    let pool = &ctx.accounts.swap_pool;
+    let pool = ctx.accounts.swap_pool.load()?;
 
     // let curve = build_curve(&pool.curve).unwrap();
     // let calculator = curve.calculator;
-    let calculator = &pool.swap_curve;
+    let calculator = pool.swap_curve()?;
     if !calculator.allows_deposits() {
         return Err(TokenSwapError::UnsupportedCurveOperation.into());
     }
