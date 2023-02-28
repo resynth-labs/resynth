@@ -734,39 +734,6 @@ export type TokenSwap = {
       }
     },
     {
-      "name": "ConstantPriceCurve",
-      "docs": [
-        "ConstantPriceCurve struct implementing CurveCalculator"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "tokenBPrice",
-            "docs": [
-              "Amount of token A required to get 1 token B"
-            ],
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "ConstantProductCurve",
-      "docs": [
-        "ConstantProductCurve struct implementing CurveCalculator"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "unused",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "Fees",
       "docs": [
         "Encapsulates all fee information and calculations for swap operations"
@@ -836,25 +803,6 @@ export type TokenSwap = {
             "name": "hostFeeDenominator",
             "docs": [
               "Host trading fee denominator"
-            ],
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "OffsetCurve",
-      "docs": [
-        "Offset curve, uses ConstantProduct under the hood, but adds an offset to",
-        "one side on swap calculations"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "tokenBOffset",
-            "docs": [
-              "Amount to offset the token B liquidity account"
             ],
             "type": "u64"
           }
@@ -1787,39 +1735,6 @@ export const IDL: TokenSwap = {
       }
     },
     {
-      "name": "ConstantPriceCurve",
-      "docs": [
-        "ConstantPriceCurve struct implementing CurveCalculator"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "tokenBPrice",
-            "docs": [
-              "Amount of token A required to get 1 token B"
-            ],
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "ConstantProductCurve",
-      "docs": [
-        "ConstantProductCurve struct implementing CurveCalculator"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "unused",
-            "type": "u8"
-          }
-        ]
-      }
-    },
-    {
       "name": "Fees",
       "docs": [
         "Encapsulates all fee information and calculations for swap operations"
@@ -1889,25 +1804,6 @@ export const IDL: TokenSwap = {
             "name": "hostFeeDenominator",
             "docs": [
               "Host trading fee denominator"
-            ],
-            "type": "u64"
-          }
-        ]
-      }
-    },
-    {
-      "name": "OffsetCurve",
-      "docs": [
-        "Offset curve, uses ConstantProduct under the hood, but adds an offset to",
-        "one side on swap calculations"
-      ],
-      "type": {
-        "kind": "struct",
-        "fields": [
-          {
-            "name": "tokenBOffset",
-            "docs": [
-              "Amount to offset the token B liquidity account"
             ],
             "type": "u64"
           }

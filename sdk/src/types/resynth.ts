@@ -3,7 +3,11 @@ import { PublicKey } from "@solana/web3.js";
 
 // Constants ----------------------------------------------------------------
 
+export const ASSET: string = "asset";
 export const AUTHORITY: string = "authority";
+export const VAULT: string = "vault";
+export const MINT: string = "mint";
+export const MARGIN_ACCOUNT: string = "margin_account";
 
 // Accounts -----------------------------------------------------------------
 

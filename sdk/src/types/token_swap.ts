@@ -11,20 +11,19 @@ export const SWAP_POOL_ACCOUNT_SEED: Buffer = Buffer.from("swap_pool");
 // A token swap pool.
 //
 export type SwapPool = {
-  // Initialized state.
-  isInitialized: boolean;
+  version: number;
+  bump: number;
   // Bump seed used in program address.
   // The program address is created deterministically with the bump seed,
   // swap program id, and swap account pubkey.  This program address has
   // authority over the swap's token A account, token B account, and pool
   // token mint.
-  bump: number;
-  authorityBump: number;
+  authorityBump: number[];
   vaultABump: number;
   vaultBBump: number;
   lpmintBump: number;
-  // Program ID of the tokens being exchanged.
-  tokenProgram: PublicKey;
+  swapPool: PublicKey;
+  authority: PublicKey;
   // Mint information for token A
   mintA: PublicKey;
   // Mint information for token B
@@ -38,23 +37,17 @@ export type SwapPool = {
   vaultB: PublicKey;
   // Pool token account to receive trading and / or withdrawal fees
   feeReceiver: PublicKey;
+  // Program ID of the tokens being exchanged.
+  tokenProgram: PublicKey;
   // All fee information
   fees: Fees;
   // Swap curve parameters, to be unpacked and used by the SwapCurve, which
   // calculates swaps, deposits, and withdrawals
-  swapCurve: SwapCurve;
+  swapCurveType: SwapCurveType;
+  tokenBPriceOrOffset: BN;
 };
 
 // Types --------------------------------------------------------------------
-
-//
-// Offset curve, uses ConstantProduct under the hood, but adds an offset to
-// one side on swap calculations
-//
-export type OffsetCurve = {
-  // Amount to offset the token B liquidity account
-  tokenBOffset: BN;
-};
 
 //
 // ConstantPriceCurve struct implementing CurveCalculator
@@ -69,6 +62,15 @@ export type ConstantPriceCurve = {
 //
 export type ConstantProductCurve = {
   unused: number;
+};
+
+//
+// Offset curve, uses ConstantProduct under the hood, but adds an offset to
+// one side on swap calculations
+//
+export type OffsetCurve = {
+  // Amount to offset the token B liquidity account
+  tokenBOffset: BN;
 };
 
 //
@@ -113,6 +115,19 @@ export class RoundDirection {
   static toString(roundDirection: any): string {
     if (roundDirection["floor"]) return "Floor";
     if (roundDirection["ceiling"]) return "Ceiling";
+    return "unknown";
+  }
+}
+
+export class SwapCurveType {
+  static readonly ConstantProductCurve = { constantProductCurve: {} };
+  static readonly ConstantPriceCurve = { constantPriceCurve: {} };
+  static readonly OffsetCurve = { offsetCurve: {} };
+
+  static toString(swapCurveType: any): string {
+    if (swapCurveType["constantProductCurve"]) return "ConstantProductCurve";
+    if (swapCurveType["constantPriceCurve"]) return "ConstantPriceCurve";
+    if (swapCurveType["offsetCurve"]) return "OffsetCurve";
     return "unknown";
   }
 }
