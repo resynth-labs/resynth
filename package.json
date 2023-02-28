@@ -5,7 +5,7 @@
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
     "postinstall": "husky install",
-    "precommit": "yarn build",
+    "precommit": "echo",
     "prepush": "yarn test",
     "test": "yarn build && cargo test && anchor test --skip-build",
     "type-check": "tsc --pretty --noEmit"
