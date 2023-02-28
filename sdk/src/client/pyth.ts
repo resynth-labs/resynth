@@ -118,7 +118,7 @@ export class PythClient {
 }
 
 const empty32Buffer = Buffer.alloc(32)
-const PKorNull = (data: Buffer) => (data.equals(empty32Buffer) ? null : new web3.PublicKey(data))
+const PKorNull = (data: Buffer) => (data.equals(empty32Buffer) ? null : new PublicKey(data))
 
 // https://github.com/nodejs/node/blob/v14.17.0/lib/internal/errors.js#L758
 const ERR_BUFFER_OUT_OF_BOUNDS = () => new Error("Attempt to access memory outside buffer bounds")
@@ -215,11 +215,11 @@ export const parsePythPriceData = (data: Buffer) => {
   const drv5Component = readBigInt64LE(data, 104)
   const drv5 = Number(drv5Component) * 10 ** exponent
   // Product id / reference account.
-  const productAccountKey = new web3.PublicKey(data.slice(112, 144))
+  const productAccountKey = new PublicKey(data.slice(112, 144))
   // Next price account in list.
   const nextPriceAccountKey = PKorNull(data.slice(144, 176))
   // Aggregate price updater.
-  const aggregatePriceUpdaterAccountKey = new web3.PublicKey(data.slice(176, 208))
+  const aggregatePriceUpdaterAccountKey = new PublicKey(data.slice(176, 208))
   const aggregatePriceInfo = parsePriceInfo(data.slice(208, 240), exponent)
   // Price components - up to 32.
   const priceComponents: any[] = []
