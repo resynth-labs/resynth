@@ -1,279 +1,279 @@
 export type Pyth = {
-  version: "0.1.0";
-  name: "pyth";
-  instructions: [
+  "version": "0.1.0",
+  "name": "pyth",
+  "instructions": [
     {
-      name: "initialize";
-      accounts: [
+      "name": "initialize",
+      "accounts": [
         {
-          name: "price";
-          isMut: true;
-          isSigner: false;
+          "name": "price",
+          "isMut": true,
+          "isSigner": false
         }
-      ];
-      args: [
+      ],
+      "args": [
         {
-          name: "price";
-          type: "i64";
+          "name": "price",
+          "type": "i64"
         },
         {
-          name: "expo";
-          type: "i32";
+          "name": "expo",
+          "type": "i32"
         },
         {
-          name: "conf";
-          type: "u64";
+          "name": "conf",
+          "type": "u64"
         }
-      ];
+      ]
     },
     {
-      name: "setPrice";
-      accounts: [
+      "name": "setPrice",
+      "accounts": [
         {
-          name: "price";
-          isMut: true;
-          isSigner: false;
+          "name": "price",
+          "isMut": true,
+          "isSigner": false
         }
-      ];
-      args: [
+      ],
+      "args": [
         {
-          name: "price";
-          type: "i64";
+          "name": "price",
+          "type": "i64"
         }
-      ];
+      ]
     },
     {
-      name: "setPriceInfo";
-      accounts: [
+      "name": "setPriceInfo",
+      "accounts": [
         {
-          name: "price";
-          isMut: true;
-          isSigner: false;
+          "name": "price",
+          "isMut": true,
+          "isSigner": false
         }
-      ];
-      args: [
+      ],
+      "args": [
         {
-          name: "price";
-          type: "i64";
+          "name": "price",
+          "type": "i64"
         },
         {
-          name: "conf";
-          type: "u64";
+          "name": "conf",
+          "type": "u64"
         },
         {
-          name: "slot";
-          type: "u64";
+          "name": "slot",
+          "type": "u64"
         }
-      ];
+      ]
     },
     {
-      name: "setTwap";
-      accounts: [
+      "name": "setTwap",
+      "accounts": [
         {
-          name: "price";
-          isMut: true;
-          isSigner: false;
+          "name": "price",
+          "isMut": true,
+          "isSigner": false
         }
-      ];
-      args: [
+      ],
+      "args": [
         {
-          name: "twap";
-          type: "i64";
+          "name": "twap",
+          "type": "i64"
         }
-      ];
+      ]
     }
-  ];
-  types: [
+  ],
+  "types": [
     {
-      name: "PriceStatus";
-      type: {
-        kind: "enum";
-        variants: [
+      "name": "PriceStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
           {
-            name: "Unknown";
+            "name": "Unknown"
           },
           {
-            name: "Trading";
+            "name": "Trading"
           },
           {
-            name: "Halted";
+            "name": "Halted"
           },
           {
-            name: "Auction";
+            "name": "Auction"
           }
-        ];
-      };
+        ]
+      }
     },
     {
-      name: "CorpAction";
-      type: {
-        kind: "enum";
-        variants: [
+      "name": "CorpAction",
+      "type": {
+        "kind": "enum",
+        "variants": [
           {
-            name: "NoCorpAct";
+            "name": "NoCorpAct"
           }
-        ];
-      };
+        ]
+      }
     },
     {
-      name: "PriceType";
-      type: {
-        kind: "enum";
-        variants: [
+      "name": "PriceType",
+      "type": {
+        "kind": "enum",
+        "variants": [
           {
-            name: "Unknown";
+            "name": "Unknown"
           },
           {
-            name: "Price";
+            "name": "Price"
           },
           {
-            name: "TWAP";
+            "name": "TWAP"
           },
           {
-            name: "Volatility";
+            "name": "Volatility"
           }
-        ];
-      };
+        ]
+      }
     }
-  ];
+  ]
 };
 
 export const IDL: Pyth = {
-  version: "0.1.0",
-  name: "pyth",
-  instructions: [
+  "version": "0.1.0",
+  "name": "pyth",
+  "instructions": [
     {
-      name: "initialize",
-      accounts: [
+      "name": "initialize",
+      "accounts": [
         {
-          name: "price",
-          isMut: true,
-          isSigner: false,
-        },
+          "name": "price",
+          "isMut": true,
+          "isSigner": false
+        }
       ],
-      args: [
+      "args": [
         {
-          name: "price",
-          type: "i64",
+          "name": "price",
+          "type": "i64"
         },
         {
-          name: "expo",
-          type: "i32",
+          "name": "expo",
+          "type": "i32"
         },
         {
-          name: "conf",
-          type: "u64",
-        },
-      ],
+          "name": "conf",
+          "type": "u64"
+        }
+      ]
     },
     {
-      name: "setPrice",
-      accounts: [
+      "name": "setPrice",
+      "accounts": [
         {
-          name: "price",
-          isMut: true,
-          isSigner: false,
-        },
+          "name": "price",
+          "isMut": true,
+          "isSigner": false
+        }
       ],
-      args: [
+      "args": [
         {
-          name: "price",
-          type: "i64",
-        },
-      ],
+          "name": "price",
+          "type": "i64"
+        }
+      ]
     },
     {
-      name: "setPriceInfo",
-      accounts: [
+      "name": "setPriceInfo",
+      "accounts": [
         {
-          name: "price",
-          isMut: true,
-          isSigner: false,
-        },
+          "name": "price",
+          "isMut": true,
+          "isSigner": false
+        }
       ],
-      args: [
+      "args": [
         {
-          name: "price",
-          type: "i64",
+          "name": "price",
+          "type": "i64"
         },
         {
-          name: "conf",
-          type: "u64",
+          "name": "conf",
+          "type": "u64"
         },
         {
-          name: "slot",
-          type: "u64",
-        },
-      ],
+          "name": "slot",
+          "type": "u64"
+        }
+      ]
     },
     {
-      name: "setTwap",
-      accounts: [
+      "name": "setTwap",
+      "accounts": [
         {
-          name: "price",
-          isMut: true,
-          isSigner: false,
-        },
+          "name": "price",
+          "isMut": true,
+          "isSigner": false
+        }
       ],
-      args: [
+      "args": [
         {
-          name: "twap",
-          type: "i64",
-        },
-      ],
-    },
+          "name": "twap",
+          "type": "i64"
+        }
+      ]
+    }
   ],
-  types: [
+  "types": [
     {
-      name: "PriceStatus",
-      type: {
-        kind: "enum",
-        variants: [
+      "name": "PriceStatus",
+      "type": {
+        "kind": "enum",
+        "variants": [
           {
-            name: "Unknown",
+            "name": "Unknown"
           },
           {
-            name: "Trading",
+            "name": "Trading"
           },
           {
-            name: "Halted",
+            "name": "Halted"
           },
           {
-            name: "Auction",
-          },
-        ],
-      },
+            "name": "Auction"
+          }
+        ]
+      }
     },
     {
-      name: "CorpAction",
-      type: {
-        kind: "enum",
-        variants: [
+      "name": "CorpAction",
+      "type": {
+        "kind": "enum",
+        "variants": [
           {
-            name: "NoCorpAct",
-          },
-        ],
-      },
+            "name": "NoCorpAct"
+          }
+        ]
+      }
     },
     {
-      name: "PriceType",
-      type: {
-        kind: "enum",
-        variants: [
+      "name": "PriceType",
+      "type": {
+        "kind": "enum",
+        "variants": [
           {
-            name: "Unknown",
+            "name": "Unknown"
           },
           {
-            name: "Price",
+            "name": "Price"
           },
           {
-            name: "TWAP",
+            "name": "TWAP"
           },
           {
-            name: "Volatility",
-          },
-        ],
-      },
-    },
-  ],
+            "name": "Volatility"
+          }
+        ]
+      }
+    }
+  ]
 };
