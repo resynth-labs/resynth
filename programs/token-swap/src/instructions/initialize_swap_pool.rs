@@ -22,11 +22,11 @@ pub struct InitializeSwapPool<'info> {
         ],
         bump
     )]
-    pub swap_pool: Box<Account<'info, SwapPool>>,
+    pub swap_pool: AccountLoader<'info, SwapPool>,
 
     #[account(seeds = [swap_pool.key().as_ref()], bump)]
     /// CHECK:
-    pub authority: UncheckedAccount<'info>,
+    pub authority: AccountInfo<'info>,
 
     #[account(init,
         payer = payer,
@@ -88,11 +88,14 @@ pub struct InitializeSwapPool<'info> {
 
     pub source: Signer<'info>,
 
+    #[account(mut)]
     pub source_a: Box<Account<'info, TokenAccount>>,
 
+    #[account(mut)]
     pub source_b: Box<Account<'info, TokenAccount>>,
 
     /// CHECK: This associated token account will be created during execution
+    #[account(mut)]
     pub lptoken: SystemAccount<'info>,
 
     #[account(mut)]
@@ -112,7 +115,7 @@ impl<'info> InitializeSwapPool<'info> {
             Transfer {
                 from: self.source_a.to_account_info(),
                 to: self.vault_a.to_account_info(),
-                authority: self.payer.to_account_info(),
+                authority: self.source.to_account_info(),
             },
         )
     }
@@ -122,7 +125,7 @@ impl<'info> InitializeSwapPool<'info> {
             Transfer {
                 from: self.source_b.to_account_info(),
                 to: self.vault_b.to_account_info(),
-                authority: self.payer.to_account_info(),
+                authority: self.source.to_account_info(),
             },
         )
     }
@@ -137,6 +140,17 @@ impl<'info> InitializeSwapPool<'info> {
                 mint: self.lpmint.to_account_info(),
                 system_program: self.system_program.to_account_info(),
                 token_program: self.token_program.to_account_info(),
+            },
+        )
+    }
+
+    pub fn mint_to_lptoken_context(&self) -> CpiContext<'_, '_, '_, 'info, MintTo<'info>> {
+        CpiContext::new(
+            self.associated_token_program.to_account_info(),
+            MintTo {
+                mint: self.lpmint.to_account_info(),
+                to: self.lptoken.to_account_info(),
+                authority: self.authority.to_account_info(),
             },
         )
     }
@@ -174,10 +188,36 @@ pub fn execute(
     }
 
     let swap_curve = swap_curve_type.try_into_swap_curve(token_b_price_or_offset)?;
-    swap_curve.validate_supply(ctx.accounts.source_a.amount, ctx.accounts.source_b.amount)?;
 
+    swap_curve.validate_supply(ctx.accounts.source_a.amount, ctx.accounts.source_b.amount)?;
     fees.validate()?;
     swap_curve.validate()?;
+
+    let initial_lp_amount = u64::try_from(swap_curve.new_pool_supply()).unwrap();
+
+    let mut swap_pool = ctx.accounts.swap_pool.load_init()?;
+    *swap_pool = SwapPool {
+        version: 1,
+        bump: ctx.bumps["swap_pool"],
+        authority_bump: [ctx.bumps["authority"]],
+        vault_a_bump: ctx.bumps["vault_a"],
+        vault_b_bump: ctx.bumps["vault_b"],
+        lpmint_bump: ctx.bumps["lpmint"],
+        swap_pool: ctx.accounts.swap_pool.key(),
+        authority: ctx.accounts.authority.key(),
+        token_program: *ctx.accounts.token_program.key,
+        vault_a: ctx.accounts.vault_a.key(),
+        vault_b: ctx.accounts.vault_b.key(),
+        lpmint: ctx.accounts.lpmint.key(),
+        mint_a: ctx.accounts.mint_a.key(),
+        mint_b: ctx.accounts.mint_b.key(),
+        fee_receiver: ctx.accounts.fee_receiver.key(),
+        fees,
+        swap_curve_type,
+        token_b_price_or_offset,
+    };
+
+    let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
 
     // This is a departure from the non-anchor spl-token-swap.
     // Because vaults aren't preinitialized with a balance,
@@ -190,37 +230,13 @@ pub fn execute(
         ctx.accounts.transfer_source_b_context(),
         ctx.accounts.source_b.amount,
     )?;
-    anchor_spl::associated_token::create(ctx.accounts.create_lptoken_context())?;
-    let initial_lp_amount = u64::try_from(swap_curve.new_pool_supply()).unwrap();
+    anchor_spl::associated_token::create_idempotent(ctx.accounts.create_lptoken_context())?;
     token::mint_to(
-        CpiContext::new(
-            ctx.accounts.token_program.to_account_info().clone(),
-            MintTo {
-                mint: ctx.accounts.lpmint.to_account_info().clone(),
-                to: ctx.accounts.lptoken.to_account_info().clone(),
-                authority: ctx.accounts.authority.to_account_info().clone(),
-            },
-        ),
+        ctx.accounts
+            .mint_to_lptoken_context()
+            .with_signer(signer_seeds),
         initial_lp_amount,
     )?;
-
-    **ctx.accounts.swap_pool = SwapPool {
-        version: 1,
-        bump: ctx.bumps["swap_pool"],
-        authority_bump: ctx.bumps["authority"],
-        vault_a_bump: ctx.bumps["vault_a"],
-        vault_b_bump: ctx.bumps["vault_b"],
-        lpmint_bump: ctx.bumps["lpmint"],
-        token_program: *ctx.accounts.token_program.key,
-        vault_a: ctx.accounts.vault_a.key(),
-        vault_b: ctx.accounts.vault_b.key(),
-        lpmint: ctx.accounts.lpmint.key(),
-        mint_a: ctx.accounts.mint_a.key(),
-        mint_b: ctx.accounts.mint_b.key(),
-        fee_receiver: ctx.accounts.fee_receiver.key(),
-        fees,
-        swap_curve,
-    };
 
     Ok(())
 }

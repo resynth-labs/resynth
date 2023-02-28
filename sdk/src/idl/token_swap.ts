@@ -244,17 +244,17 @@ export type TokenSwap = {
         },
         {
           "name": "sourceA",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "sourceB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "lptoken",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -576,7 +576,12 @@ export type TokenSwap = {
               "authority over the swap's token A account, token B account, and pool",
               "token mint."
             ],
-            "type": "u8"
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
           },
           {
             "name": "vaultABump",
@@ -591,10 +596,11 @@ export type TokenSwap = {
             "type": "u8"
           },
           {
-            "name": "tokenProgram",
-            "docs": [
-              "Program ID of the tokens being exchanged."
-            ],
+            "name": "swapPool",
+            "type": "publicKey"
+          },
+          {
+            "name": "authority",
             "type": "publicKey"
           },
           {
@@ -641,6 +647,13 @@ export type TokenSwap = {
             "type": "publicKey"
           },
           {
+            "name": "tokenProgram",
+            "docs": [
+              "Program ID of the tokens being exchanged."
+            ],
+            "type": "publicKey"
+          },
+          {
             "name": "fees",
             "docs": [
               "All fee information"
@@ -650,14 +663,18 @@ export type TokenSwap = {
             }
           },
           {
-            "name": "swapCurve",
+            "name": "swapCurveType",
             "docs": [
               "Swap curve parameters, to be unpacked and used by the SwapCurve, which",
               "calculates swaps, deposits, and withdrawals"
             ],
             "type": {
-              "defined": "SwapCurve"
+              "defined": "SwapCurveType"
             }
+          },
+          {
+            "name": "tokenBPriceOrOffset",
+            "type": "u64"
           }
         ]
       }
@@ -1228,17 +1245,17 @@ export const IDL: TokenSwap = {
         },
         {
           "name": "sourceA",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "sourceB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
           "name": "lptoken",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1560,7 +1577,12 @@ export const IDL: TokenSwap = {
               "authority over the swap's token A account, token B account, and pool",
               "token mint."
             ],
-            "type": "u8"
+            "type": {
+              "array": [
+                "u8",
+                1
+              ]
+            }
           },
           {
             "name": "vaultABump",
@@ -1575,10 +1597,11 @@ export const IDL: TokenSwap = {
             "type": "u8"
           },
           {
-            "name": "tokenProgram",
-            "docs": [
-              "Program ID of the tokens being exchanged."
-            ],
+            "name": "swapPool",
+            "type": "publicKey"
+          },
+          {
+            "name": "authority",
             "type": "publicKey"
           },
           {
@@ -1625,6 +1648,13 @@ export const IDL: TokenSwap = {
             "type": "publicKey"
           },
           {
+            "name": "tokenProgram",
+            "docs": [
+              "Program ID of the tokens being exchanged."
+            ],
+            "type": "publicKey"
+          },
+          {
             "name": "fees",
             "docs": [
               "All fee information"
@@ -1634,14 +1664,18 @@ export const IDL: TokenSwap = {
             }
           },
           {
-            "name": "swapCurve",
+            "name": "swapCurveType",
             "docs": [
               "Swap curve parameters, to be unpacked and used by the SwapCurve, which",
               "calculates swaps, deposits, and withdrawals"
             ],
             "type": {
-              "defined": "SwapCurve"
+              "defined": "SwapCurveType"
             }
+          },
+          {
+            "name": "tokenBPriceOrOffset",
+            "type": "u64"
           }
         ]
       }

@@ -11,11 +11,11 @@ pub struct Swap<'info> {
         has_one = token_program @ TokenSwapError::InvalidTokenProgram,
         has_one = fee_receiver @ TokenSwapError::InvalidFeeReceiver,
     )]
-    pub swap_pool: Box<Account<'info, SwapPool>>,
+    pub swap_pool: AccountLoader<'info, SwapPool>,
 
     #[account(
         seeds = [swap_pool.key().as_ref()],
-        bump = swap_pool.authority_bump,
+        bump = swap_pool.load().unwrap().authority_bump[0],
     )]
     /// CHECK:
     pub authority: UncheckedAccount<'info>,
@@ -45,7 +45,7 @@ pub struct Swap<'info> {
     pub lpmint: Box<Account<'info, Mint>>,
 
     #[account(mut,
-        token::mint = swap_pool.lpmint,
+        token::mint = swap_pool.load().unwrap().lpmint,
     )]
     pub fee_receiver: Box<Account<'info, TokenAccount>>,
 
@@ -53,14 +53,14 @@ pub struct Swap<'info> {
 
     /// Host fee account to receive additional trading fees
     #[account(mut,
-        token::mint = swap_pool.lpmint,
+        token::mint = swap_pool.load().unwrap().lpmint,
     )]
     pub host_fee_receiver: Option<Box<Account<'info, TokenAccount>>>,
 }
 
 //#[cfg_attr(feature = "fuzz", derive(arbitrary::Arbitrary))]
 pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<()> {
-    let swap_pool = &ctx.accounts.swap_pool;
+    let swap_pool = ctx.accounts.swap_pool.load()?;
 
     let trade_direction = if ctx.accounts.source_token.mint == swap_pool.vault_a {
         TradeDirection::AtoB
@@ -98,7 +98,7 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
 
     // Calculate the trade amounts
     let result = swap_pool
-        .swap_curve
+        .swap_curve()?
         .swap(
             u128::try_from(amount_in).unwrap(),
             u128::try_from(ctx.accounts.source_vault.amount).unwrap(),
@@ -141,7 +141,7 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
 
     if result.owner_fee > 0 {
         let mut pool_token_amount = swap_pool
-            .swap_curve
+            .swap_curve()?
             .withdraw_single_token_type_exact_out(
                 result.owner_fee,
                 swap_token_a_amount,

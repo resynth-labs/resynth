@@ -2,12 +2,14 @@ use anchor_lang::prelude::*;
 
 use crate::{
     errors::TokenSwapError,
-    types::{Fees, SwapCurve},
+    types::{
+        swap_curve::{SwapCurve, SwapCurveType},
+        Fees,
+    },
 };
 
 /// A token swap pool.
-#[account]
-#[derive(Default)]
+#[account(zero_copy)]
 pub struct SwapPool {
     pub version: u8,
 
@@ -18,7 +20,7 @@ pub struct SwapPool {
     /// swap program id, and swap account pubkey.  This program address has
     /// authority over the swap's token A account, token B account, and pool
     /// token mint.
-    pub authority_bump: u8,
+    pub authority_bump: [u8; 1],
 
     pub vault_a_bump: u8,
 
@@ -26,8 +28,9 @@ pub struct SwapPool {
 
     pub lpmint_bump: u8,
 
-    /// Program ID of the tokens being exchanged.
-    pub token_program: Pubkey,
+    pub swap_pool: Pubkey,
+
+    pub authority: Pubkey,
 
     /// Mint information for token A
     pub mint_a: Pubkey,
@@ -48,12 +51,17 @@ pub struct SwapPool {
     /// Pool token account to receive trading and / or withdrawal fees
     pub fee_receiver: Pubkey,
 
+    /// Program ID of the tokens being exchanged.
+    pub token_program: Pubkey,
+
     /// All fee information
     pub fees: Fees,
 
     /// Swap curve parameters, to be unpacked and used by the SwapCurve, which
     /// calculates swaps, deposits, and withdrawals
-    pub swap_curve: SwapCurve,
+    pub swap_curve_type: SwapCurveType,
+
+    pub token_b_price_or_offset: u64,
 }
 
 impl SwapPool {
@@ -95,5 +103,17 @@ impl SwapPool {
             }
         }
         Ok(())
+    }
+
+    pub fn signer_seeds(&self) -> [&[u8]; 2] {
+        [
+            self.swap_pool.as_ref().clone(),
+            self.authority_bump.as_ref().clone(),
+        ]
+    }
+
+    pub fn swap_curve(&self) -> Result<SwapCurve> {
+        self.swap_curve_type
+            .try_into_swap_curve(self.token_b_price_or_offset)
     }
 }

@@ -8,6 +8,11 @@ use pyth_sdk_solana::load_price_feed_from_account_info;
 pub struct InitializeSyntheticAsset<'info> {
     /// The synthetic asset account to initialize
     #[account(init,
+        seeds = [
+            seeds::ASSET.as_ref(),
+            synthetic_oracle.key().as_ref(),
+        ],
+        bump,
         payer = payer,
         space = 8 + std::mem::size_of::<SyntheticAsset>(),
     )]
