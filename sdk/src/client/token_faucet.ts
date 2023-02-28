@@ -9,7 +9,10 @@ import {
   ProgramAccount,
   Wallet,
 } from "@coral-xyz/anchor";
-import { createInitializeMintInstruction, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  createInitializeMintInstruction,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import {
   Connection,
   Keypair,
