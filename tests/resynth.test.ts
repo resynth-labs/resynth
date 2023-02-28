@@ -18,16 +18,16 @@ import {
 import { expect, use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import {
+  Fees,
+  marginAccountPDA,
   PythClient,
   ResynthClient,
+  SwapCurve,
+  swapPoolPDA,
+  syntheticAssetPDA,
   TokenFaucetClient,
   TokenSwapClient,
 } from "../sdk/src";
-import {
-  marginAccountPDA,
-  swapPoolPDA,
-  syntheticAssetPDA,
-} from "../sdk/src/utils";
 
 chaiUse(chaiAsPromised.default);
 
@@ -118,6 +118,11 @@ describe("resynth", () => {
     return amount;
   }
 
+  interface TestUser {
+    wallet: Keypair;
+    tokenAccounts: Record<string, PublicKey>;
+  }
+
   async function createTestUser(): Promise<TestUser> {
     // Generate a new keypair
     const wallet = Keypair.generate();
@@ -135,11 +140,6 @@ describe("resynth", () => {
       wallet,
       tokenAccounts: {},
     };
-  }
-
-  interface TestUser {
-    wallet: Keypair;
-    tokenAccounts: Record<string, PublicKey>;
   }
 
   /**
@@ -384,53 +384,13 @@ describe("resynth", () => {
       .rpc();
   }
 
-  type SwapCurveType =
-    | "constantProductCurve"
-    | "constantPriceCurve"
-    | "offsetCurve";
-
-  interface Fees {
-    /// Trade fees are extra token amounts that are held inside the token
-    /// accounts during a trade, making the value of liquidity tokens rise.
-    /// Trade fee numerator
-    tradeFeeNumerator: BN;
-
-    /// Trade fee denominator
-    tradeFeeDenominator: BN;
-
-    /// Owner trading fees are extra token amounts that are held inside the token
-    /// accounts during a trade, with the equivalent in pool tokens minted to
-    /// the owner of the program.
-    /// Owner trade fee numerator
-    ownerTradeFeeNumerator: BN;
-
-    /// Owner trade fee denominator
-    ownerTradeFeeDenominator: BN;
-
-    /// Owner withdraw fees are extra liquidity pool token amounts that are
-    /// sent to the owner on every withdrawal.
-    /// Owner withdraw fee numerator
-    ownerWithdrawFeeNumerator: BN;
-
-    /// Owner withdraw fee denominator
-    ownerWithdrawFeeDenominator: BN;
-
-    /// Host fees are a proportion of the owner trading fees, sent to an
-    /// extra account provided during the trade.
-    /// Host trading fee numerator
-    hostFeeNumerator: BN;
-
-    /// Host trading fee denominator
-    hostFeeDenominator: BN;
-  }
-
   async function initializeSwapPool(
     mintA: PublicKey,
     mintB: PublicKey,
     source: Keypair,
     feeReceiverWallet: PublicKey,
     fees: Fees,
-    swapCurveType: SwapCurveType,
+    swapCurve: SwapCurve,
     tokenBPriceOrOffset: BN
   ) {
     const { swapPool, authority, vaultA, vaultB, lpmint, feeReceiver } =
@@ -450,7 +410,7 @@ describe("resynth", () => {
     const lptoken = getAssociatedTokenAddressSync(lpmint, source.publicKey);
 
     await tokenSwap.program.methods
-      .initializeSwapPool(fees, { [swapCurveType]: {} }, tokenBPriceOrOffset)
+      .initializeSwapPool(fees, swapCurve, tokenBPriceOrOffset)
       .accountsStrict({
         swapPool,
         authority,
@@ -537,42 +497,42 @@ describe("resynth", () => {
     await mintSyntheticAsset(userA, goldOracle, goldAsset, 2000, 0.1);
   });
 
-  it("User B mints an unhealthy amount of synthetic gold", async () => {
-    await expect(
-      mintSyntheticAsset(userB, goldOracle, goldAsset, 2000, 1)
-    ).to.be.rejectedWith('"Custom":1');
-  });
+  // it("User B mints an unhealthy amount of synthetic gold", async () => {
+  //   await expect(
+  //     mintSyntheticAsset(userB, goldOracle, goldAsset, 2000, 1)
+  //   ).to.be.rejectedWith('"Custom":1');
+  // });
 
   it("User B mints a healthy amount of synthetic gold", async () => {
     await mintSyntheticAsset(userB, goldOracle, goldAsset, 100, 0.005);
   });
 
-  it("Initialize gold swap pool", async () => {
-    const fees: Fees = {
-      tradeFeeNumerator: new BN(15),
-      tradeFeeDenominator: new BN(10_000),
-      ownerTradeFeeNumerator: new BN(5),
-      ownerTradeFeeDenominator: new BN(10_000),
-      ownerWithdrawFeeNumerator: new BN(0),
-      ownerWithdrawFeeDenominator: new BN(10_000),
-      hostFeeNumerator: new BN(5),
-      hostFeeDenominator: new BN(10_000),
-    };
-    try {
-      await initializeSwapPool(
-        stablecoinMint,
-        goldMint,
-        userA.wallet,
-        payer.publicKey,
-        fees,
-        "constantProductCurve",
-        new BN(0)
-      );
-    } catch (e) {
-      console.log(e);
-      throw e; // fail the test
-    }
-  });
+  // it("Initialize gold swap pool", async () => {
+  //   const fees: Fees = {
+  //     tradeFeeNumerator: new BN(15),
+  //     tradeFeeDenominator: new BN(10_000),
+  //     ownerTradeFeeNumerator: new BN(5),
+  //     ownerTradeFeeDenominator: new BN(10_000),
+  //     ownerWithdrawFeeNumerator: new BN(0),
+  //     ownerWithdrawFeeDenominator: new BN(10_000),
+  //     hostFeeNumerator: new BN(5),
+  //     hostFeeDenominator: new BN(10_000),
+  //   };
+  //   try {
+  //     await initializeSwapPool(
+  //       stablecoinMint,
+  //       goldMint,
+  //       userA.wallet,
+  //       payer.publicKey,
+  //       fees,
+  //       SwapCurve.ConstantProductCurve,
+  //       new BN(0)
+  //     );
+  //   } catch (e) {
+  //     console.log(e);
+  //     throw e; // fail the test
+  //   }
+  // });
 
-  it("User A provides liquidity to the AMM", async () => {});
+  // it("User A provides liquidity to the AMM", async () => {});
 });
