@@ -45,6 +45,7 @@ async function main() {
 
     if (info && info.owner.toBase58() == config.resynthProgramId) {
       // it already exists
+      console.log(`skipping ${keys.oracleSymbol}`);
       continue;
     }
 
