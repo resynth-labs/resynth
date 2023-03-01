@@ -24,6 +24,10 @@ pub struct WithdrawAllTokenTypes<'info> {
     pub authority: UncheckedAccount<'info>,
 
     #[account()]
+    /// CHECK:
+    pub source: UncheckedAccount<'info>,
+
+    #[account()]
     pub user_transfer_authority: Signer<'info>,
 
     #[account(
@@ -36,7 +40,7 @@ pub struct WithdrawAllTokenTypes<'info> {
 
     #[account(
         mut,
-        token::authority = user_transfer_authority,
+        token::authority = source,
         token::mint = swap_pool.load().unwrap().lpmint,
     )]
     pub lptoken: Box<Account<'info, TokenAccount>>,
@@ -61,12 +65,14 @@ pub struct WithdrawAllTokenTypes<'info> {
 
     #[account(
         mut,
+        token::authority = source,
         token::mint = swap_pool.load().unwrap().mint_a,
     )]
     pub token_a: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
+        token::authority = source,
         token::mint = swap_pool.load().unwrap().mint_b,
     )]
     pub token_b: Box<Account<'info, TokenAccount>>,
@@ -183,28 +189,32 @@ pub fn execute(
         u64::try_from(pool_token_amount).unwrap(),
     )?;
 
+    let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
+
     if token_a_amount > 0 {
         token::transfer(
-            CpiContext::new(
+            CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info().clone(),
                 Transfer {
                     from: ctx.accounts.vault_a.to_account_info().clone(),
                     to: ctx.accounts.token_a.to_account_info().clone(),
                     authority: ctx.accounts.authority.to_account_info().clone(),
                 },
+                signer_seeds,
             ),
             token_a_amount,
         )?;
     }
     if token_b_amount > 0 {
         token::transfer(
-            CpiContext::new(
+            CpiContext::new_with_signer(
                 ctx.accounts.token_program.to_account_info().clone(),
                 Transfer {
                     from: ctx.accounts.vault_b.to_account_info().clone(),
                     to: ctx.accounts.token_b.to_account_info().clone(),
                     authority: ctx.accounts.authority.to_account_info().clone(),
                 },
+                signer_seeds,
             ),
             token_b_amount,
         )?;

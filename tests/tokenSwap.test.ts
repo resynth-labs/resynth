@@ -348,85 +348,74 @@ describe("token swap", () => {
     assert(Number(info.amount) == DEFAULT_POOL_TOKEN_AMOUNT + POOL_TOKEN_AMOUNT);
   });
 
-  /*
   it("withdrawAllTokenTypes", async () => {
-    // const poolMintInfo = MintLayout.decode((await tokenSwap.connection.getAccountInfo(lpmint)).data);
-    // const swapTokenA = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA)).data);
-    // const swapTokenB = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB)).data);
+    const supply = Number(MintLayout.decode((await tokenSwap.connection.getAccountInfo(lpmint)).data).supply);
+    let feeAmount = 0;
+    if (OWNER_WITHDRAW_FEE_NUMERATOR !== 0) {
+      feeAmount = Math.floor(
+        (POOL_TOKEN_AMOUNT * OWNER_WITHDRAW_FEE_NUMERATOR) /
+        OWNER_WITHDRAW_FEE_DENOMINATOR,
+      );
+    }
+    const poolTokenAmount = POOL_TOKEN_AMOUNT - feeAmount;
+    const tokenAmountA = Math.floor(
+      (Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA)).data).amount) * poolTokenAmount) / supply,
+    );
+    const tokenAmountB = Math.floor(
+      (Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB)).data).amount) * poolTokenAmount) / supply,
+    );
 
-    // const supply = Number(poolMintInfo.supply);
-    // let feeAmount = 0;
-    // if (OWNER_WITHDRAW_FEE_NUMERATOR !== 0) {
-    //   feeAmount = Math.floor(
-    //     (POOL_TOKEN_AMOUNT * OWNER_WITHDRAW_FEE_NUMERATOR) /
-    //     OWNER_WITHDRAW_FEE_DENOMINATOR,
-    //   );
-    // }
-    // const poolTokenAmount = POOL_TOKEN_AMOUNT - feeAmount;
-    // const tokenA = Math.floor(
-    //   (Number(swapTokenA.amount) * poolTokenAmount) / supply,
-    // );
-    // const tokenB = Math.floor(
-    //   (Number(swapTokenB.amount) * poolTokenAmount) / supply,
-    // );
-
-    // console.log('Creating withdraw token A account');
-    // const userAccountA = await getOrCreateAssociatedTokenAccount(tokenSwap.connection, tokenSwap.wallet.payer, mintA, user.publicKey);
-    // console.log('Creating withdraw token B account');
-    // const userAccountB = await getOrCreateAssociatedTokenAccount(tokenSwap.connection, tokenSwap.wallet.payer, mintB, user.publicKey);
-
-    // const userTransferAuthority = Keypair.generate();
-    // console.log('Approving withdrawal from pool account');
-    // await approveChecked(
-    //   tokenSwap.connection,
-    //   tokenSwap.wallet.payer,
-    //   lpmint,
-    //   tokenAccountPool.address,
-    //   userTransferAuthority.publicKey,
-    //   user,
-    //   POOL_TOKEN_AMOUNT,
-    //   2,
-    // );
+    const userTransferAuthority = Keypair.generate();
+    console.log('Approving withdrawal from pool account');
+    await approveChecked(
+      tokenSwap.connection,
+      tokenSwap.wallet.payer,
+      lpmint,
+      userPoolTokenAccount,
+      userTransferAuthority.publicKey,
+      user,
+      POOL_TOKEN_AMOUNT,
+      lpmintDecimals,
+    );
 
     console.log('Withdrawing pool tokens for A and B tokens');
     await tokenSwap.withdrawAllTokenTypes({
       poolTokenAmount: new BN(POOL_TOKEN_AMOUNT),
-      maximumTokenAAmount: new BN(tokenAmountA),
-      maximumTokenBAmount: new BN(tokenAmountB),
+      minimumTokenAAmount: new BN(tokenAmountA),
+      minimumTokenBAmount: new BN(tokenAmountB),
       swapPool,
       authority,
+      source: user.publicKey,
       userTransferAuthority,
       lpmint,
-      lptoken: newAccountPool.address,
+      lptoken: userPoolTokenAccount,
       vaultA,
       vaultB,
-      tokenA: userAccountA.address,
-      tokenB: userAccountB.address,
+      tokenA: userAccountA,
+      tokenB: userAccountB,
       feeReceiver,
       mintA,
       mintB,
     });
 
-    // swapTokenA = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA)).data);
-    // swapTokenB = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB)).data);
-
-    // let info = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(tokenAccountPool)).data);
-    // assert(
-    //   Number(info.amount) == DEFAULT_POOL_TOKEN_AMOUNT - POOL_TOKEN_AMOUNT,
-    // );
-    // assert(swapTokenA.amount.toNumber() == currentSwapTokenA - tokenA);
-    // currentSwapTokenA -= tokenA;
-    // assert(swapTokenB.amount.toNumber() == currentSwapTokenB - tokenB);
-    // currentSwapTokenB -= tokenB;
-    // info = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA.address)).data);
-    // assert(Number(info.amount) == tokenA);
-    // info = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB.address)).data);
-    // assert(Number(info.amount) == tokenB);
-    // info = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(feeAccount)).data);
-    // assert(Number(info.amount) == feeAmount);
-    // currentFeeAmount = feeAmount;
+    let info = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount)).data);
+    assert(
+      Number(info.amount) == DEFAULT_POOL_TOKEN_AMOUNT,
+    );
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA)).data).amount) == currentSwapTokenA - tokenAmountA);
+    currentSwapTokenA -= tokenAmountA;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB)).data).amount) == currentSwapTokenB - tokenAmountB);
+    currentSwapTokenB -= tokenAmountB;
+    info = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA)).data);
+    assert(Number(info.amount) == tokenAmountA);
+    info = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB)).data);
+    assert(Number(info.amount) == tokenAmountB);
+    info = AccountLayout.decode((await tokenSwap.connection.getAccountInfo(feeReceiver)).data);
+    assert(Number(info.amount) == feeAmount);
+    currentFeeAmount = feeAmount;
   });
 
+  /*
   it("createAccountAndSwapAtomic", async () => {
     // console.log('Creating swap token a account');
     // let userAccountA = await mintA.createAccount(owner.publicKey);
