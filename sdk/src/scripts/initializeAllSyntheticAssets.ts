@@ -2,7 +2,8 @@ import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { ResynthClient } from "../client";
 import configs from "../config.json";
-import { syntheticAssetPDA, SYNTH_DECIMALS } from "../utils";
+import { syntheticAssetPDA } from "../utils";
+import { SYNTH_DECIMALS } from "../utils/constants";
 
 // Run with ts-node -T ..
 
