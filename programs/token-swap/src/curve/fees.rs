@@ -1,5 +1,6 @@
-use anchor_lang::prelude::*;
+//! All fee information, to be used for validation currently
 
+use anchor_lang::prelude::*;
 use crate::errors::TokenSwapError;
 
 /// Helper function for calculating swap fee

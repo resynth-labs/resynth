@@ -68,17 +68,14 @@ pub struct InitializeSwapPool<'info> {
     /// Pool Token Account to deposit trading and withdraw fees.
     /// Must be empty, not owned by swap authority
     /// FIXME! Freeze expoit: Nothing is stopping the fee receiver from closing the account, freezing the pool funds
-    #[account(init,
-        seeds = [
-            b"fee_receiver",
-            swap_pool.key().as_ref(),
-        ],
-        bump,
-        payer = payer,
-        token::authority = fee_receiver_wallet,
-        token::mint = lpmint,
+    #[account(
+      init_if_needed,
+      payer = payer,
+      associated_token::mint = lpmint,
+      associated_token::authority = fee_receiver_wallet,
     )]
     pub fee_receiver: Box<Account<'info, TokenAccount>>,
+
     /// CHECK:
     pub fee_receiver_wallet: AccountInfo<'info>,
 
@@ -203,6 +200,7 @@ pub fn execute(
         vault_a_bump: ctx.bumps["vault_a"],
         vault_b_bump: ctx.bumps["vault_b"],
         lpmint_bump: ctx.bumps["lpmint"],
+        padding: [0; 2],
         swap_pool: ctx.accounts.swap_pool.key(),
         authority: ctx.accounts.authority.key(),
         token_program: *ctx.accounts.token_program.key,

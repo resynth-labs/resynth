@@ -79,13 +79,12 @@ describe("token faucet", () => {
 
     const amount = new BN(1_000_000);
 
-    const txid = await tokenFaucet.airdrop({
+    await tokenFaucet.airdrop({
       amount,
-      faucetAccount: faucet,
-      mintAccount: mint,
-      tokenAccountAccount: tokenAccount,
+      faucet: faucet,
+      mint: mint,
+      tokenAccount: tokenAccount,
     });
-    await tokenFaucet.connection.confirmTransaction(txid, "confirmed");
 
     assert(
       (await tokenFaucet.connection.getTokenAccountBalance(tokenAccount)).value

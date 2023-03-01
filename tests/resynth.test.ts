@@ -15,15 +15,14 @@ import {
   SystemProgram,
   Transaction,
 } from "@solana/web3.js";
-import { expect, use as chaiUse } from "chai";
+import { use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import {
   Fees,
   marginAccountPDA,
   PythClient,
   ResynthClient,
-  SwapCurve,
-  swapPoolPDA,
+  SwapCurveType,
   syntheticAssetPDA,
   TokenFaucetClient,
   TokenSwapClient,
@@ -104,20 +103,6 @@ describe("resynth", () => {
   // User B will trade against user A and follow the sad path
   let userB: TestUser;
 
-  async function checkBalance(tokenAccount: PublicKey): Promise<BN> {
-    let info = await provider.connection.getAccountInfo(tokenAccount);
-    const account = AccountLayout.decode(info.data);
-
-    return new BN(account.amount.toString());
-  }
-
-  async function checkWalletBalance(tokenAccount: PublicKey): Promise<number> {
-    let info = await provider.connection.getAccountInfo(tokenAccount);
-    let amount = info.lamports;
-
-    return amount;
-  }
-
   interface TestUser {
     wallet: Keypair;
     tokenAccounts: Record<string, PublicKey>;
@@ -162,13 +147,12 @@ describe("resynth", () => {
       wallet
     );
     if (amount && amount > 0) {
-      const txid = await tokenFaucet.airdrop({
+      await tokenFaucet.airdrop({
         amount: new BN(amount),
-        faucetAccount: stablecoinFaucet,
-        mintAccount: mint,
-        tokenAccountAccount: tokenAccount,
+        faucet: stablecoinFaucet,
+        mint: mint,
+        tokenAccount: tokenAccount,
       });
-      await tokenFaucet.connection.confirmTransaction(txid, "confirmed");
     }
   }
 
@@ -304,63 +288,6 @@ describe("resynth", () => {
       .rpc();
   }
 
-  async function initializeSwapPool(
-    mintA: PublicKey,
-    mintB: PublicKey,
-    source: Keypair,
-    feeReceiverWallet: PublicKey,
-    fees: Fees,
-    swapCurve: SwapCurve,
-    tokenBPriceOrOffset: BN
-  ) {
-    const { swapPool, authority, vaultA, vaultB, lpmint, feeReceiver } =
-      swapPoolPDA(tokenSwap.programId, mintA, mintB);
-    const { address: sourceA } = await getOrCreateAssociatedTokenAccount(
-      connection,
-      payer,
-      mintA,
-      source.publicKey
-    );
-    const { address: sourceB } = await getOrCreateAssociatedTokenAccount(
-      connection,
-      payer,
-      mintB,
-      source.publicKey
-    );
-    const lptoken = getAssociatedTokenAddressSync(lpmint, source.publicKey);
-
-    await tokenSwap.program.methods
-      .initializeSwapPool(fees, swapCurve, tokenBPriceOrOffset)
-      .accountsStrict({
-        swapPool,
-        authority,
-
-        vaultA,
-        vaultB,
-        lpmint,
-
-        feeReceiver,
-        feeReceiverWallet,
-
-        mintA,
-        mintB,
-        source: userA.wallet.publicKey,
-        sourceA,
-        sourceB,
-        lptoken,
-
-        payer: payer.publicKey,
-
-        systemProgram,
-        tokenProgram,
-        associatedTokenProgram,
-      })
-      .signers([source])
-      .rpc();
-  }
-
-  async function provideLiquidityToAMM() { }
-
   before(async () => {
     const airdropSignature = await tokenFaucet.connection.requestAirdrop(
       wallet.publicKey,
@@ -451,27 +378,4 @@ describe("resynth", () => {
     );
   });
 
-  it("Initialize gold swap pool", async () => {
-    const fees: Fees = {
-      tradeFeeNumerator: new BN(15),
-      tradeFeeDenominator: new BN(10_000),
-      ownerTradeFeeNumerator: new BN(5),
-      ownerTradeFeeDenominator: new BN(10_000),
-      ownerWithdrawFeeNumerator: new BN(0),
-      ownerWithdrawFeeDenominator: new BN(10_000),
-      hostFeeNumerator: new BN(5),
-      hostFeeDenominator: new BN(10_000),
-    };
-    await initializeSwapPool(
-      stablecoinMint,
-      goldMint,
-      userA.wallet,
-      payer.publicKey,
-      fees,
-      SwapCurve.ConstantProductCurve,
-      new BN(0)
-    );
-  });
-
-  it("User A provides liquidity to the AMM", async () => { });
 });

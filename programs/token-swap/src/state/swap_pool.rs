@@ -28,6 +28,8 @@ pub struct SwapPool {
 
     pub lpmint_bump: u8,
 
+    pub padding: [u8; 2],
+
     pub swap_pool: Pubkey,
 
     pub authority: Pubkey,

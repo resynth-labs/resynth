@@ -596,6 +596,15 @@ export type TokenSwap = {
             "type": "u8"
           },
           {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                2
+              ]
+            }
+          },
+          {
             "name": "swapPool",
             "type": "publicKey"
           },
@@ -1595,6 +1604,15 @@ export const IDL: TokenSwap = {
           {
             "name": "lpmintBump",
             "type": "u8"
+          },
+          {
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                2
+              ]
+            }
           },
           {
             "name": "swapPool",

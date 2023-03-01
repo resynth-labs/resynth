@@ -152,18 +152,19 @@ export class TokenFaucetClient {
 
   async airdrop(params: {
     amount: BN;
-    faucetAccount: PublicKey;
-    mintAccount: PublicKey;
-    tokenAccountAccount: PublicKey;
-  }): Promise<TransactionSignature> {
-    return this.program.rpc.airdrop(params.amount, {
+    faucet: PublicKey;
+    mint: PublicKey;
+    tokenAccount: PublicKey;
+  }): Promise<void> {
+    const txid = await this.program.rpc.airdrop(params.amount, {
       accounts: {
-        faucet: params.faucetAccount,
-        mint: params.mintAccount,
-        tokenAccount: params.tokenAccountAccount,
+        faucet: params.faucet,
+        mint: params.mint,
+        tokenAccount: params.tokenAccount,
         tokenProgram: TOKEN_PROGRAM_ID,
       },
     });
+    await this.connection.confirmTransaction(txid, "confirmed");
   }
 
   async initializeFaucet(params: {
