@@ -1,6 +1,6 @@
 import { BN } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { AccountLayout, approveChecked, createAssociatedTokenAccount, createAssociatedTokenAccountInstruction, getAssociatedTokenAddressSync, MintLayout, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { AccountLayout, approveChecked, createApproveInstruction, createAssociatedTokenAccount, createAssociatedTokenAccountInstruction, getAssociatedTokenAddressSync, MintLayout, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Keypair,
   LAMPORTS_PER_SOL,
@@ -72,6 +72,9 @@ describe("token swap", () => {
 
   let feeReceiverWallet = Keypair.generate();
   let feeReceiver: PublicKey;
+
+  let hostFeeReceiverWallet = Keypair.generate();
+  let hostFeeReceiver: PublicKey;
 
   let swapPool: PublicKey;
   let authority: PublicKey;
@@ -214,6 +217,8 @@ describe("token swap", () => {
       sourceA: userAccountA,
       sourceB: userAccountB,
     });
+
+    hostFeeReceiver = await createAssociatedTokenAccount(tokenSwap.connection, tokenSwap.wallet.payer, lpmint, hostFeeReceiverWallet.publicKey);
 
     const fetchedSwapPool = (await tokenSwap.fetchSwapPool(swapPool)).account;
 
@@ -415,88 +420,67 @@ describe("token swap", () => {
     currentFeeAmount = feeAmount;
   });
 
-  /*
   it("createAccountAndSwapAtomic", async () => {
-    // console.log('Creating swap token a account');
-    // let userAccountA = await mintA.createAccount(owner.publicKey);
-    // await mintA.mintTo(userAccountA, owner, [], SWAP_AMOUNT_IN);
+    console.log('Creating swap token a account');
+    const swappper = Keypair.generate();
 
-    // // @ts-ignore
-    // const balanceNeeded = await Token.getMinBalanceRentForExemptAccount(
-    //   connection,
-    // );
-    // const newAccount = new Account();
+    const swapperAccountA = await createAssociatedTokenAccount(tokenSwap.connection, tokenSwap.wallet.payer, mintA, swappper.publicKey);
+
+    await tokenFaucet.airdrop({
+      amount: new BN(SWAP_AMOUNT_IN),
+      faucet: faucetA,
+      mint: mintA,
+      tokenAccount: swapperAccountA,
+    });
+
     const transaction = new Transaction();
+
+    const swapperAccountB = getAssociatedTokenAddressSync(mintB, swappper.publicKey);
     transaction.add(
-      SystemProgram.createAccount({
-        fromPubkey: owner.publicKey,
-        newAccountPubkey: newAccount.publicKey,
-        lamports: balanceNeeded,
-        space: AccountLayout.span,
-        programId: mintB.programId,
-      }),
+      createAssociatedTokenAccountInstruction(
+        tokenSwap.wallet.payer.publicKey,
+        swapperAccountB,
+        swappper.publicKey,
+        mintB,
+      )
     );
 
+    const userTransferAuthority = Keypair.generate();
     transaction.add(
-      Token.createInitAccountInstruction(
-        mintB.programId,
-        mintB.publicKey,
-        newAccount.publicKey,
-        owner.publicKey,
-      ),
-    );
-
-    // const userTransferAuthority = Keypair.generate();
-    // transaction.add(
-    //   Token.createApproveInstruction(
-    //     mintA.programId,
-    //     userAccountA,
-    //     userTransferAuthority.publicKey,
-    //     owner.publicKey,
-    //     [owner],
-    //     SWAP_AMOUNT_IN,
-    //   ),
-    // );
-
-    transaction.add(
-      TokenSwap.swapInstruction(
-        tokenSwap.tokenSwap,
-        tokenSwap.authority,
+      createApproveInstruction(
+        swapperAccountA,
         userTransferAuthority.publicKey,
-        userAccountA,
-        tokenSwap.tokenAccountA,
-        tokenSwap.tokenAccountB,
-        newAccount.publicKey,
-        tokenSwap.poolToken,
-        tokenSwap.feeAccount,
-        null,
-        tokenSwap.mintA,
-        tokenSwap.mintB,
-        tokenSwap.swapProgramId,
-        TOKEN_PROGRAM_ID,
-        TOKEN_PROGRAM_ID,
-        tokenSwap.poolTokenProgramId,
+        swappper.publicKey,
         SWAP_AMOUNT_IN,
-        0,
       ),
+    );
+
+    transaction.add(
+      await tokenSwap.swapInstruction({
+        amountIn: new BN(SWAP_AMOUNT_IN),
+        minimumAmountOut: new BN(0),
+        swapPool,
+        authority,
+        userTransferAuthority: userTransferAuthority.publicKey,
+        sourceTokenAccount: swapperAccountA,
+        sourceVault: vaultA,
+        destVault: vaultB,
+        destTokenAccount: swapperAccountB,
+        lpmint,
+        feeReceiver,
+        hostFeeReceiver,
+      }),
     );
 
     // Send the instructions
     console.log('sending big instruction');
-    await sendAndConfirmTransaction(
-      connection,
-      transaction,
-      [owner, newAccount, userTransferAuthority],
-      confirmOptions
-    );
+    tokenSwap.provider.sendAndConfirm(transaction, [swappper, userTransferAuthority], { commitment: "confirmed" });
 
-    // let info;
-    // info = await mintA.getAccountInfo(tokenAccountA);
-    // currentSwapTokenA = info.amount.toNumber();
-    // info = await mintB.getAccountInfo(tokenAccountB);
-    // currentSwapTokenB = info.amount.toNumber();
+    currentSwapTokenA = Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA)).data).amount);
+    currentSwapTokenB = Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB)).data).amount);
   });
 
+  /*
   it("swap", async () => {
     // console.log('Creating swap token a account');
     // let userAccountA = await mintA.createAccount(owner.publicKey);

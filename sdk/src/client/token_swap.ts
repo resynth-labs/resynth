@@ -16,6 +16,7 @@ import {
   Signer,
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
+  TransactionInstruction,
   TransactionSignature,
 } from "@solana/web3.js";
 import CONFIG from "../config.json";
@@ -299,6 +300,38 @@ export class TokenSwapClient {
       },
     });
     await this.connection.confirmTransaction(txid, "confirmed");
+  }
+
+  async swapInstruction(params: {
+    amountIn: BN;
+    minimumAmountOut: BN;
+    swapPool: PublicKey;
+    authority: PublicKey;
+    userTransferAuthority: PublicKey;
+    sourceTokenAccount: PublicKey;
+    sourceVault: PublicKey;
+    destVault: PublicKey;
+    destTokenAccount: PublicKey;
+    lpmint: PublicKey;
+    feeReceiver: PublicKey;
+    hostFeeReceiver: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .swap(params.amountIn, params.minimumAmountOut)
+      .accounts({
+        swapPool: params.swapPool,
+        authority: params.authority,
+        userTransferAuthority: params.userTransferAuthority,
+        sourceToken: params.sourceTokenAccount,
+        sourceVault: params.sourceVault,
+        destVault: params.destVault,
+        destToken: params.destTokenAccount,
+        lpmint: params.lpmint,
+        feeReceiver: params.feeReceiver,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        hostFeeReceiver: params.hostFeeReceiver,
+      })
+      .instruction();
   }
 
   //
