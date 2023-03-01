@@ -28,6 +28,11 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
+          "name": "source",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -240,6 +245,11 @@ export type TokenSwap = {
         {
           "name": "source",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userTransferAuthority",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -293,6 +303,14 @@ export type TokenSwap = {
         },
         {
           "name": "tokenBPriceOrOffset",
+          "type": "u64"
+        },
+        {
+          "name": "initialTokenAAmount",
+          "type": "u64"
+        },
+        {
+          "name": "initialTokenBAmount",
           "type": "u64"
         }
       ]
@@ -1038,6 +1056,11 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
+          "name": "source",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -1250,6 +1273,11 @@ export const IDL: TokenSwap = {
         {
           "name": "source",
           "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "userTransferAuthority",
+          "isMut": false,
           "isSigner": true
         },
         {
@@ -1303,6 +1331,14 @@ export const IDL: TokenSwap = {
         },
         {
           "name": "tokenBPriceOrOffset",
+          "type": "u64"
+        },
+        {
+          "name": "initialTokenAAmount",
+          "type": "u64"
+        },
+        {
+          "name": "initialTokenBAmount",
           "type": "u64"
         }
       ]

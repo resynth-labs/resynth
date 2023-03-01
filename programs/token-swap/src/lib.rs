@@ -57,12 +57,16 @@ pub mod token_swap {
         fees: Fees,
         swap_curve_type: SwapCurveType,
         token_b_price_or_offset: u64,
+        initial_token_a_amount: u64,
+        initial_token_b_amount: u64,
     ) -> Result<()> {
         instructions::initialize_swap_pool::execute(
             ctx,
             fees,
             swap_curve_type,
             token_b_price_or_offset,
+            initial_token_a_amount,
+            initial_token_b_amount,
         )
     }
 

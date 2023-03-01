@@ -127,6 +127,7 @@ export class TokenSwapClient {
     maximumTokenBAmount: BN;
     swapPool: PublicKey;
     authority: PublicKey;
+    source: PublicKey,
     userTransferAuthority: Signer;
     tokenA: PublicKey;
     tokenB: PublicKey;
@@ -136,8 +137,8 @@ export class TokenSwapClient {
     lptoken: PublicKey;
     mintA: PublicKey;
     mintB: PublicKey;
-  }): Promise<TransactionSignature> {
-    return this.program.rpc.depositAllTokenTypes(
+  }): Promise<void> {
+    const txid = await this.program.rpc.depositAllTokenTypes(
       params.poolTokenAmount,
       params.maximumTokenAAmount,
       params.maximumTokenBAmount,
@@ -145,6 +146,7 @@ export class TokenSwapClient {
         accounts: {
           swapPool: params.swapPool,
           authority: params.authority,
+          source: params.source,
           userTransferAuthority: params.userTransferAuthority.publicKey,
           tokenA: params.tokenA,
           tokenB: params.tokenB,
@@ -159,6 +161,7 @@ export class TokenSwapClient {
         signers: [params.userTransferAuthority],
       }
     );
+    await this.connection.confirmTransaction(txid, "confirmed");
   }
 
   //
@@ -210,23 +213,30 @@ export class TokenSwapClient {
     fees: Fees;
     swapCurveType: SwapCurveType;
     tokenBPriceOrOffset: BN;
+
+    initialTokenAAmount: BN;
+    initialTokenBAmount: BN;
+
     feeReceiver: PublicKey;
     feeReceiverWallet: PublicKey;
     mintA: PublicKey;
     mintB: PublicKey;
-    source: Signer;
+    source: PublicKey;
+    userTransferAuthority: Signer;
     sourceA: PublicKey;
     sourceB: PublicKey;
   }): Promise<PublicKey> {
     const { swapPool, authority, vaultA, vaultB, lpmint } =
       swapPoolPDA(this.programId, params.mintA, params.mintB);
 
-    const lptoken = getAssociatedTokenAddressSync(lpmint, params.source.publicKey);
+    const lptoken = getAssociatedTokenAddressSync(lpmint, params.source);
 
     const txid = await this.program.rpc.initializeSwapPool(
       params.fees,
       params.swapCurveType,
       params.tokenBPriceOrOffset,
+      params.initialTokenAAmount,
+      params.initialTokenBAmount,
       {
         accounts: {
           swapPool,
@@ -238,7 +248,8 @@ export class TokenSwapClient {
           feeReceiverWallet: params.feeReceiverWallet,
           mintA: params.mintA,
           mintB: params.mintB,
-          source: params.source.publicKey,
+          source: params.source,
+          userTransferAuthority: params.userTransferAuthority.publicKey,
           sourceA: params.sourceA,
           sourceB: params.sourceB,
           lptoken: lptoken,
@@ -247,7 +258,7 @@ export class TokenSwapClient {
           tokenProgram: TOKEN_PROGRAM_ID,
           associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
         },
-        signers: [params.source],
+        signers: [params.userTransferAuthority],
       }
     );
     await this.connection.confirmTransaction(txid, "confirmed");

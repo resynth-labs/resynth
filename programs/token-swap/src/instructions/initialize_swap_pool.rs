@@ -61,7 +61,7 @@ pub struct InitializeSwapPool<'info> {
         ],
         bump,
         mint::authority = authority,
-        mint::decimals = 0
+        mint::decimals = 2 //TODO we should probably increase this to 6
     )]
     pub lpmint: Box<Account<'info, Mint>>,
 
@@ -83,12 +83,25 @@ pub struct InitializeSwapPool<'info> {
 
     pub mint_b: Box<Account<'info, Mint>>,
 
-    pub source: Signer<'info>,
+    #[account()]
+    /// CHECK:
+    pub source: UncheckedAccount<'info>,
 
-    #[account(mut)]
+    #[account()]
+    pub user_transfer_authority: Signer<'info>,
+
+    #[account(
+      mut,
+      token::authority = source,
+      token::mint = mint_a,
+    )]
     pub source_a: Box<Account<'info, TokenAccount>>,
 
-    #[account(mut)]
+    #[account(
+      mut,
+      token::authority = source,
+      token::mint = mint_b,
+    )]
     pub source_b: Box<Account<'info, TokenAccount>>,
 
     /// CHECK: This associated token account will be created during execution
@@ -112,7 +125,7 @@ impl<'info> InitializeSwapPool<'info> {
             Transfer {
                 from: self.source_a.to_account_info(),
                 to: self.vault_a.to_account_info(),
-                authority: self.source.to_account_info(),
+                authority: self.user_transfer_authority.to_account_info(),
             },
         )
     }
@@ -122,7 +135,7 @@ impl<'info> InitializeSwapPool<'info> {
             Transfer {
                 from: self.source_b.to_account_info(),
                 to: self.vault_b.to_account_info(),
-                authority: self.source.to_account_info(),
+                authority: self.user_transfer_authority.to_account_info(),
             },
         )
     }
@@ -158,6 +171,8 @@ pub fn execute(
     fees: Fees,
     swap_curve_type: SwapCurveType,
     token_b_price_or_offset: u64,
+    initial_token_a_amount: u64,
+    initial_token_b_amount: u64,
 ) -> Result<()> {
     if *ctx.accounts.authority.key != ctx.accounts.lpmint.mint_authority.unwrap() {
         return Err(TokenSwapError::InvalidOwner.into());
@@ -222,11 +237,11 @@ pub fn execute(
     // they must be seeded before validating a supply.
     transfer(
         ctx.accounts.transfer_source_a_context(),
-        ctx.accounts.source_a.amount,
+        initial_token_a_amount,
     )?;
     transfer(
         ctx.accounts.transfer_source_b_context(),
-        ctx.accounts.source_b.amount,
+        initial_token_b_amount,
     )?;
     anchor_spl::associated_token::create_idempotent(ctx.accounts.create_lptoken_context())?;
     token::mint_to(
