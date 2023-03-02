@@ -159,7 +159,7 @@ export class TokenFaucetClient {
       );
     }
     if (transaction.instructions.length > 0) {
-      const txid = await this.provider.sendAndConfirm(transaction, [], { commitment: "confirmed" });
+      const txid = await this.provider.sendAndConfirm(transaction, [], { commitment: "confirmed", skipPreflight: true });
       this.existing_accounts.add(tokenAccount);
     }
     return tokenAccount;
