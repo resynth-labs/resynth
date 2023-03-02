@@ -191,8 +191,6 @@ pub fn execute(
 
     let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
 
-    let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
-
     if token_a_amount > 0 {
         token::transfer(
             CpiContext::new_with_signer(
