@@ -1,14 +1,12 @@
 import { BN } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import {
-  createAssociatedTokenAccountInstruction,
   getAssociatedTokenAddressSync,
 } from "@solana/spl-token";
 import {
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
-  Transaction,
 } from "@solana/web3.js";
 import { assert } from "chai";
 import { TokenFaucetClient } from "../sdk/src";
@@ -63,32 +61,15 @@ describe("token faucet", () => {
       "token account already exists"
     );
 
-    //TODO move this into the airdrop function
-    const transaction = new Transaction();
-    transaction.add(
-      createAssociatedTokenAccountInstruction(
-        tokenFaucet.wallet.publicKey,
-        tokenAccount,
-        tokenFaucet.wallet.publicKey,
-        mint
-      )
-    );
-    await tokenFaucet.provider.sendAndConfirm(transaction, [], {
-      commitment: "confirmed",
-    });
-
-    const amount = new BN(1_000_000);
-
     await tokenFaucet.airdrop({
-      amount,
+      amount: new BN(1_000_000),
       faucet: faucet,
       mint: mint,
-      tokenAccount: tokenAccount,
+      owner: tokenFaucet.wallet.publicKey,
     });
 
     assert(
-      (await tokenFaucet.connection.getTokenAccountBalance(tokenAccount)).value
-        .uiAmount === 1,
+      (await tokenFaucet.connection.getTokenAccountBalance(tokenAccount)).value.uiAmount === 1,
       "token account balance is not 1"
     );
   });

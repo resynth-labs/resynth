@@ -165,7 +165,7 @@ describe("token swap", () => {
       amount: new BN(currentSwapTokenA),
       faucet: faucetA,
       mint: mintA,
-      tokenAccount: userAccountA,
+      owner: user.publicKey,
     });
     await approveChecked(
       tokenSwap.connection,
@@ -182,7 +182,7 @@ describe("token swap", () => {
       amount: new BN(currentSwapTokenB),
       faucet: faucetB,
       mint: mintB,
-      tokenAccount: userAccountB,
+      owner: user.publicKey,
     });
     await approveChecked(
       tokenSwap.connection,
@@ -274,7 +274,7 @@ describe("token swap", () => {
       amount: new BN(tokenAmountA - Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA)).data).amount)),
       faucet: faucetA,
       mint: mintA,
-      tokenAccount: userAccountA,
+      owner: user.publicKey,
     });
     await approveChecked(
       tokenSwap.connection,
@@ -291,7 +291,7 @@ describe("token swap", () => {
       amount: new BN(tokenAmountB - Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB)).data).amount)),
       faucet: faucetB,
       mint: mintB,
-      tokenAccount: userAccountB,
+      owner: user.publicKey,
     });
     await approveChecked(
       tokenSwap.connection,
@@ -412,7 +412,7 @@ describe("token swap", () => {
       amount: new BN(SWAP_AMOUNT_IN),
       faucet: faucetA,
       mint: mintA,
-      tokenAccount: swapperAccountA,
+      owner: user.publicKey,
     });
 
     const userTransferAuthority = Keypair.generate();
@@ -476,7 +476,7 @@ describe("token swap", () => {
       amount: new BN(SWAP_AMOUNT_IN),
       faucet: faucetA,
       mint: mintA,
-      tokenAccount: swapperAccountA,
+      owner: user.publicKey,
     });
 
     const transaction = new Transaction();
@@ -549,7 +549,7 @@ describe("token swap", () => {
       amount: new BN(depositAmount - Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA)).data).amount)),
       faucet: faucetA,
       mint: mintA,
-      tokenAccount: userAccountA,
+      owner: user.publicKey,
     });
     await approveChecked(
       tokenSwap.connection,
@@ -566,7 +566,7 @@ describe("token swap", () => {
       amount: new BN(depositAmount - Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB)).data).amount)),
       faucet: faucetB,
       mint: mintB,
-      tokenAccount: userAccountB,
+      owner: user.publicKey,
     });
     await approveChecked(
       tokenSwap.connection,

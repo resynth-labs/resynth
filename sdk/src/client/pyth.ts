@@ -1,26 +1,19 @@
 import {
   AnchorProvider,
   BN,
-  BorshAccountsCoder,
   BorshCoder,
-  Idl,
-  Instruction,
   Program,
-  ProgramAccount,
   Wallet,
 } from "@coral-xyz/anchor";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Connection,
   Keypair,
   PublicKey,
   SystemProgram,
-  SYSVAR_RENT_PUBKEY,
   TransactionSignature,
 } from "@solana/web3.js";
 import CONFIG from "../config.json";
 import { IDL, Pyth } from "../idl/pyth";
-import { PriceStatus, CorpAction, PriceType } from "../types";
 
 export class PythClient {
   accountDiscriminators: Record<string, string> = {};
@@ -58,11 +51,14 @@ export class PythClient {
     this.coder = this.program._coder;
   }
 
-  // Instructions -------------------------------------------------------------
+  // Accounts -----------------------------------------------------------------
 
-  decodeInstruction(str: string): Instruction {
-    return this.coder.instruction.decode(str, "base58");
+  async getPrice(priceAccount: PublicKey): Promise<number> {
+    const priceData = parsePythPriceData((await this.connection.getAccountInfo(priceAccount))!.data);
+    return priceData.price;
   }
+
+  // Instructions -------------------------------------------------------------
 
   /**
    * Initialize a pyth price account for a token

@@ -33,8 +33,7 @@ describe("pyth", () => {
       expo,
       conf,
     });
-    const priceData = parsePythPriceData((await pythClient.connection.getAccountInfo(priceAccount))!.data);
-    assert.ok(priceData.price === price);
+    assert.ok(await pythClient.getPrice(priceAccount) === price);
   })
 
   it("setPrice", async () => {

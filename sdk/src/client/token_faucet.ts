@@ -10,7 +10,9 @@ import {
   Wallet,
 } from "@coral-xyz/anchor";
 import {
+  createAssociatedTokenAccountInstruction,
   createInitializeMintInstruction,
+  getAssociatedTokenAddressSync,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
@@ -37,6 +39,8 @@ export class TokenFaucetClient {
   provider: AnchorProvider;
   url: string;
   wallet: Wallet;
+
+  private existing_accounts = new Set<PublicKey>();
 
   constructor(
     cluster: "devnet" | "localnet" | "mainnet",
@@ -109,30 +113,6 @@ export class TokenFaucetClient {
 
   // Accounts -----------------------------------------------------------------
 
-  decodeAccountName(buffer: Buffer): string {
-    const accountDiscriminator = buffer.slice(0, 8).toString("base64");
-    return this.accountDiscriminators[accountDiscriminator];
-  }
-
-  decodeAccount(accountName: string, buffer: Buffer): any {
-    // Anchor uses camelCase for account names, but the discriminator is in PascalCase.
-    accountName = accountName.charAt(0).toLowerCase() + accountName.slice(1);
-    return this.coder.accounts.decodeUnchecked(accountName, buffer);
-  }
-
-  encodeAccount(accountName: string, account: any): Buffer {
-    const buffer = Buffer.alloc(8192);
-    // @ts-ignore
-    const layout = this.coder.accounts.accountLayouts.get(accountName);
-    if (!layout) {
-      throw new Error(`Unknown account: ${accountName}`);
-    }
-    const len = layout.encode(account, buffer);
-    let accountData = buffer.slice(0, len);
-    let discriminator = BorshAccountsCoder.accountDiscriminator(accountName);
-    return Buffer.concat([discriminator, accountData]);
-  }
-
   async fetchAllFaucets(): Promise<ProgramAccount<Faucet>[]> {
     return (await this.program.account.faucet.all()) as ProgramAccount<Faucet>[];
   }
@@ -146,41 +126,61 @@ export class TokenFaucetClient {
 
   // Instructions -------------------------------------------------------------
 
-  decodeInstruction(str: string): Instruction {
-    return this.coder.instruction.decode(str, "base58");
-  }
-
   async airdrop(params: {
     amount: BN;
     faucet: PublicKey;
     mint: PublicKey;
-    tokenAccount: PublicKey;
-  }): Promise<void> {
-    const txid = await this.program.rpc.airdrop(params.amount, {
-      accounts: {
-        faucet: params.faucet,
-        mint: params.mint,
-        tokenAccount: params.tokenAccount,
-        tokenProgram: TOKEN_PROGRAM_ID,
-      },
-    });
-    await this.connection.confirmTransaction(txid, "confirmed");
+    owner: PublicKey;
+  }): Promise<PublicKey> {
+    const tokenAccount = getAssociatedTokenAddressSync(params.mint, params.owner);
+    const exists = this.existing_accounts.has(tokenAccount) ? true : (await this.connection.getAccountInfo(tokenAccount)) !== null;
+    const transaction = new Transaction();
+    if (!exists) {
+      transaction.add(
+        createAssociatedTokenAccountInstruction(
+          this.wallet.publicKey,
+          tokenAccount,
+          params.owner,
+          params.mint
+        )
+      );
+    }
+    if (params.amount.gt(new BN(0))) {
+      transaction.add(
+        await this.program.methods
+          .airdrop(params.amount)
+          .accounts({
+            faucet: params.faucet,
+            mint: params.mint,
+            tokenAccount: tokenAccount,
+            tokenProgram: TOKEN_PROGRAM_ID,
+          })
+          .instruction(),
+      );
+    }
+    if (transaction.instructions.length > 0) {
+      const txid = await this.provider.sendAndConfirm(transaction, [], { commitment: "confirmed" });
+      this.existing_accounts.add(tokenAccount);
+    }
+    return tokenAccount;
   }
 
   async initializeFaucet(params: {
     faucetAccount: PublicKey;
     payerAccount: PublicKey;
     mintAccount: PublicKey;
-  }): Promise<TransactionSignature> {
-    return this.program.rpc.initializeFaucet({
-      accounts: {
+  }): Promise<void> {
+    const txid = await this.program.methods
+      .initializeFaucet()
+      .accounts({
         faucet: params.faucetAccount,
         payer: params.payerAccount,
         mint: params.mintAccount,
         rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
-      },
-    });
+      })
+      .rpc();
+    await this.connection.confirmTransaction(txid, "confirmed");
   }
 }

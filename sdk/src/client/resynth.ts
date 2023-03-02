@@ -70,30 +70,6 @@ export class ResynthClient {
 
   // Accounts -----------------------------------------------------------------
 
-  decodeAccountName(buffer: Buffer): string {
-    const accountDiscriminator = buffer.slice(0, 8).toString("base64");
-    return this.accountDiscriminators[accountDiscriminator];
-  }
-
-  decodeAccount(accountName: string, buffer: Buffer): any {
-    // Anchor uses camelCase for account names, but the discriminator is in PascalCase.
-    accountName = accountName.charAt(0).toLowerCase() + accountName.slice(1);
-    return this.coder.accounts.decodeUnchecked(accountName, buffer);
-  }
-
-  encodeAccount(accountName: string, account: any): Buffer {
-    const buffer = Buffer.alloc(8192);
-    // @ts-ignore
-    const layout = this.coder.accounts.accountLayouts.get(accountName);
-    if (!layout) {
-      throw new Error(`Unknown account: ${accountName}`);
-    }
-    const len = layout.encode(account, buffer);
-    let accountData = buffer.slice(0, len);
-    let discriminator = BorshAccountsCoder.accountDiscriminator(accountName);
-    return Buffer.concat([discriminator, accountData]);
-  }
-
   async fetchAllMarginAccounts(): Promise<ProgramAccount<MarginAccount>[]> {
     return (await this.program.account.marginAccount.all()) as ProgramAccount<MarginAccount>[];
   }
@@ -121,10 +97,6 @@ export class ResynthClient {
   }
 
   // Instructions -------------------------------------------------------------
-
-  decodeInstruction(str: string): Instruction {
-    return this.coder.instruction.decode(str, "base58");
-  }
 
   async initializeSyntheticAsset(params: {
     decimals: number;

@@ -1,7 +1,6 @@
 import { AnchorProvider, BN, setProvider } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import {
-  AccountLayout,
   ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
   getOrCreateAssociatedTokenAccount,
@@ -18,23 +17,15 @@ import {
 import { use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import {
-  Fees,
   marginAccountPDA,
   PythClient,
   ResynthClient,
-  SwapCurveType,
   syntheticAssetPDA,
   TokenFaucetClient,
   TokenSwapClient,
 } from "../sdk/src";
 
 chaiUse(chaiAsPromised.default);
-
-function sleep(ms: number): Promise<boolean> {
-  return new Promise((res) => {
-    setTimeout(() => res(true), ms);
-  });
-}
 
 describe("resynth", () => {
   // Configure the client to use the local cluster.
@@ -69,15 +60,6 @@ describe("resynth", () => {
     connection,
     wallet as NodeWallet
   );
-
-  // Sytem program
-  const systemProgram = SystemProgram.programId;
-
-  // The token program used by the synth amm
-  const tokenProgram = TOKEN_PROGRAM_ID;
-
-  // The associated token program
-  const associatedTokenProgram = ASSOCIATED_TOKEN_PROGRAM_ID;
 
   // The stablecoin as the base pair of the amm
   let stablecoinMint: PublicKey;
@@ -128,35 +110,6 @@ describe("resynth", () => {
   }
 
   /**
-   * Creates a token account for the user. And mints a number of stablecoins to the account.
-   *
-   * @param {PublicKey} mint
-   * @param {PublicKey} wallet
-   * @param {number} amount
-   * @returns {Promise<void>}
-   */
-  async function airdropStablecoin(
-    mint: PublicKey,
-    wallet: PublicKey,
-    amount?: number
-  ): Promise<void> {
-    const { address: tokenAccount } = await getOrCreateAssociatedTokenAccount(
-      connection,
-      payer,
-      mint,
-      wallet
-    );
-    if (amount && amount > 0) {
-      await tokenFaucet.airdrop({
-        amount: new BN(amount),
-        faucet: stablecoinFaucet,
-        mint: mint,
-        tokenAccount: tokenAccount,
-      });
-    }
-  }
-
-  /**
    * Creates a token account for the user. And mints a number of tokens to the account.
    *
    * @param {PublicKey} mint
@@ -198,8 +151,8 @@ describe("resynth", () => {
         syntheticOracle,
         assetAuthority,
         payer: payer.publicKey,
-        tokenProgram,
-        systemProgram,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
       })
       .rpc();
   }
@@ -227,7 +180,7 @@ describe("resynth", () => {
         owner: owner.wallet.publicKey,
         syntheticAsset,
         marginAccount,
-        systemProgram,
+        systemProgram: SystemProgram.programId,
       })
       .signers([owner.wallet])
       .rpc();
@@ -282,7 +235,7 @@ describe("resynth", () => {
         collateralAccount,
         syntheticAccount,
 
-        tokenProgram,
+        tokenProgram: TOKEN_PROGRAM_ID,
       })
       .signers([owner.wallet])
       .rpc();
@@ -328,16 +281,18 @@ describe("resynth", () => {
   });
 
   it("Mint stablecoins, and init gold accounts", async () => {
-    await airdropStablecoin(
-      stablecoinMint,
-      userA.wallet.publicKey,
-      2500 * 10 ** stablecoinDecimals
-    );
-    await airdropStablecoin(
-      stablecoinMint,
-      userB.wallet.publicKey,
-      250 * 10 ** stablecoinDecimals
-    );
+    await tokenFaucet.airdrop({
+      amount: new BN(2500 * 10 ** stablecoinDecimals),
+      faucet: stablecoinFaucet,
+      mint: stablecoinMint,
+      owner: userA.wallet.publicKey,
+    });
+    await tokenFaucet.airdrop({
+      amount: new BN(250 * 10 ** stablecoinDecimals),
+      faucet: stablecoinFaucet,
+      mint: stablecoinMint,
+      owner: userB.wallet.publicKey,
+    });
     await mintTestToken(goldMint, userA.wallet.publicKey);
     await mintTestToken(goldMint, userB.wallet.publicKey);
   });
