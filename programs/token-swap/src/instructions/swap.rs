@@ -21,10 +21,14 @@ pub struct Swap<'info> {
     pub authority: UncheckedAccount<'info>,
 
     #[account()]
+    /// CHECK:
+    pub source: UncheckedAccount<'info>,
+
+    #[account()]
     pub user_transfer_authority: Signer<'info>,
 
     #[account(mut,
-        token::authority = user_transfer_authority,
+        token::authority = source,
     )]
     pub source_token: Box<Account<'info, TokenAccount>>,
 
@@ -62,9 +66,9 @@ pub struct Swap<'info> {
 pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<()> {
     let swap_pool = ctx.accounts.swap_pool.load()?;
 
-    let trade_direction = if ctx.accounts.source_token.mint == swap_pool.vault_a {
+    let trade_direction = if ctx.accounts.source_token.mint == swap_pool.mint_a {
         TradeDirection::AtoB
-    } else if ctx.accounts.source_token.mint == swap_pool.vault_b {
+    } else if ctx.accounts.source_token.mint == swap_pool.mint_b {
         TradeDirection::BtoA
     } else {
         return Err(error!(TokenSwapError::IncorrectSwapAccount));
@@ -112,6 +116,54 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
         return Err(TokenSwapError::ExceededSlippage.into());
     }
 
+    // // Re-calculate the source amount swapped based on what the curve says
+    // let (source_transfer_amount, source_mint_decimals) = {
+    //     let source_amount_swapped = to_u64(result.source_amount_swapped)?;
+
+    //     let source_mint_data = source_token_mint_info.data.borrow();
+    //     let source_mint = Self::unpack_mint_with_extensions(
+    //         &source_mint_data,
+    //         source_token_mint_info.owner,
+    //         token_swap.token_program_id(),
+    //     )?;
+    //     let amount =
+    //         if let Ok(transfer_fee_config) = source_mint.get_extension::<TransferFeeConfig>() {
+    //             source_amount_swapped.saturating_add(
+    //                 transfer_fee_config
+    //                     .calculate_inverse_epoch_fee(Clock::get()?.epoch, source_amount_swapped)
+    //                     .ok_or(SwapError::FeeCalculationFailure)?,
+    //             )
+    //         } else {
+    //             source_amount_swapped
+    //         };
+    //     (amount, source_mint.base.decimals)
+    // };
+
+    // let (destination_transfer_amount, destination_mint_decimals) = {
+    //     let destination_mint_data = destination_token_mint_info.data.borrow();
+    //     let destination_mint = Self::unpack_mint_with_extensions(
+    //         &destination_mint_data,
+    //         source_token_mint_info.owner,
+    //         token_swap.token_program_id(),
+    //     )?;
+    //     let amount_out = to_u64(result.destination_amount_swapped)?;
+    //     let amount_received = if let Ok(transfer_fee_config) =
+    //         destination_mint.get_extension::<TransferFeeConfig>()
+    //     {
+    //         amount_out.saturating_sub(
+    //             transfer_fee_config
+    //                 .calculate_epoch_fee(Clock::get()?.epoch, amount_out)
+    //                 .ok_or(SwapError::FeeCalculationFailure)?,
+    //         )
+    //     } else {
+    //         amount_out
+    //     };
+    //     if amount_received < minimum_amount_out {
+    //         return Err(SwapError::ExceededSlippage.into());
+    //     }
+    //     (amount_out, destination_mint.base.decimals)
+    // };
+
     let (swap_token_a_amount, swap_token_b_amount) = match trade_direction {
         TradeDirection::AtoB => (
             result.new_swap_source_amount,
@@ -128,7 +180,7 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
             ctx.accounts.token_program.to_account_info().clone(),
             Transfer {
                 from: ctx.accounts.source_token.to_account_info().clone(),
-                to: ctx.accounts.source_token.to_account_info().clone(),
+                to: ctx.accounts.source_vault.to_account_info().clone(),
                 authority: ctx
                     .accounts
                     .user_transfer_authority
@@ -138,6 +190,8 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
         ),
         u64::try_from(result.source_amount_swapped).unwrap(),
     )?;
+
+    let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
 
     if result.owner_fee > 0 {
         let mut pool_token_amount = swap_pool
@@ -168,7 +222,7 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
                         .checked_sub(host_fee)
                         .ok_or(TokenSwapError::FeeCalculationFailure)?;
                     token::mint_to(
-                        CpiContext::new(
+                        CpiContext::new_with_signer(
                             ctx.accounts.token_program.to_account_info().clone(),
                             MintTo {
                                 mint: ctx.accounts.lpmint.to_account_info().clone(),
@@ -181,19 +235,21 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
                                     .clone(),
                                 authority: ctx.accounts.authority.to_account_info().clone(),
                             },
+                            signer_seeds,
                         ),
                         u64::try_from(host_fee).unwrap(),
                     )?;
                 }
             }
             token::mint_to(
-                CpiContext::new(
+                CpiContext::new_with_signer(
                     ctx.accounts.token_program.to_account_info().clone(),
                     MintTo {
                         mint: ctx.accounts.lpmint.to_account_info().clone(),
                         to: ctx.accounts.fee_receiver.to_account_info().clone(),
                         authority: ctx.accounts.authority.to_account_info().clone(),
                     },
+                    signer_seeds,
                 ),
                 u64::try_from(pool_token_amount).unwrap(),
             )?;
@@ -201,13 +257,14 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
     }
 
     token::transfer(
-        CpiContext::new(
+        CpiContext::new_with_signer(
             ctx.accounts.token_program.to_account_info().clone(),
             Transfer {
                 from: ctx.accounts.dest_vault.to_account_info().clone(),
                 to: ctx.accounts.dest_token.to_account_info().clone(),
                 authority: ctx.accounts.authority.to_account_info().clone(),
             },
+            signer_seeds,
         ),
         u64::try_from(result.destination_amount_swapped).unwrap(),
     )?;

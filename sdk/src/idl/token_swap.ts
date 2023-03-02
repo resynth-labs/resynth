@@ -117,6 +117,11 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
+          "name": "source",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -332,6 +337,11 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
+          "name": "source",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -500,6 +510,11 @@ export type TokenSwap = {
         },
         {
           "name": "authority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "source",
           "isMut": false,
           "isSigner": false
         },
@@ -1150,6 +1165,11 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
+          "name": "source",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -1365,6 +1385,11 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
+          "name": "source",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -1533,6 +1558,11 @@ export const IDL: TokenSwap = {
         },
         {
           "name": "authority",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "source",
           "isMut": false,
           "isSigner": false
         },

@@ -24,19 +24,23 @@ pub struct DepositSingleTokenTypeExactAmountIn<'info> {
     pub authority: UncheckedAccount<'info>,
 
     #[account()]
+    /// CHECK:
+    pub source: UncheckedAccount<'info>,
+
+    #[account()]
     pub user_transfer_authority: Signer<'info>,
 
     #[account(
         mut,
-        token::authority = user_transfer_authority,
-        token::mint = swap_pool.load().unwrap().mint_a,
+        token::authority = source,
+        //token::mint = swap_pool.load().unwrap().mint_a,
     )]
     pub token_a: Option<Box<Account<'info, TokenAccount>>>,
 
     #[account(
         mut,
-        token::authority = user_transfer_authority,
-        token::mint = swap_pool.load().unwrap().mint_b,
+        token::authority = source,
+        //token::mint = swap_pool.load().unwrap().mint_b,
     )]
     pub token_b: Option<Box<Account<'info, TokenAccount>>>,
 
@@ -190,14 +194,17 @@ pub fn execute(
         }
     }
 
+    let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
+
     token::mint_to(
-        CpiContext::new(
+        CpiContext::new_with_signer(
             ctx.accounts.token_program.to_account_info().clone(),
             MintTo {
                 mint: ctx.accounts.lpmint.to_account_info().clone(),
                 to: ctx.accounts.lptoken.to_account_info().clone(),
                 authority: ctx.accounts.authority.to_account_info().clone(),
             },
+            signer_seeds,
         ),
         u64::try_from(pool_token_amount).unwrap(),
     )?;
