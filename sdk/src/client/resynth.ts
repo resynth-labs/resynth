@@ -151,7 +151,7 @@ export class ResynthClient {
     return this.program.methods
       .initializeMarginAccount()
       .accountsStrict({
-        payer: this.wallet.publicKey,
+        payer: params.owner.publicKey,
         owner: params.owner.publicKey,
         syntheticAsset: params.syntheticAsset,
         marginAccount: marginAccount,
