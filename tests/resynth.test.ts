@@ -175,11 +175,12 @@ describe("resynth", () => {
       oracle: goldOracle,
     });
     await resynth.mintSyntheticAsset({
-      owner: userA.wallet,
+      owner: userA.wallet.publicKey,
       syntheticOracle: goldOracle,
       collateralMint: stablecoinMint,
       collateralAmount: new BN(2000 * 10 ** stablecoinDecimals),
       mintAmount: new BN(0.1 * 10 ** goldDecimals),
+      signers: [userA.wallet],
     });
   });
 
@@ -192,11 +193,12 @@ describe("resynth", () => {
 
   it("User B mints a healthy amount of synthetic gold", async () => {
     await resynth.mintSyntheticAsset({
-      owner: userB.wallet,
+      owner: userB.wallet.publicKey,
       syntheticOracle: goldOracle,
       collateralMint: stablecoinMint,
       collateralAmount: new BN(100 * 10 ** stablecoinDecimals),
       mintAmount: new BN(0.005 * 10 ** goldDecimals),
+      signers: [userB.wallet],
     });
   });
 });
