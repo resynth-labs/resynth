@@ -30,11 +30,12 @@ async function main() {
 
   const syntheticAssets = Object.entries(oracles).map((entry) => {
     return {
+      ...entry[1],
       ...syntheticAssetPDA(
         new PublicKey(config.resynthProgramId),
         new PublicKey(entry[1])
       ),
-      oracle: new PublicKey(entry[1]),
+      oracle: new PublicKey(entry[1].oracle),
       oracleSymbol: entry[0],
     };
   });
@@ -51,7 +52,7 @@ async function main() {
 
     console.log(
       `initializing ${keys.oracleSymbol}`.padEnd(24) +
-      `- ${keys.syntheticAsset}`
+        `- ${keys.syntheticAsset}`
     );
     await client.initializeSyntheticAsset({
       collateralMint: new PublicKey(config.collateralMint),
