@@ -6,7 +6,10 @@ import {
   Wallet,
 } from "@coral-xyz/anchor";
 import { ASSOCIATED_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
-import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import {
+  getAssociatedTokenAddressSync,
+  TOKEN_PROGRAM_ID,
+} from "@solana/spl-token";
 import {
   Connection,
   PublicKey,
@@ -17,11 +20,11 @@ import {
 import CONFIG from "../config.json";
 import { IDL, Resynth } from "../idl/resynth";
 import { MarginAccount, SyntheticAsset } from "../types";
-import { marginAccountPDA, syntheticAssetPDA } from "../utils";
+import { marginAccountPDA, ResynthConfig, syntheticAssetPDA } from "../utils";
 
 export class ResynthClient {
   cluster: "devnet" | "localnet" | "mainnet";
-  config: any;
+  config: ResynthConfig;
   connection: Connection;
   program: Program<Resynth>;
   programId: PublicKey;
@@ -35,7 +38,7 @@ export class ResynthClient {
     wallet?: Wallet
   ) {
     this.cluster = cluster;
-    this.config = CONFIG[this.cluster];
+    this.config = CONFIG[this.cluster] as ResynthConfig;
     this.programId = new PublicKey(this.config.resynthProgramId);
     this.url = this.config.url;
 
@@ -81,7 +84,6 @@ export class ResynthClient {
   // Instructions -------------------------------------------------------------
 
   async initializeSyntheticAsset(params: {
-    decimals: number;
     collateralMint: PublicKey;
     syntheticOracle: PublicKey;
   }): Promise<TransactionSignature> {
@@ -89,7 +91,7 @@ export class ResynthClient {
       syntheticAssetPDA(this.programId, params.syntheticOracle);
 
     return this.program.methods
-      .initializeSyntheticAsset(params.decimals)
+      .initializeSyntheticAsset()
       .accountsStrict({
         syntheticAsset: syntheticAsset,
         collateralMint: params.collateralMint,
@@ -150,7 +152,8 @@ export class ResynthClient {
     owner: Signer;
     collateralMint: PublicKey;
   }): Promise<TransactionSignature> {
-    const { syntheticAsset, collateralVault, syntheticMint, assetAuthority } = syntheticAssetPDA(this.programId, params.syntheticOracle);
+    const { syntheticAsset, collateralVault, syntheticMint, assetAuthority } =
+      syntheticAssetPDA(this.programId, params.syntheticOracle);
 
     const marginAccount = marginAccountPDA(
       this.programId,

@@ -108,12 +108,7 @@ export type Resynth = {
           ]
         }
       ],
-      "args": [
-        {
-          "name": "decimals",
-          "type": "u8"
-        }
-      ]
+      "args": []
     },
     {
       "name": "initializeMarginAccount",
@@ -474,12 +469,7 @@ export const IDL: Resynth = {
           ]
         }
       ],
-      "args": [
-        {
-          "name": "decimals",
-          "type": "u8"
-        }
-      ]
+      "args": []
     },
     {
       "name": "initializeMarginAccount",

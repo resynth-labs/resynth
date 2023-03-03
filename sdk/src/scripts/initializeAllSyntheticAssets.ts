@@ -3,7 +3,6 @@ import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { ResynthClient } from "../client";
 import configs from "../config.json";
 import { syntheticAssetPDA } from "../utils";
-import { SYNTH_DECIMALS } from "../utils/constants";
 
 // Run with ts-node -T ..
 
@@ -55,7 +54,6 @@ async function main() {
       `- ${keys.syntheticAsset}`
     );
     await client.initializeSyntheticAsset({
-      decimals: SYNTH_DECIMALS,
       collateralMint: new PublicKey(config.collateralMint),
       syntheticOracle: keys.oracle,
     });

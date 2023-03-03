@@ -4,7 +4,6 @@ use anchor_spl::token::{Mint, Token, TokenAccount};
 use pyth_sdk_solana::load_price_feed_from_account_info;
 
 #[derive(Accounts)]
-#[instruction(decimals: u8)]
 pub struct InitializeSyntheticAsset<'info> {
     /// The synthetic asset account to initialize
     #[account(init,
@@ -42,7 +41,7 @@ pub struct InitializeSyntheticAsset<'info> {
         ],
         bump,
         payer = payer,
-        mint::decimals = decimals,
+        mint::decimals = 9,
         mint::authority = asset_authority,
     )]
     pub synthetic_mint: Box<Account<'info, Mint>>,
@@ -74,7 +73,7 @@ pub struct InitializeSyntheticAsset<'info> {
 }
 
 impl<'info> InitializeSyntheticAsset<'info> {
-    pub fn process(ctx: Context<Self>, _decimals: u8) -> Result<()> {
+    pub fn process(ctx: Context<Self>) -> Result<()> {
         // Load the price feed to validate it's a feed
         // This doesn't verify it's owned by the pyth program.
         // Assume users trust the admin configured the synthetic asset correctly.

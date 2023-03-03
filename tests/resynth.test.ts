@@ -60,7 +60,7 @@ describe("resynth", () => {
 
   let stablecoinFaucet: PublicKey;
 
-  const goldDecimals: number = 3;
+  const goldDecimals: number = 9;
 
   // The gold synthetic asset account
   let goldAsset: PublicKey;
@@ -135,7 +135,6 @@ describe("resynth", () => {
     await resynth.initializeSyntheticAsset({
       collateralMint: stablecoinMint,
       syntheticOracle: goldOracle,
-      decimals: goldDecimals
     });
 
     ({ syntheticAsset: goldAsset, syntheticMint: goldMint } = syntheticAssetPDA(
@@ -162,11 +161,11 @@ describe("resynth", () => {
   it("Initialize margin accounts", async () => {
     await resynth.initializeMarginAccount({
       owner: userA.wallet,
-      syntheticAsset: goldAsset
+      syntheticAsset: goldAsset,
     });
     await resynth.initializeMarginAccount({
       owner: userB.wallet,
-      syntheticAsset: goldAsset
+      syntheticAsset: goldAsset,
     });
   });
 
@@ -180,7 +179,7 @@ describe("resynth", () => {
       syntheticOracle: goldOracle,
       collateralMint: stablecoinMint,
       collateralAmount: new BN(2000 * 10 ** stablecoinDecimals),
-      mintAmount: new BN(0.1 * 10 ** goldDecimals)
+      mintAmount: new BN(0.1 * 10 ** goldDecimals),
     });
   });
 
@@ -197,8 +196,7 @@ describe("resynth", () => {
       syntheticOracle: goldOracle,
       collateralMint: stablecoinMint,
       collateralAmount: new BN(100 * 10 ** stablecoinDecimals),
-      mintAmount: new BN(0.005 * 10 ** goldDecimals)
+      mintAmount: new BN(0.005 * 10 ** goldDecimals),
     });
   });
-
 });

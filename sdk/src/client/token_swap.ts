@@ -21,6 +21,7 @@ import { IDL, TokenSwap } from "../idl/token_swap";
 import { SwapPool } from "../types";
 import { Fees, SwapCurveType } from "../types";
 import { swapPoolPDA } from "../utils";
+import assert from "assert";
 
 export class TokenSwapClient {
   cluster: "devnet" | "localnet" | "mainnet";
@@ -154,9 +155,11 @@ export class TokenSwapClient {
     const transaction = new Transaction();
 
     const userTransferAuthority = Keypair.generate();
+    const sourceToken = params.tokenA !== null ? params.tokenA : params.tokenB;
+    assert(sourceToken);
     transaction.add(
       createApproveInstruction(
-        params.tokenA !== null ? params.tokenA : params.tokenB,
+        sourceToken,
         userTransferAuthority.publicKey,
         params.owner.publicKey,
         BigInt(Number(params.sourceTokenAmount)), //TODO this isn't great
