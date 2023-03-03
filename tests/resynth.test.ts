@@ -173,7 +173,7 @@ describe("resynth", () => {
   it("User A mints synthetic gold", async () => {
     await pyth.setPrice({
       price: new BN(1_800 * 10 ** goldDecimals),
-      priceAccount: goldOracle,
+      oracle: goldOracle,
     });
     await resynth.mintSyntheticAsset({
       owner: userA.wallet,

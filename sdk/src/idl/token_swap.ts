@@ -28,7 +28,7 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -117,7 +117,7 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -248,7 +248,7 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -337,7 +337,7 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -421,7 +421,7 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -514,7 +514,7 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -1076,7 +1076,7 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -1165,7 +1165,7 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -1296,7 +1296,7 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -1385,7 +1385,7 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -1469,7 +1469,7 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },
@@ -1562,7 +1562,7 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "source",
+          "name": "owner",
           "isMut": false,
           "isSigner": false
         },

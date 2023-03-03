@@ -6,7 +6,7 @@ export type Pyth = {
       "name": "initialize",
       "accounts": [
         {
-          "name": "price",
+          "name": "oracle",
           "isMut": true,
           "isSigner": false
         }
@@ -30,7 +30,7 @@ export type Pyth = {
       "name": "setPrice",
       "accounts": [
         {
-          "name": "price",
+          "name": "oracle",
           "isMut": true,
           "isSigner": false
         }
@@ -46,7 +46,7 @@ export type Pyth = {
       "name": "setPriceInfo",
       "accounts": [
         {
-          "name": "price",
+          "name": "oracle",
           "isMut": true,
           "isSigner": false
         }
@@ -70,7 +70,7 @@ export type Pyth = {
       "name": "setTwap",
       "accounts": [
         {
-          "name": "price",
+          "name": "oracle",
           "isMut": true,
           "isSigner": false
         }
@@ -146,7 +146,7 @@ export const IDL: Pyth = {
       "name": "initialize",
       "accounts": [
         {
-          "name": "price",
+          "name": "oracle",
           "isMut": true,
           "isSigner": false
         }
@@ -170,7 +170,7 @@ export const IDL: Pyth = {
       "name": "setPrice",
       "accounts": [
         {
-          "name": "price",
+          "name": "oracle",
           "isMut": true,
           "isSigner": false
         }
@@ -186,7 +186,7 @@ export const IDL: Pyth = {
       "name": "setPriceInfo",
       "accounts": [
         {
-          "name": "price",
+          "name": "oracle",
           "isMut": true,
           "isSigner": false
         }
@@ -210,7 +210,7 @@ export const IDL: Pyth = {
       "name": "setTwap",
       "accounts": [
         {
-          "name": "price",
+          "name": "oracle",
           "isMut": true,
           "isSigner": false
         }

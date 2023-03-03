@@ -1,7 +1,6 @@
 import {
   AnchorProvider,
   BN,
-  BorshCoder,
   Program,
   Wallet,
 } from "@coral-xyz/anchor";
@@ -16,9 +15,7 @@ import CONFIG from "../config.json";
 import { IDL, Pyth } from "../idl/pyth";
 
 export class PythClient {
-  accountDiscriminators: Record<string, string> = {};
   cluster: "devnet" | "localnet" | "mainnet";
-  coder: BorshCoder;
   config: any;
   connection: Connection;
   program: Program<Pyth>;
@@ -46,9 +43,6 @@ export class PythClient {
     const opts = AnchorProvider.defaultOptions();
     this.provider = new AnchorProvider(this.connection, this.wallet, opts);
     this.program = new Program<Pyth>(IDL, this.programId, this.provider);
-
-    // @ts-ignore
-    this.coder = this.program._coder;
   }
 
   // Accounts -----------------------------------------------------------------
@@ -63,8 +57,8 @@ export class PythClient {
   /**
    * Initialize a pyth price account for a token
    *
-   * @param {PublicKey} mint the token mint to get decimals from
    * @param {number} price The price of a token in USD
+   * @param {number} oracle price exponent
    * @param {number} confidence The price confidence in percentage terms
    * @return {Promise<PublicKey>}
    */
@@ -73,19 +67,19 @@ export class PythClient {
     expo: number;
     conf: number;
   }): Promise<PublicKey> {
-    const priceKeypair = Keypair.generate();
+    const oracleKeypair = Keypair.generate();
     const PYTH_PRICE_SIZE = 3312;
     await this.program.methods
       .initialize(new BN(params.price * 10 ** -params.expo), params.expo, new BN(params.conf * 10 ** -params.expo))
       .accountsStrict({
-        price: priceKeypair.publicKey,
+        oracle: oracleKeypair.publicKey,
       })
       .preInstructions([
         SystemProgram.createAccount({
           /** The account that will transfer lamports to the created account */
           fromPubkey: this.wallet.publicKey,
           /** Public key of the created account */
-          newAccountPubkey: priceKeypair.publicKey,
+          newAccountPubkey: oracleKeypair.publicKey,
           /** Amount of lamports to transfer to the created account */
           lamports: await this.connection.getMinimumBalanceForRentExemption(
             PYTH_PRICE_SIZE
@@ -96,27 +90,26 @@ export class PythClient {
           programId: this.program.programId,
         }),
       ])
-      .signers([priceKeypair])
+      .signers([oracleKeypair])
       .rpc({ commitment: "confirmed", skipPreflight: true });
-    return priceKeypair.publicKey;
+    return oracleKeypair.publicKey;
   }
 
   /**
    * Set the price of a pyth account
    *
-   * @param {PublicKey} priceAccount
-   * @param {number} decimals
    * @param {number} price
-   * @returns {Promise<void>}
+   * @param {PublicKey} oracleAccount
+   * @returns {Promise<TransactionSignature>}
    */
   async setPrice(params: {
     price: BN;
-    priceAccount: PublicKey;
+    oracle: PublicKey;
   }): Promise<TransactionSignature> {
     return this.program.methods
       .setPrice(params.price)
-      .accounts({
-        price: params.priceAccount,
+      .accountsStrict({
+        oracle: params.oracle,
       })
       .rpc({ commitment: "confirmed", skipPreflight: true });
   }
@@ -125,24 +118,24 @@ export class PythClient {
     price: BN;
     conf: BN;
     slot: BN;
-    priceAccount: PublicKey;
+    oracle: PublicKey;
   }): Promise<TransactionSignature> {
     return this.program.methods
       .setPriceInfo(params.price, params.conf, params.slot)
-      .accounts({
-        price: params.priceAccount,
+      .accountsStrict({
+        oracle: params.oracle,
       })
       .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 
   async setTwap(params: {
     twap: BN;
-    priceAccount: PublicKey;
+    oracle: PublicKey;
   }): Promise<TransactionSignature> {
     return this.program.methods
       .setTwap(params.twap)
-      .accounts({
-        price: params.priceAccount,
+      .accountsStrict({
+        oracle: params.oracle,
       })
       .rpc({ commitment: "confirmed", skipPreflight: true });
   }

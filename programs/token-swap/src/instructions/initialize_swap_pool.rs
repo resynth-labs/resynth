@@ -85,21 +85,21 @@ pub struct InitializeSwapPool<'info> {
 
     #[account()]
     /// CHECK:
-    pub source: UncheckedAccount<'info>,
+    pub owner: UncheckedAccount<'info>,
 
     #[account()]
     pub user_transfer_authority: Signer<'info>,
 
     #[account(
       mut,
-      token::authority = source,
+      token::authority = owner,
       token::mint = mint_a,
     )]
     pub source_a: Box<Account<'info, TokenAccount>>,
 
     #[account(
       mut,
-      token::authority = source,
+      token::authority = owner,
       token::mint = mint_b,
     )]
     pub source_b: Box<Account<'info, TokenAccount>>,
@@ -146,7 +146,7 @@ impl<'info> InitializeSwapPool<'info> {
             Create {
                 payer: self.payer.to_account_info(),
                 associated_token: self.lptoken.to_account_info(),
-                authority: self.source.to_account_info(),
+                authority: self.owner.to_account_info(),
                 mint: self.lpmint.to_account_info(),
                 system_program: self.system_program.to_account_info(),
                 token_program: self.token_program.to_account_info(),

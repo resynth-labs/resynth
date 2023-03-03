@@ -56,13 +56,8 @@ async function main() {
     );
     await client.initializeSyntheticAsset({
       decimals: SYNTH_DECIMALS,
-      //syntheticAssetAccount: keys.syntheticAsset,
       collateralMint: new PublicKey(config.collateralMint),
-      //collateralVaultAccount: keys.collateralVault,
-      //syntheticMintAccount: keys.syntheticMint,
       syntheticOracle: keys.oracle,
-      //assetAuthorityAccount: keys.assetAuthority,
-      //payerAccount: client.wallet.publicKey,
     });
   }
 }

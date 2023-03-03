@@ -1,8 +1,6 @@
 import {
   AnchorProvider,
   BN,
-  BorshAccountsCoder,
-  BorshCoder,
   Program,
   ProgramAccount,
   Wallet,
@@ -22,9 +20,7 @@ import { MarginAccount, SyntheticAsset } from "../types";
 import { marginAccountPDA, syntheticAssetPDA } from "../utils";
 
 export class ResynthClient {
-  accountDiscriminators: Record<string, string> = {};
   cluster: "devnet" | "localnet" | "mainnet";
-  coder: BorshCoder;
   config: any;
   connection: Connection;
   program: Program<Resynth>;
@@ -52,20 +48,6 @@ export class ResynthClient {
     const opts = AnchorProvider.defaultOptions();
     this.provider = new AnchorProvider(this.connection, this.wallet, opts);
     this.program = new Program<Resynth>(IDL, this.programId, this.provider);
-
-    // @ts-ignore
-    this.coder = this.program._coder;
-
-    this.accountDiscriminators[
-      BorshAccountsCoder.accountDiscriminator("MarginAccount").toString(
-        "base64"
-      )
-    ] = "MarginAccount";
-    this.accountDiscriminators[
-      BorshAccountsCoder.accountDiscriminator("SyntheticAsset").toString(
-        "base64"
-      )
-    ] = "SyntheticAsset";
   }
 
   // Accounts -----------------------------------------------------------------
@@ -127,7 +109,7 @@ export class ResynthClient {
    *
    * @param {TestUser} owner The owner of the margin account
    * @param {PublicKey} syntheticAsset The synthetic asset associated with the margin account
-   * @return {Promise<void>}
+   * @return {Promise<TransactionSignature>}
    */
   async initializeMarginAccount(params: {
     owner: Signer;
@@ -159,7 +141,7 @@ export class ResynthClient {
    * @param {PublicKey} syntheticAsset The synthetic asset account
    * @param {number} collateralAmount The amount of collateral to provide
    * @param {number} mintAmount The amount of synthetic tokens to mint
-   * @return {Promise<void>}
+   * @return {Promise<TransactionSignature>}
    */
   async mintSyntheticAsset(params: {
     collateralAmount: BN;
@@ -198,8 +180,8 @@ export class ResynthClient {
         marginAccount: marginAccount,
         collateralAccount: collateralAccount,
         syntheticAccount: syntheticAccount,
-        tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_PROGRAM_ID,
       })
       .signers([params.owner])

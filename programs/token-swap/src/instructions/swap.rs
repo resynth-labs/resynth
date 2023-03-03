@@ -22,13 +22,13 @@ pub struct Swap<'info> {
 
     #[account()]
     /// CHECK:
-    pub source: UncheckedAccount<'info>,
+    pub owner: UncheckedAccount<'info>,
 
     #[account()]
     pub user_transfer_authority: Signer<'info>,
 
     #[account(mut,
-        token::authority = source,
+        token::authority = owner,
     )]
     pub source_token: Box<Account<'info, TokenAccount>>,
 

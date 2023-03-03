@@ -1,10 +1,6 @@
 import {
   AnchorProvider,
   BN,
-  BorshAccountsCoder,
-  BorshCoder,
-  Idl,
-  Instruction,
   Program,
   ProgramAccount,
   Wallet,
@@ -29,9 +25,7 @@ import { IDL, TokenFaucet } from "../idl/token_faucet";
 import { Faucet } from "../types";
 
 export class TokenFaucetClient {
-  accountDiscriminators: Record<string, string> = {};
   cluster: "devnet" | "localnet" | "mainnet";
-  coder: BorshCoder;
   config: any;
   connection: Connection;
   program: Program<TokenFaucet>;
@@ -61,54 +55,6 @@ export class TokenFaucetClient {
     const opts = AnchorProvider.defaultOptions();
     this.provider = new AnchorProvider(this.connection, this.wallet, opts);
     this.program = new Program<TokenFaucet>(IDL, this.programId, this.provider);
-
-    // @ts-ignore
-    this.coder = this.program._coder;
-
-    this.accountDiscriminators[
-      BorshAccountsCoder.accountDiscriminator("Faucet").toString("base64")
-    ] = "Faucet";
-  }
-
-  async createMintAndFaucet(decimals: number): Promise<[PublicKey, PublicKey]> {
-    const mint = Keypair.generate();
-    const faucet = PublicKey.findProgramAddressSync(
-      [Buffer.from("faucet"), mint.publicKey.toBuffer()],
-      this.program.programId
-    )[0];
-
-    const transaction = new Transaction();
-    transaction.add(
-      SystemProgram.createAccount({
-        fromPubkey: this.wallet.publicKey,
-        newAccountPubkey: mint.publicKey,
-        space: 82,
-        lamports: await this.connection.getMinimumBalanceForRentExemption(82),
-        programId: TOKEN_PROGRAM_ID,
-      }),
-      createInitializeMintInstruction(
-        mint.publicKey,
-        decimals,
-        this.wallet.publicKey,
-        null
-      ),
-      await this.program.methods
-        .initializeFaucet()
-        .accounts({
-          faucet,
-          payer: this.wallet.publicKey,
-          mint: mint.publicKey,
-          rent: SYSVAR_RENT_PUBKEY,
-          systemProgram: SystemProgram.programId,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        })
-        .instruction()
-    );
-    await this.provider.sendAndConfirm(transaction, [mint], {
-      commitment: "confirmed",
-    });
-
-    return [mint.publicKey, faucet];
   }
 
   // Accounts -----------------------------------------------------------------
@@ -165,17 +111,57 @@ export class TokenFaucetClient {
     return tokenAccount;
   }
 
+  async createMintAndFaucet(decimals: number): Promise<[PublicKey, PublicKey]> {
+    const mint = Keypair.generate();
+    const faucet = PublicKey.findProgramAddressSync(
+      [Buffer.from("faucet"), mint.publicKey.toBuffer()],
+      this.program.programId
+    )[0];
+
+    const transaction = new Transaction();
+    transaction.add(
+      SystemProgram.createAccount({
+        fromPubkey: this.wallet.publicKey,
+        newAccountPubkey: mint.publicKey,
+        space: 82,
+        lamports: await this.connection.getMinimumBalanceForRentExemption(82),
+        programId: TOKEN_PROGRAM_ID,
+      }),
+      createInitializeMintInstruction(
+        mint.publicKey,
+        decimals,
+        this.wallet.publicKey,
+        null
+      ),
+      await this.program.methods
+        .initializeFaucet()
+        .accounts({
+          faucet,
+          payer: this.wallet.publicKey,
+          mint: mint.publicKey,
+          rent: SYSVAR_RENT_PUBKEY,
+          systemProgram: SystemProgram.programId,
+          tokenProgram: TOKEN_PROGRAM_ID,
+        })
+        .instruction()
+    );
+    await this.provider.sendAndConfirm(transaction, [mint], {
+      commitment: "confirmed",
+    });
+
+    return [mint.publicKey, faucet];
+  }
+
   async initializeFaucet(params: {
-    faucetAccount: PublicKey;
-    payerAccount: PublicKey;
-    mintAccount: PublicKey;
+    faucet: PublicKey;
+    mint: PublicKey;
   }): Promise<TransactionSignature> {
     return this.program.methods
       .initializeFaucet()
-      .accounts({
-        faucet: params.faucetAccount,
-        payer: params.payerAccount,
-        mint: params.mintAccount,
+      .accountsStrict({
+        faucet: params.faucet,
+        payer: this.wallet.publicKey,
+        mint: params.mint,
         rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,

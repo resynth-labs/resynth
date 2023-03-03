@@ -24,7 +24,7 @@ pub struct WithdrawSingleTokenTypeExactAmountOut<'info> {
 
     #[account()]
     /// CHECK:
-    pub source: UncheckedAccount<'info>,
+    pub owner: UncheckedAccount<'info>,
 
     #[account()]
     pub user_transfer_authority: Signer<'info>,
@@ -39,7 +39,7 @@ pub struct WithdrawSingleTokenTypeExactAmountOut<'info> {
 
     #[account(
         mut,
-        token::authority = source,
+        token::authority = owner,
         token::mint = swap_pool.load().unwrap().lpmint,
     )]
     pub lptoken: Box<Account<'info, TokenAccount>>,

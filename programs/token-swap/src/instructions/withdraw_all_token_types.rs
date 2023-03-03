@@ -25,7 +25,7 @@ pub struct WithdrawAllTokenTypes<'info> {
 
     #[account()]
     /// CHECK:
-    pub source: UncheckedAccount<'info>,
+    pub owner: UncheckedAccount<'info>,
 
     #[account()]
     pub user_transfer_authority: Signer<'info>,
@@ -40,7 +40,7 @@ pub struct WithdrawAllTokenTypes<'info> {
 
     #[account(
         mut,
-        token::authority = source,
+        token::authority = owner,
         token::mint = swap_pool.load().unwrap().lpmint,
     )]
     pub lptoken: Box<Account<'info, TokenAccount>>,
@@ -65,14 +65,14 @@ pub struct WithdrawAllTokenTypes<'info> {
 
     #[account(
         mut,
-        token::authority = source,
+        token::authority = owner,
         token::mint = swap_pool.load().unwrap().mint_a,
     )]
     pub token_a: Box<Account<'info, TokenAccount>>,
 
     #[account(
         mut,
-        token::authority = source,
+        token::authority = owner,
         token::mint = swap_pool.load().unwrap().mint_b,
     )]
     pub token_b: Box<Account<'info, TokenAccount>>,

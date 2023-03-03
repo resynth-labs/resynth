@@ -28,30 +28,30 @@ describe("pyth", () => {
     const price = 69420;
     const expo = -6;
     const conf = 69.420;
-    const priceAccount = await pythClient.initialize({
+    const oracle = await pythClient.initialize({
       price,
       expo,
       conf,
     });
-    assert.ok(await pythClient.getPrice(priceAccount) === price);
+    assert.ok(await pythClient.getPrice(oracle) === price);
   })
 
   it("setPrice", async () => {
     const price = 69420;
     const expo = -6;
     const conf = 69.420;
-    const priceAccount = await pythClient.initialize({
+    const oracle = await pythClient.initialize({
       price,
       expo,
       conf,
     });
-    let priceData = parsePythPriceData((await pythClient.connection.getAccountInfo(priceAccount))!.data);
+    let priceData = parsePythPriceData((await pythClient.connection.getAccountInfo(oracle))!.data);
     assert.ok(priceData.price === price);
     assert.ok(priceData.exponent === expo);
 
     const newPrice = 69000;
-    await pythClient.setPrice({ price: new BN(newPrice * 10 ** -expo), priceAccount: priceAccount });
-    priceData = parsePythPriceData((await pythClient.connection.getAccountInfo(priceAccount))!.data);
+    await pythClient.setPrice({ price: new BN(newPrice * 10 ** -expo), oracle });
+    priceData = parsePythPriceData((await pythClient.connection.getAccountInfo(oracle))!.data);
     assert.ok(priceData.price === newPrice);
     assert.ok(priceData.exponent === expo);
   })
