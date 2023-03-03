@@ -6,6 +6,7 @@ export interface ResynthConfig {
   pythProgramId: Address;
   tokenSwapProgramId: Address;
   collateralMint: Address;
+  collateralDecimals: number;
   oracles?: Record<string, Oracle>;
 }
 

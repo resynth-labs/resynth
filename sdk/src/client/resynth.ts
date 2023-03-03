@@ -102,7 +102,6 @@ export class ResynthClient {
   // Instructions -------------------------------------------------------------
 
   async initializeSyntheticAsset(params: {
-    decimals: number;
     collateralMint: PublicKey;
     syntheticOracle: PublicKey;
   }): Promise<TransactionSignature> {
@@ -110,7 +109,7 @@ export class ResynthClient {
       syntheticAssetPDA(this.programId, params.syntheticOracle);
 
     return this.program.methods
-      .initializeSyntheticAsset(params.decimals)
+      .initializeSyntheticAsset()
       .accountsStrict({
         syntheticAsset: syntheticAsset,
         collateralMint: params.collateralMint,

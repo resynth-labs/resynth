@@ -17,11 +17,8 @@ pub mod resynth {
     use super::*;
 
     /// Initialize a new synthetic asset
-    pub fn initialize_synthetic_asset(
-        ctx: Context<InitializeSyntheticAsset>,
-        decimals: u8,
-    ) -> Result<()> {
-        InitializeSyntheticAsset::process(ctx, decimals)
+    pub fn initialize_synthetic_asset(ctx: Context<InitializeSyntheticAsset>) -> Result<()> {
+        InitializeSyntheticAsset::process(ctx)
     }
 
     /// Initialize a new margin account

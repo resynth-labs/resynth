@@ -63,14 +63,13 @@ impl MarginAccount {
         msg!(&("oracle price ".to_owned() + &price.to_string()));
         msg!(&("oracle expo".to_owned() + &oracle_price.expo.to_string()));
 
-        let healthy = &self.collateral_deposited
-            * COLLATERAL_VALUE_NUMERATOR
-            * COLLATERAL_RATIO_DENOMINATOR
-            * 10u64.pow(price_expo)
-            >= price
-                * self.synthetic_asset_borrowed
-                * COLLATERAL_VALUE_DENOMINATOR
-                * COLLATERAL_RATIO_NUMERATOR;
+        let healthy = u128::from(
+            &self.collateral_deposited * COLLATERAL_VALUE_NUMERATOR * COLLATERAL_RATIO_DENOMINATOR,
+        ) * u128::from(10u64.pow(price_expo))
+            >= u128::from(price)
+                * u128::from(self.synthetic_asset_borrowed)
+                * u128::from(COLLATERAL_VALUE_DENOMINATOR)
+                * u128::from(COLLATERAL_RATIO_NUMERATOR);
 
         Ok(healthy)
     }

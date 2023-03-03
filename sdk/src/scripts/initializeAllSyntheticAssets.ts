@@ -55,7 +55,6 @@ async function main() {
         `- ${keys.syntheticAsset}`
     );
     await client.initializeSyntheticAsset({
-      decimals: SYNTH_DECIMALS,
       collateralMint: new PublicKey(config.collateralMint),
       syntheticOracle: keys.oracle,
     });
