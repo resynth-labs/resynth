@@ -35,6 +35,7 @@ import {
   TradeDirection,
 } from "../types";
 import { swapPoolPDA } from "../utils";
+import assert from "assert";
 
 export class TokenSwapClient {
   accountDiscriminators: Record<string, string> = {};
@@ -177,9 +178,11 @@ export class TokenSwapClient {
     const transaction = new Transaction();
 
     const userTransferAuthority = Keypair.generate();
+    const sourceToken = params.tokenA !== null ? params.tokenA : params.tokenB;
+    assert(sourceToken);
     transaction.add(
       createApproveInstruction(
-        params.tokenA !== null ? params.tokenA : params.tokenB,
+        sourceToken,
         userTransferAuthority.publicKey,
         params.source.publicKey,
         BigInt(Number(params.sourceTokenAmount)), //TODO this isn't great

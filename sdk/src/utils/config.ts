@@ -1,6 +1,6 @@
 import { Address } from "@coral-xyz/anchor";
 
-export interface Config {
+export interface ResynthConfig {
   url: string;
   resynthProgramId: Address;
   pythProgramId: Address;

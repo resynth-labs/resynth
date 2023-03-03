@@ -52,17 +52,12 @@ async function main() {
 
     console.log(
       `initializing ${keys.oracleSymbol}`.padEnd(24) +
-      `- ${keys.syntheticAsset}`
+        `- ${keys.syntheticAsset}`
     );
     await client.initializeSyntheticAsset({
       decimals: SYNTH_DECIMALS,
-      //syntheticAssetAccount: keys.syntheticAsset,
       collateralMint: new PublicKey(config.collateralMint),
-      //collateralVaultAccount: keys.collateralVault,
-      //syntheticMintAccount: keys.syntheticMint,
       syntheticOracle: keys.oracle,
-      //assetAuthorityAccount: keys.assetAuthority,
-      //payerAccount: client.wallet.publicKey,
     });
   }
 }
