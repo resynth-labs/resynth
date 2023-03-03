@@ -9,14 +9,16 @@ import {
   Keypair,
   PublicKey,
   SystemProgram,
+  TransactionInstruction,
   TransactionSignature,
 } from "@solana/web3.js";
 import CONFIG from "../config.json";
 import { IDL, Pyth } from "../idl/pyth";
+import { ResynthConfig } from "../utils";
 
 export class PythClient {
   cluster: "devnet" | "localnet" | "mainnet";
-  config: any;
+  config: ResynthConfig;
   connection: Connection;
   program: Program<Pyth>;
   programId: PublicKey;
@@ -30,7 +32,7 @@ export class PythClient {
     wallet?: Wallet
   ) {
     this.cluster = cluster;
-    this.config = CONFIG[this.cluster];
+    this.config = CONFIG[this.cluster] as ResynthConfig;
     this.programId = new PublicKey(this.config.pythProgramId);
     this.url = this.config.url;
 
@@ -95,6 +97,20 @@ export class PythClient {
     return oracleKeypair.publicKey;
   }
 
+  async initializeInstruction(params: {
+    price: number;
+    expo: number;
+    conf: number;
+    oracle: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .initialize(new BN(params.price * 10 ** -params.expo), params.expo, new BN(params.conf * 10 ** -params.expo))
+      .accountsStrict({
+        oracle: params.oracle,
+      })
+      .instruction();
+  }
+
   /**
    * Set the price of a pyth account
    *
@@ -114,6 +130,18 @@ export class PythClient {
       .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 
+  async setPriceInstruction(params: {
+    price: BN;
+    oracle: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .setPrice(params.price)
+      .accountsStrict({
+        oracle: params.oracle,
+      })
+      .instruction();
+  }
+
   async setPriceInfo(params: {
     price: BN;
     conf: BN;
@@ -128,6 +156,20 @@ export class PythClient {
       .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 
+  async setPriceInfoInstruction(params: {
+    price: BN;
+    conf: BN;
+    slot: BN;
+    oracle: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .setPriceInfo(params.price, params.conf, params.slot)
+      .accountsStrict({
+        oracle: params.oracle,
+      })
+      .instruction();
+  }
+
   async setTwap(params: {
     twap: BN;
     oracle: PublicKey;
@@ -138,6 +180,18 @@ export class PythClient {
         oracle: params.oracle,
       })
       .rpc({ commitment: "confirmed", skipPreflight: true });
+  }
+
+  async setTwapInstruction(params: {
+    twap: BN;
+    oracle: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .setTwap(params.twap)
+      .accountsStrict({
+        oracle: params.oracle,
+      })
+      .instruction();
   }
 }
 

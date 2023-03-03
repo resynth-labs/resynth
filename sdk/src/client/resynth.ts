@@ -7,6 +7,7 @@ import {
 } from "@coral-xyz/anchor";
 import { ASSOCIATED_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import {
+  ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
@@ -15,6 +16,7 @@ import {
   PublicKey,
   Signer,
   SystemProgram,
+  TransactionInstruction,
   TransactionSignature,
 } from "@solana/web3.js";
 import CONFIG from "../config.json";
@@ -106,6 +108,30 @@ export class ResynthClient {
       .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 
+  async initializeSyntheticAssetInstruction(params: {
+    syntheticAsset: PublicKey;
+    collateralMint: PublicKey;
+    collateralVault: PublicKey;
+    syntheticMint: PublicKey;
+    syntheticOracle: PublicKey;
+    assetAuthority: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .initializeSyntheticAsset()
+      .accountsStrict({
+        syntheticAsset: params.syntheticAsset,
+        collateralMint: params.collateralMint,
+        collateralVault: params.collateralVault,
+        syntheticMint: params.syntheticMint,
+        syntheticOracle: params.syntheticOracle,
+        assetAuthority: params.assetAuthority,
+        payer: this.wallet.publicKey,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+      })
+      .instruction();
+  }
+
   /**
    * Initialize a margin account associated with the user and synthetic asset
    *
@@ -125,7 +151,7 @@ export class ResynthClient {
     return this.program.methods
       .initializeMarginAccount()
       .accountsStrict({
-        payer: params.owner.publicKey,
+        payer: this.wallet.publicKey,
         owner: params.owner.publicKey,
         syntheticAsset: params.syntheticAsset,
         marginAccount: marginAccount,
@@ -133,6 +159,23 @@ export class ResynthClient {
       })
       .signers([params.owner])
       .rpc({ commitment: "confirmed", skipPreflight: true });
+  }
+
+  async initializeMarginAccountInstruction(params: {
+    owner: PublicKey;
+    syntheticAsset: PublicKey;
+    marginAccount: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .initializeMarginAccount()
+      .accountsStrict({
+        payer: this.wallet.publicKey,
+        owner: params.owner,
+        syntheticAsset: params.syntheticAsset,
+        marginAccount: params.marginAccount,
+        systemProgram: SystemProgram.programId,
+      })
+      .instruction();
   }
 
   /**
@@ -189,5 +232,38 @@ export class ResynthClient {
       })
       .signers([params.owner])
       .rpc({ commitment: "confirmed", skipPreflight: true });
+  }
+
+  async mintSyntheticAssetInstruction(params: {
+    collateralAmount: BN;
+    mintAmount: BN;
+    syntheticAsset: PublicKey;
+    collateralVault: PublicKey;
+    syntheticMint: PublicKey;
+    syntheticOracle: PublicKey;
+    assetAuthority: PublicKey;
+    owner: PublicKey;
+    marginAccount: PublicKey;
+    collateralAccount: PublicKey;
+    syntheticAccount: PublicKey;
+    associatedTokenProgram: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .mintSyntheticAsset(params.collateralAmount, params.mintAmount)
+      .accountsStrict({
+        syntheticAsset: params.syntheticAsset,
+        collateralVault: params.collateralVault,
+        syntheticMint: params.syntheticMint,
+        syntheticOracle: params.syntheticOracle,
+        assetAuthority: params.assetAuthority,
+        owner: params.owner,
+        marginAccount: params.marginAccount,
+        collateralAccount: params.collateralAccount,
+        syntheticAccount: params.syntheticAccount,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .instruction();
   }
 }

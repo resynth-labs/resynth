@@ -18,15 +18,17 @@ import {
   SystemProgram,
   SYSVAR_RENT_PUBKEY,
   Transaction,
+  TransactionInstruction,
   TransactionSignature,
 } from "@solana/web3.js";
 import CONFIG from "../config.json";
 import { IDL, TokenFaucet } from "../idl/token_faucet";
 import { Faucet } from "../types";
+import { ResynthConfig } from "../utils";
 
 export class TokenFaucetClient {
   cluster: "devnet" | "localnet" | "mainnet";
-  config: any;
+  config: ResynthConfig;
   connection: Connection;
   program: Program<TokenFaucet>;
   programId: PublicKey;
@@ -42,8 +44,8 @@ export class TokenFaucetClient {
     wallet?: Wallet
   ) {
     this.cluster = cluster;
-    this.config = CONFIG[this.cluster];
-    this.programId = new PublicKey(this.config.tokenFaucetProgramId);
+    this.config = CONFIG[this.cluster] as ResynthConfig;
+    this.programId = this.config.tokenFaucetProgramId ? new PublicKey(this.config.tokenFaucetProgramId) : PublicKey.default;
     this.url = this.config.url;
 
     this.connection = connection
@@ -111,6 +113,23 @@ export class TokenFaucetClient {
     return tokenAccount;
   }
 
+  async airdropInstruction(params: {
+    amount: BN;
+    faucet: PublicKey;
+    mint: PublicKey;
+    tokenAccount: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .airdrop(params.amount)
+      .accountsStrict({
+        faucet: params.faucet,
+        mint: params.mint,
+        tokenAccount: params.tokenAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .instruction();
+  }
+
   async createMintAndFaucet(decimals: number): Promise<[PublicKey, PublicKey]> {
     const mint = Keypair.generate();
     const faucet = PublicKey.findProgramAddressSync(
@@ -167,5 +186,22 @@ export class TokenFaucetClient {
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .rpc({ commitment: "confirmed", skipPreflight: true });
+  }
+
+  async initializeFaucetInstruction(params: {
+    faucet: PublicKey;
+    mint: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .initializeFaucet()
+      .accountsStrict({
+        faucet: params.faucet,
+        payer: this.wallet.publicKey,
+        mint: params.mint,
+        rent: SYSVAR_RENT_PUBKEY,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .instruction();
   }
 }

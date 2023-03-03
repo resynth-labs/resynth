@@ -4,6 +4,7 @@ export interface ResynthConfig {
   url: string;
   resynthProgramId: Address;
   pythProgramId: Address;
+  tokenFaucetProgramId?: Address;
   tokenSwapProgramId: Address;
   collateralMint: Address;
   collateralDecimals: number;

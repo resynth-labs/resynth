@@ -20,12 +20,12 @@ import CONFIG from "../config.json";
 import { IDL, TokenSwap } from "../idl/token_swap";
 import { SwapPool } from "../types";
 import { Fees, SwapCurveType } from "../types";
-import { swapPoolPDA } from "../utils";
+import { ResynthConfig, swapPoolPDA } from "../utils";
 import assert from "assert";
 
 export class TokenSwapClient {
   cluster: "devnet" | "localnet" | "mainnet";
-  config: any;
+  config: ResynthConfig;
   connection: Connection;
   program: Program<TokenSwap>;
   programId: PublicKey;
@@ -39,7 +39,7 @@ export class TokenSwapClient {
     wallet?: Wallet
   ) {
     this.cluster = cluster;
-    this.config = CONFIG[this.cluster];
+    this.config = CONFIG[this.cluster] as ResynthConfig;
     this.programId = new PublicKey(this.config.tokenSwapProgramId);
     this.url = this.config.url;
 
@@ -132,6 +132,43 @@ export class TokenSwapClient {
     return await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
+  async depositAllTokenTypesInstruction(params: {
+    poolTokenAmount: BN;
+    maximumTokenAAmount: BN;
+    maximumTokenBAmount: BN;
+    swapPool: PublicKey;
+    authority: PublicKey;
+    owner: PublicKey;
+    userTransferAuthority: PublicKey;
+    tokenA: PublicKey;
+    tokenB: PublicKey;
+    vaultA: PublicKey;
+    vaultB: PublicKey;
+    lpmint: PublicKey;
+    lptoken: PublicKey;
+    mintA: PublicKey;
+    mintB: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .depositAllTokenTypes(params.poolTokenAmount, params.maximumTokenAAmount, params.maximumTokenBAmount)
+      .accountsStrict({
+        swapPool: params.swapPool,
+        authority: params.authority,
+        owner: params.owner,
+        userTransferAuthority: params.userTransferAuthority,
+        tokenA: params.tokenA,
+        tokenB: params.tokenB,
+        vaultA: params.vaultA,
+        vaultB: params.vaultB,
+        lpmint: params.lpmint,
+        lptoken: params.lptoken,
+        mintA: params.mintA,
+        mintB: params.mintB,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .instruction();
+  }
+
   //
   // Deposit one type of tokens into the pool.  The output is a "pool" token
   // representing ownership into the pool. Input token is converted as if
@@ -188,6 +225,42 @@ export class TokenSwapClient {
     );
 
     return await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+  }
+
+  async depositSingleTokenTypeExactAmountInInstruction(params: {
+    sourceTokenAmount: BN;
+    minimumPoolTokenAmount: BN;
+    swapPool: PublicKey;
+    authority: PublicKey;
+    owner: PublicKey;
+    userTransferAuthority: PublicKey;
+    tokenA: PublicKey | null;
+    tokenB: PublicKey | null;
+    vaultA: PublicKey;
+    vaultB: PublicKey;
+    lpmint: PublicKey;
+    lptoken: PublicKey;
+    mintA: PublicKey;
+    mintB: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .depositSingleTokenTypeExactAmountIn(params.sourceTokenAmount, params.minimumPoolTokenAmount)
+      .accountsStrict({
+        swapPool: params.swapPool,
+        authority: params.authority,
+        owner: params.owner,
+        userTransferAuthority: params.userTransferAuthority,
+        tokenA: params.tokenA,
+        tokenB: params.tokenB,
+        vaultA: params.vaultA,
+        vaultB: params.vaultB,
+        lpmint: params.lpmint,
+        lptoken: params.lptoken,
+        mintA: params.mintA,
+        mintB: params.mintB,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .instruction();
   }
 
   //
@@ -258,6 +331,53 @@ export class TokenSwapClient {
 
     await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
     return swapPool;
+  }
+
+  async initializeSwapPoolInstruction(params: {
+    fees: Fees;
+    swapCurveType: SwapCurveType;
+    tokenBPriceOrOffset: BN;
+    initialTokenAAmount: BN;
+    initialTokenBAmount: BN;
+    swapPool: PublicKey;
+    authority: PublicKey;
+    vaultA: PublicKey;
+    vaultB: PublicKey;
+    lpmint: PublicKey;
+    feeReceiver: PublicKey;
+    feeReceiverWallet: PublicKey;
+    mintA: PublicKey;
+    mintB: PublicKey;
+    owner: PublicKey;
+    userTransferAuthority: PublicKey;
+    sourceA: PublicKey;
+    sourceB: PublicKey;
+    lptoken: PublicKey;
+    associatedTokenProgram: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .initializeSwapPool(params.fees, params.swapCurveType, params.tokenBPriceOrOffset, params.initialTokenAAmount, params.initialTokenBAmount)
+      .accountsStrict({
+        swapPool: params.swapPool,
+        authority: params.authority,
+        vaultA: params.vaultA,
+        vaultB: params.vaultB,
+        lpmint: params.lpmint,
+        feeReceiver: params.feeReceiver,
+        feeReceiverWallet: params.feeReceiverWallet,
+        mintA: params.mintA,
+        mintB: params.mintB,
+        owner: params.owner,
+        userTransferAuthority: params.userTransferAuthority,
+        sourceA: params.sourceA,
+        sourceB: params.sourceB,
+        lptoken: params.lptoken,
+        payer: this.wallet.publicKey,
+        systemProgram: SystemProgram.programId,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
+      })
+      .instruction();
   }
 
   //
@@ -405,6 +525,45 @@ export class TokenSwapClient {
     return await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
+  async withdrawAllTokenTypesInstruction(params: {
+    poolTokenAmount: BN;
+    minimumTokenAAmount: BN;
+    minimumTokenBAmount: BN;
+    swapPool: PublicKey;
+    authority: PublicKey;
+    owner: PublicKey;
+    userTransferAuthority: PublicKey;
+    lpmint: PublicKey;
+    lptoken: PublicKey;
+    vaultA: PublicKey;
+    vaultB: PublicKey;
+    tokenA: PublicKey;
+    tokenB: PublicKey;
+    feeReceiver: PublicKey;
+    mintA: PublicKey;
+    mintB: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .withdrawAllTokenTypes(params.poolTokenAmount, params.minimumTokenAAmount, params.minimumTokenBAmount)
+      .accountsStrict({
+        swapPool: params.swapPool,
+        authority: params.authority,
+        owner: params.owner,
+        userTransferAuthority: params.userTransferAuthority,
+        lpmint: params.lpmint,
+        lptoken: params.lptoken,
+        vaultA: params.vaultA,
+        vaultB: params.vaultB,
+        tokenA: params.tokenA,
+        tokenB: params.tokenB,
+        feeReceiver: params.feeReceiver,
+        mintA: params.mintA,
+        mintB: params.mintB,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .instruction();
+  }
+
   //
   // Withdraw one token type from the pool at the current ratio given the
   // exact amount out expected.
@@ -460,5 +619,43 @@ export class TokenSwapClient {
     );
 
     return await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+  }
+
+  async withdrawSingleTokenTypeExactAmountOutInstruction(params: {
+    destinationTokenAmount: BN;
+    maximumPoolTokenAmount: BN;
+    swapPool: PublicKey;
+    authority: PublicKey;
+    owner: PublicKey;
+    userTransferAuthority: PublicKey;
+    lpmint: PublicKey;
+    lptoken: PublicKey;
+    vaultA: PublicKey;
+    vaultB: PublicKey;
+    tokenA: PublicKey | null;
+    tokenB: PublicKey | null;
+    feeReceiver: PublicKey;
+    mintA: PublicKey;
+    mintB: PublicKey;
+  }): Promise<TransactionInstruction> {
+    return this.program.methods
+      .withdrawSingleTokenTypeExactAmountOut(params.destinationTokenAmount, params.maximumPoolTokenAmount)
+      .accountsStrict({
+        swapPool: params.swapPool,
+        authority: params.authority,
+        owner: params.owner,
+        userTransferAuthority: params.userTransferAuthority,
+        lpmint: params.lpmint,
+        lptoken: params.lptoken,
+        vaultA: params.vaultA,
+        vaultB: params.vaultB,
+        tokenA: params.tokenA,
+        tokenB: params.tokenB,
+        feeReceiver: params.feeReceiver,
+        mintA: params.mintA,
+        mintB: params.mintB,
+        tokenProgram: TOKEN_PROGRAM_ID,
+      })
+      .instruction();
   }
 }
