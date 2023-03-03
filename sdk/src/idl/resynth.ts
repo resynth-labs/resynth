@@ -212,7 +212,7 @@ export type Resynth = {
         },
         {
           "name": "owner",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true,
           "docs": [
             "The receiver of the synthetic asset"
@@ -243,12 +243,22 @@ export type Resynth = {
           ]
         },
         {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
             "The token program for CPI calls"
           ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [
@@ -568,7 +578,7 @@ export const IDL: Resynth = {
         },
         {
           "name": "owner",
-          "isMut": false,
+          "isMut": true,
           "isSigner": true,
           "docs": [
             "The receiver of the synthetic asset"
@@ -599,12 +609,22 @@ export const IDL: Resynth = {
           ]
         },
         {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
           "name": "tokenProgram",
           "isMut": false,
           "isSigner": false,
           "docs": [
             "The token program for CPI calls"
           ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
         }
       ],
       "args": [

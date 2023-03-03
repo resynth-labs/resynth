@@ -112,13 +112,13 @@ export class PythClient {
   async setPrice(params: {
     price: BN;
     priceAccount: PublicKey;
-  }): Promise<void> {
-    const txid = await this.program.rpc.setPrice(params.price, {
-      accounts: {
+  }): Promise<TransactionSignature> {
+    return this.program.methods
+      .setPrice(params.price)
+      .accounts({
         price: params.priceAccount,
-      },
-    });
-    await this.connection.confirmTransaction(txid, "confirmed");
+      })
+      .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 
   async setPriceInfo(params: {
@@ -127,27 +127,24 @@ export class PythClient {
     slot: BN;
     priceAccount: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.setPriceInfo(
-      params.price,
-      params.conf,
-      params.slot,
-      {
-        accounts: {
-          price: params.priceAccount,
-        },
-      }
-    );
+    return this.program.methods
+      .setPriceInfo(params.price, params.conf, params.slot)
+      .accounts({
+        price: params.priceAccount,
+      })
+      .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 
   async setTwap(params: {
     twap: BN;
     priceAccount: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.setTwap(params.twap, {
-      accounts: {
+    return this.program.methods
+      .setTwap(params.twap)
+      .accounts({
         price: params.priceAccount,
-      },
-    });
+      })
+      .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 }
 

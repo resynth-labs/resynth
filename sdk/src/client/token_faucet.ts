@@ -169,8 +169,8 @@ export class TokenFaucetClient {
     faucetAccount: PublicKey;
     payerAccount: PublicKey;
     mintAccount: PublicKey;
-  }): Promise<void> {
-    const txid = await this.program.methods
+  }): Promise<TransactionSignature> {
+    return this.program.methods
       .initializeFaucet()
       .accounts({
         faucet: params.faucetAccount,
@@ -180,7 +180,6 @@ export class TokenFaucetClient {
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
-      .rpc();
-    await this.connection.confirmTransaction(txid, "confirmed");
+      .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 }

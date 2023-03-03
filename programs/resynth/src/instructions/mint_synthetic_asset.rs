@@ -1,6 +1,9 @@
 use crate::{Errors, MarginAccount, SyntheticAsset};
 use anchor_lang::prelude::*;
-use anchor_spl::token::{mint_to, transfer, Mint, MintTo, Token, TokenAccount, Transfer};
+use anchor_spl::{
+    associated_token::AssociatedToken,
+    token::{mint_to, transfer, Mint, MintTo, Token, TokenAccount, Transfer},
+};
 use pyth_sdk_solana::load_price_feed_from_account_info;
 
 #[derive(Accounts)]
@@ -27,6 +30,7 @@ pub struct MintSyntheticAsset<'info> {
     pub asset_authority: AccountInfo<'info>,
 
     /// The receiver of the synthetic asset
+    #[account(mut)]
     pub owner: Signer<'info>,
 
     /// The margin account of the owner, to track collateral and debt
@@ -41,13 +45,20 @@ pub struct MintSyntheticAsset<'info> {
     )]
     pub collateral_account: Box<Account<'info, TokenAccount>>,
     /// The owners account that will receive synthetic tokens
-    #[account(mut,
-        token::authority = owner,
+    #[account(
+        init_if_needed,
+        payer = owner,
+        associated_token::mint = synthetic_mint,
+        associated_token::authority = owner,
     )]
     pub synthetic_account: Box<Account<'info, TokenAccount>>,
 
+    pub system_program: Program<'info, System>,
+
     /// The token program for CPI calls
     pub token_program: Program<'info, Token>,
+
+    pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
 impl<'info> MintSyntheticAsset<'info> {

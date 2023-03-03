@@ -3,23 +3,23 @@ import {
   BN,
   BorshAccountsCoder,
   BorshCoder,
-  Idl,
-  Instruction,
   Program,
   ProgramAccount,
   Wallet,
 } from "@coral-xyz/anchor";
-import { TOKEN_PROGRAM_ID } from "@solana/spl-token";
+import { ASSOCIATED_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
+import { getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
   Connection,
   PublicKey,
+  Signer,
   SystemProgram,
-  SYSVAR_RENT_PUBKEY,
   TransactionSignature,
 } from "@solana/web3.js";
 import CONFIG from "../config.json";
 import { IDL, Resynth } from "../idl/resynth";
 import { MarginAccount, SyntheticAsset } from "../types";
+import { marginAccountPDA, syntheticAssetPDA } from "../utils";
 
 export class ResynthClient {
   accountDiscriminators: Record<string, string> = {};
@@ -100,74 +100,109 @@ export class ResynthClient {
 
   async initializeSyntheticAsset(params: {
     decimals: number;
-    syntheticAssetAccount: PublicKey;
-    collateralMintAccount: PublicKey;
-    collateralVaultAccount: PublicKey;
-    syntheticMintAccount: PublicKey;
-    syntheticOracleAccount: PublicKey;
-    assetAuthorityAccount: PublicKey;
-    payerAccount: PublicKey;
+    collateralMint: PublicKey;
+    syntheticOracle: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.initializeSyntheticAsset(params.decimals, {
-      accounts: {
-        syntheticAsset: params.syntheticAssetAccount,
-        collateralMint: params.collateralMintAccount,
-        collateralVault: params.collateralVaultAccount,
-        syntheticMint: params.syntheticMintAccount,
-        syntheticOracle: params.syntheticOracleAccount,
-        assetAuthority: params.assetAuthorityAccount,
-        payer: params.payerAccount,
+    let { syntheticAsset, collateralVault, syntheticMint, assetAuthority } =
+      syntheticAssetPDA(this.programId, params.syntheticOracle);
+
+    return this.program.methods
+      .initializeSyntheticAsset(params.decimals)
+      .accountsStrict({
+        syntheticAsset: syntheticAsset,
+        collateralMint: params.collateralMint,
+        collateralVault: collateralVault,
+        syntheticMint: syntheticMint,
+        syntheticOracle: params.syntheticOracle,
+        assetAuthority: assetAuthority,
+        payer: this.wallet.publicKey,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
-      },
-    });
+      })
+      .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 
+  /**
+   * Initialize a margin account associated with the user and synthetic asset
+   *
+   * @param {TestUser} owner The owner of the margin account
+   * @param {PublicKey} syntheticAsset The synthetic asset associated with the margin account
+   * @return {Promise<void>}
+   */
   async initializeMarginAccount(params: {
-    payerAccount: PublicKey;
-    syntheticAssetAccount: PublicKey;
-    marginAccountAccount: PublicKey;
+    owner: Signer;
+    syntheticAsset: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.initializeMarginAccount({
-      accounts: {
-        payer: params.payerAccount,
-        owner: this.wallet.publicKey,
-        syntheticAsset: params.syntheticAssetAccount,
-        marginAccount: params.marginAccountAccount,
+    const marginAccount = marginAccountPDA(
+      this.programId,
+      params.owner.publicKey,
+      params.syntheticAsset
+    );
+    return this.program.methods
+      .initializeMarginAccount()
+      .accountsStrict({
+        payer: params.owner.publicKey,
+        owner: params.owner.publicKey,
+        syntheticAsset: params.syntheticAsset,
+        marginAccount: marginAccount,
         systemProgram: SystemProgram.programId,
-      },
-    });
+      })
+      .signers([params.owner])
+      .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 
+  /**
+   * Mints synthetic assets and provides collateral to the margin account
+   *
+   * @param {TestUser} owner The owner that receives the synthetic asset
+   * @param {PublicKey} syntheticOracle The price oracle of the synthetic asset
+   * @param {PublicKey} syntheticAsset The synthetic asset account
+   * @param {number} collateralAmount The amount of collateral to provide
+   * @param {number} mintAmount The amount of synthetic tokens to mint
+   * @return {Promise<void>}
+   */
   async mintSyntheticAsset(params: {
     collateralAmount: BN;
     mintAmount: BN;
-    syntheticAssetAccount: PublicKey;
-    collateralVaultAccount: PublicKey;
-    syntheticMintAccount: PublicKey;
-    syntheticOracleAccount: PublicKey;
-    assetAuthorityAccount: PublicKey;
-    marginAccountAccount: PublicKey;
-    collateralAccountAccount: PublicKey;
-    syntheticAccountAccount: PublicKey;
+    syntheticOracle: PublicKey;
+    owner: Signer;
+    collateralMint: PublicKey;
   }): Promise<TransactionSignature> {
-    return this.program.rpc.mintSyntheticAsset(
-      params.collateralAmount,
-      params.mintAmount,
-      {
-        accounts: {
-          syntheticAsset: params.syntheticAssetAccount,
-          collateralVault: params.collateralVaultAccount,
-          syntheticMint: params.syntheticMintAccount,
-          syntheticOracle: params.syntheticOracleAccount,
-          assetAuthority: params.assetAuthorityAccount,
-          owner: this.wallet.publicKey,
-          marginAccount: params.marginAccountAccount,
-          collateralAccount: params.collateralAccountAccount,
-          syntheticAccount: params.syntheticAccountAccount,
-          tokenProgram: TOKEN_PROGRAM_ID,
-        },
-      }
+    const { syntheticAsset, collateralVault, syntheticMint, assetAuthority } = syntheticAssetPDA(this.programId, params.syntheticOracle);
+
+    const marginAccount = marginAccountPDA(
+      this.programId,
+      params.owner.publicKey,
+      syntheticAsset
     );
+
+    const collateralAccount = getAssociatedTokenAddressSync(
+      params.collateralMint,
+      params.owner.publicKey
+    );
+
+    const syntheticAccount = getAssociatedTokenAddressSync(
+      syntheticMint,
+      params.owner.publicKey
+    );
+
+    return this.program.methods
+      .mintSyntheticAsset(params.collateralAmount, params.mintAmount)
+      .accountsStrict({
+        syntheticAsset: syntheticAsset,
+        collateralVault: collateralVault,
+        syntheticMint: syntheticMint,
+        syntheticOracle: params.syntheticOracle,
+        assetAuthority: assetAuthority,
+        owner: params.owner.publicKey,
+        marginAccount: marginAccount,
+        collateralAccount: collateralAccount,
+        syntheticAccount: syntheticAccount,
+        tokenProgram: TOKEN_PROGRAM_ID,
+        systemProgram: SystemProgram.programId,
+        associatedTokenProgram: ASSOCIATED_PROGRAM_ID,
+      })
+      .signers([params.owner])
+      .rpc({ commitment: "confirmed", skipPreflight: true });
   }
 }

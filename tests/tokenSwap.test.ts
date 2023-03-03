@@ -117,13 +117,7 @@ describe("token swap", () => {
     [mintA, faucetA] = await tokenFaucet.createMintAndFaucet(mintADecimals);
     [mintB, faucetB] = await tokenFaucet.createMintAndFaucet(mintBDecimals);
 
-    // TODO is there a better way to destructure this?
-    const pdas = swapPoolPDA(tokenSwap.program.programId, mintA, mintB);
-    swapPool = pdas.swapPool;
-    authority = pdas.authority;
-    vaultA = pdas.vaultA;
-    vaultB = pdas.vaultB;
-    lpmint = pdas.lpmint;
+    ({ swapPool, authority, vaultA, vaultB, lpmint } = swapPoolPDA(tokenSwap.program.programId, mintA, mintB));
 
     feeReceiver = await getAssociatedTokenAddressSync(lpmint, feeReceiverWallet.publicKey);
 

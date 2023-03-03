@@ -1,13 +1,6 @@
 import { AnchorProvider, BN, setProvider } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import {
-  ASSOCIATED_TOKEN_PROGRAM_ID,
-  getAssociatedTokenAddressSync,
-  getOrCreateAssociatedTokenAccount,
-  mintTo,
-  TOKEN_PROGRAM_ID,
-} from "@solana/spl-token";
-import {
   PublicKey,
   Keypair,
   LAMPORTS_PER_SOL,
@@ -17,7 +10,6 @@ import {
 import { use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import {
-  marginAccountPDA,
   PythClient,
   ResynthClient,
   syntheticAssetPDA,
@@ -109,138 +101,6 @@ describe("resynth", () => {
     };
   }
 
-  /**
-   * Creates a token account for the user. And mints a number of tokens to the account.
-   *
-   * @param {PublicKey} mint
-   * @param {PublicKey} wallet
-   * @param {number} amount
-   * @returns {Promise<void>}
-   */
-  async function mintTestToken(
-    mint: PublicKey,
-    wallet: PublicKey,
-    amount?: number
-  ): Promise<void> {
-    const { address: tokenAccount } = await getOrCreateAssociatedTokenAccount(
-      connection,
-      payer,
-      mint,
-      wallet
-    );
-    if (amount && amount > 0) {
-      await mintTo(connection, payer, mint, tokenAccount, payer, amount);
-    }
-  }
-
-  async function initializeSyntheticAsset(
-    collateralMint: PublicKey,
-    syntheticOracle: PublicKey,
-    syntheticDecimals: number
-  ): Promise<void> {
-    let { syntheticAsset, collateralVault, syntheticMint, assetAuthority } =
-      syntheticAssetPDA(resynth.programId, syntheticOracle);
-
-    await resynth.program.methods
-      .initializeSyntheticAsset(syntheticDecimals)
-      .accountsStrict({
-        syntheticAsset,
-        collateralMint,
-        collateralVault,
-        syntheticMint,
-        syntheticOracle,
-        assetAuthority,
-        payer: payer.publicKey,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        systemProgram: SystemProgram.programId,
-      })
-      .rpc();
-  }
-
-  /**
-   * Initialize a margin account associated with the user and synthetic asset
-   *
-   * @param {TestUser} owner The owner of the margin account
-   * @param {PublicKey} syntheticAsset The synthetic asset associated with the margin account
-   * @return {Promise<void>}
-   */
-  async function initializeMarginAccount(
-    owner: TestUser,
-    syntheticAsset: PublicKey
-  ): Promise<void> {
-    const marginAccount = marginAccountPDA(
-      resynth.programId,
-      owner.wallet.publicKey,
-      syntheticAsset
-    );
-    resynth.program.methods
-      .initializeMarginAccount()
-      .accountsStrict({
-        payer: owner.wallet.publicKey,
-        owner: owner.wallet.publicKey,
-        syntheticAsset,
-        marginAccount,
-        systemProgram: SystemProgram.programId,
-      })
-      .signers([owner.wallet])
-      .rpc();
-  }
-
-  /**
-   * Mints synthetic assets and provides collateral to the margin account
-   *
-   * @param {TestUser} owner The owner that receives the synthetic asset
-   * @param {PublicKey} syntheticOracle The price oracle of the synthetic asset
-   * @param {PublicKey} syntheticAsset The synthetic asset account
-   * @param {number} collateralAmount The amount of collateral to provide
-   * @param {number} mintAmount The amount of synthetic tokens to mint
-   * @return {Promise<void>}
-   */
-  async function mintSyntheticAsset(
-    owner: TestUser,
-    syntheticOracle: PublicKey,
-    collateralMint: PublicKey,
-    collateralAmount: number,
-    mintAmount: number
-  ): Promise<void> {
-    const { syntheticAsset, collateralVault, syntheticMint, assetAuthority } =
-      syntheticAssetPDA(resynth.programId, syntheticOracle);
-    const marginAccount = marginAccountPDA(
-      resynth.programId,
-      owner.wallet.publicKey,
-      syntheticAsset
-    );
-
-    const collateralAccount = getAssociatedTokenAddressSync(
-      collateralMint,
-      owner.wallet.publicKey
-    );
-
-    const syntheticAccount = getAssociatedTokenAddressSync(
-      syntheticMint,
-      owner.wallet.publicKey
-    );
-
-    await resynth.program.methods
-      .mintSyntheticAsset(new BN(collateralAmount), new BN(mintAmount))
-      .accountsStrict({
-        syntheticAsset,
-        collateralVault,
-        syntheticMint,
-        syntheticOracle,
-        assetAuthority,
-
-        owner: owner.wallet.publicKey,
-        marginAccount,
-        collateralAccount,
-        syntheticAccount,
-
-        tokenProgram: TOKEN_PROGRAM_ID,
-      })
-      .signers([owner.wallet])
-      .rpc();
-  }
-
   before(async () => {
     const airdropSignature = await tokenFaucet.connection.requestAirdrop(
       wallet.publicKey,
@@ -272,7 +132,11 @@ describe("resynth", () => {
   });
 
   it("Initialize synthetic gold asset", async () => {
-    await initializeSyntheticAsset(stablecoinMint, goldOracle, goldDecimals);
+    await resynth.initializeSyntheticAsset({
+      collateralMint: stablecoinMint,
+      syntheticOracle: goldOracle,
+      decimals: goldDecimals
+    });
 
     ({ syntheticAsset: goldAsset, syntheticMint: goldMint } = syntheticAssetPDA(
       resynth.programId,
@@ -280,7 +144,7 @@ describe("resynth", () => {
     ));
   });
 
-  it("Mint stablecoins, and init gold accounts", async () => {
+  it("Mint stablecoins", async () => {
     await tokenFaucet.airdrop({
       amount: new BN(2500 * 10 ** stablecoinDecimals),
       faucet: stablecoinFaucet,
@@ -293,13 +157,17 @@ describe("resynth", () => {
       mint: stablecoinMint,
       owner: userB.wallet.publicKey,
     });
-    await mintTestToken(goldMint, userA.wallet.publicKey);
-    await mintTestToken(goldMint, userB.wallet.publicKey);
   });
 
   it("Initialize margin accounts", async () => {
-    await initializeMarginAccount(userA, goldAsset);
-    await initializeMarginAccount(userB, goldAsset);
+    await resynth.initializeMarginAccount({
+      owner: userA.wallet,
+      syntheticAsset: goldAsset
+    });
+    await resynth.initializeMarginAccount({
+      owner: userB.wallet,
+      syntheticAsset: goldAsset
+    });
   });
 
   it("User A mints synthetic gold", async () => {
@@ -307,13 +175,13 @@ describe("resynth", () => {
       price: new BN(1_800 * 10 ** goldDecimals),
       priceAccount: goldOracle,
     });
-    await mintSyntheticAsset(
-      userA,
-      goldOracle,
-      stablecoinMint,
-      2000 * 10 ** stablecoinDecimals,
-      0.1 * 10 ** goldDecimals
-    );
+    await resynth.mintSyntheticAsset({
+      owner: userA.wallet,
+      syntheticOracle: goldOracle,
+      collateralMint: stablecoinMint,
+      collateralAmount: new BN(2000 * 10 ** stablecoinDecimals),
+      mintAmount: new BN(0.1 * 10 ** goldDecimals)
+    });
   });
 
   //TODO: Fix this test
@@ -324,13 +192,13 @@ describe("resynth", () => {
   // });
 
   it("User B mints a healthy amount of synthetic gold", async () => {
-    await mintSyntheticAsset(
-      userB,
-      goldOracle,
-      stablecoinMint,
-      100 * 10 ** stablecoinDecimals,
-      0.005 * 10 ** goldDecimals
-    );
+    await resynth.mintSyntheticAsset({
+      owner: userB.wallet,
+      syntheticOracle: goldOracle,
+      collateralMint: stablecoinMint,
+      collateralAmount: new BN(100 * 10 ** stablecoinDecimals),
+      mintAmount: new BN(0.005 * 10 ** goldDecimals)
+    });
   });
 
 });
