@@ -1,11 +1,12 @@
+import { Address, translateAddress } from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 
 export function syntheticAssetPDA(
   programId: PublicKey,
-  syntheticOracle: PublicKey
+  syntheticOracle: Address
 ) {
   const syntheticAsset = PublicKey.findProgramAddressSync(
-    [Buffer.from("asset"), syntheticOracle.toBuffer()],
+    [Buffer.from("asset"), translateAddress(syntheticOracle).toBuffer()],
     programId
   )[0];
   const collateralVault = PublicKey.findProgramAddressSync(
@@ -26,12 +27,12 @@ export function syntheticAssetPDA(
 export function marginAccountPDA(
   programId: PublicKey,
   owner: PublicKey,
-  syntheticAsset: PublicKey
+  syntheticAsset: Address
 ) {
   return PublicKey.findProgramAddressSync(
     [
       Buffer.from("margin_account"),
-      syntheticAsset.toBuffer(),
+      translateAddress(syntheticAsset).toBuffer(),
       owner.toBuffer(),
     ],
     programId
@@ -40,11 +41,15 @@ export function marginAccountPDA(
 
 export function swapPoolPDA(
   programId: PublicKey,
-  mintA: PublicKey,
-  mintB: PublicKey
+  mintA: Address,
+  mintB: Address
 ) {
   const swapPool = PublicKey.findProgramAddressSync(
-    [Buffer.from("swap_pool"), mintA.toBuffer(), mintB.toBuffer()],
+    [
+      Buffer.from("swap_pool"),
+      translateAddress(mintA).toBuffer(),
+      translateAddress(mintB).toBuffer(),
+    ],
     programId
   )[0];
   const authority = PublicKey.findProgramAddressSync(

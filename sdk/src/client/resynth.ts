@@ -16,6 +16,7 @@ import {
   PublicKey,
   Signer,
   SystemProgram,
+  Transaction,
   TransactionInstruction,
   TransactionSignature,
 } from "@solana/web3.js";
@@ -192,27 +193,53 @@ export class ResynthClient {
     collateralAmount: BN;
     mintAmount: BN;
     syntheticOracle: PublicKey;
-    owner: Signer;
+    owner: PublicKey;
     collateralMint: PublicKey;
+    collateralAccount?: PublicKey;
+    syntheticAccount?: PublicKey;
+    signers?: Signer[];
   }): Promise<TransactionSignature> {
+    const instruction = await this.mintSyntheticAssetInstruction({
+      collateralAmount: params.collateralAmount,
+      mintAmount: params.mintAmount,
+      syntheticOracle: params.syntheticOracle,
+      owner: params.owner,
+      collateralMint: params.collateralMint,
+      collateralAccount: params.collateralAccount,
+      syntheticAccount: params.syntheticAccount,
+    });
+    const transaction = new Transaction().add(instruction);
+    return await this.provider.sendAndConfirm(transaction, params.signers, {
+      commitment: "confirmed",
+      skipPreflight: true,
+    });
+  }
+
+  async mintSyntheticAssetInstruction(params: {
+    collateralAmount: BN;
+    mintAmount: BN;
+    syntheticOracle: PublicKey;
+    owner: PublicKey;
+    collateralMint: PublicKey;
+    collateralAccount?: PublicKey;
+    syntheticAccount?: PublicKey;
+  }): Promise<TransactionInstruction> {
     const { syntheticAsset, collateralVault, syntheticMint, assetAuthority } =
       syntheticAssetPDA(this.programId, params.syntheticOracle);
 
     const marginAccount = marginAccountPDA(
       this.programId,
-      params.owner.publicKey,
+      params.owner,
       syntheticAsset
     );
 
-    const collateralAccount = getAssociatedTokenAddressSync(
-      params.collateralMint,
-      params.owner.publicKey
-    );
+    const collateralAccount =
+      params.collateralAccount ??
+      getAssociatedTokenAddressSync(params.collateralMint, params.owner);
 
-    const syntheticAccount = getAssociatedTokenAddressSync(
-      syntheticMint,
-      params.owner.publicKey
-    );
+    const syntheticAccount =
+      params.syntheticAccount ??
+      getAssociatedTokenAddressSync(syntheticMint, params.owner);
 
     return this.program.methods
       .mintSyntheticAsset(params.collateralAmount, params.mintAmount)
@@ -222,47 +249,13 @@ export class ResynthClient {
         syntheticMint: syntheticMint,
         syntheticOracle: params.syntheticOracle,
         assetAuthority: assetAuthority,
-        owner: params.owner.publicKey,
+        owner: params.owner,
         marginAccount: marginAccount,
-        collateralAccount: collateralAccount,
-        syntheticAccount: syntheticAccount,
+        collateralAccount,
+        syntheticAccount,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_PROGRAM_ID,
-      })
-      .signers([params.owner])
-      .rpc({ commitment: "confirmed", skipPreflight: true });
-  }
-
-  async mintSyntheticAssetInstruction(params: {
-    collateralAmount: BN;
-    mintAmount: BN;
-    syntheticAsset: PublicKey;
-    collateralVault: PublicKey;
-    syntheticMint: PublicKey;
-    syntheticOracle: PublicKey;
-    assetAuthority: PublicKey;
-    owner: PublicKey;
-    marginAccount: PublicKey;
-    collateralAccount: PublicKey;
-    syntheticAccount: PublicKey;
-    associatedTokenProgram: PublicKey;
-  }): Promise<TransactionInstruction> {
-    return this.program.methods
-      .mintSyntheticAsset(params.collateralAmount, params.mintAmount)
-      .accountsStrict({
-        syntheticAsset: params.syntheticAsset,
-        collateralVault: params.collateralVault,
-        syntheticMint: params.syntheticMint,
-        syntheticOracle: params.syntheticOracle,
-        assetAuthority: params.assetAuthority,
-        owner: params.owner,
-        marginAccount: params.marginAccount,
-        collateralAccount: params.collateralAccount,
-        syntheticAccount: params.syntheticAccount,
-        systemProgram: SystemProgram.programId,
-        tokenProgram: TOKEN_PROGRAM_ID,
-        associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
       })
       .instruction();
   }
