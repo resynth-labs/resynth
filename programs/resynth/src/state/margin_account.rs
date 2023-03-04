@@ -28,6 +28,13 @@ impl MarginAccount {
         self.synthetic_asset_borrowed += mint_amount;
     }
 
+    pub fn burn_synthetic_asset(&mut self, collateral_amount: u64, burn_amount: u64) {
+        // Overflow checks are implicit because
+        // of the cargo.toml parameter overflow-checks = true
+        self.collateral_deposited -= collateral_amount;
+        self.synthetic_asset_borrowed -= burn_amount;
+    }
+
     pub fn verify_healthy(&self, oracle_price: Price) -> Result<bool> {
         assert!(
             oracle_price.expo <= 0,

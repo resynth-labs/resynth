@@ -35,12 +35,12 @@ pub mod resynth {
         MintSyntheticAsset::process(ctx, collateral_amount, mint_amount)
     }
 
-    // /// Burn a synthetic asset
-    // pub fn burn_synthetic_asset(
-    //     ctx: Context<BurnSyntheticAsset>,
-    //     burn_amount: u64,
-    //     collateral_amount: u64,
-    // ) -> Result<()> {
-    //     BurnSyntheticAsset::process(ctx, burn_amount, collateral_amount)
-    // }
+    /// Burn a synthetic asset
+    pub fn burn_synthetic_asset(
+        ctx: Context<BurnSyntheticAsset>,
+        collateral_amount: u64,
+        burn_amount: u64,
+    ) -> Result<()> {
+        BurnSyntheticAsset::process(ctx, collateral_amount, burn_amount)
+    }
 }

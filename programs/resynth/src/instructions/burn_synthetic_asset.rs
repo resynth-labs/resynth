@@ -2,15 +2,16 @@ use crate::{Errors, MarginAccount, SyntheticAsset};
 use anchor_lang::prelude::*;
 use anchor_spl::{
     associated_token::AssociatedToken,
-    token::{mint_to, transfer, Mint, MintTo, Token, TokenAccount, Transfer},
+    token::{burn, transfer, Burn, Mint, Token, TokenAccount, Transfer},
 };
 use pyth_sdk_solana::load_price_feed_from_account_info;
 
 #[derive(Accounts)]
-pub struct MintSyntheticAsset<'info> {
+pub struct BurnSyntheticAsset<'info> {
     /// The synthetic asset account
     #[account(
       has_one = collateral_vault,
+      has_one = collateral_mint,
       has_one = synthetic_mint,
       has_one = synthetic_oracle,
       has_one = asset_authority,
@@ -19,6 +20,8 @@ pub struct MintSyntheticAsset<'info> {
     /// The vault that is receiving collateral
     #[account(mut)]
     pub collateral_vault: Box<Account<'info, TokenAccount>>,
+    /// The collateral mint of the synthetic asset
+    pub collateral_mint: Box<Account<'info, Mint>>,
     /// The synthetic mint of the synthetic asset
     #[account(mut)]
     pub synthetic_mint: Box<Account<'info, Mint>>,
@@ -40,16 +43,16 @@ pub struct MintSyntheticAsset<'info> {
     )]
     pub margin_account: AccountLoader<'info, MarginAccount>,
     /// The owners account that collateral will be transferred from
-    #[account(mut,
-      token::authority = owner
+    #[account(
+      init_if_needed,
+      payer = owner,
+      associated_token::mint = collateral_mint,
+      associated_token::authority = owner,
     )]
     pub collateral_account: Box<Account<'info, TokenAccount>>,
     /// The owners account that will receive synthetic tokens
-    #[account(
-        init_if_needed,
-        payer = owner,
-        associated_token::mint = synthetic_mint,
-        associated_token::authority = owner,
+    #[account(mut,
+        token::authority = owner,
     )]
     pub synthetic_account: Box<Account<'info, TokenAccount>>,
 
@@ -61,32 +64,32 @@ pub struct MintSyntheticAsset<'info> {
     pub associated_token_program: Program<'info, AssociatedToken>,
 }
 
-impl<'info> MintSyntheticAsset<'info> {
+impl<'info> BurnSyntheticAsset<'info> {
     /// CPI context to transfer collateral from the owners account to the vault
     pub fn collateral_transfer_context(&self) -> CpiContext<'_, '_, '_, 'info, Transfer<'info>> {
         return CpiContext::new(
             self.token_program.to_account_info(),
             Transfer {
-                from: self.collateral_account.to_account_info(),
-                to: self.collateral_vault.to_account_info(),
-                authority: self.owner.to_account_info(),
-            },
-        );
-    }
-
-    /// CPI context to mint synthetic tokens to the owners token account
-    pub fn mint_synthetic_context(&self) -> CpiContext<'_, '_, '_, 'info, MintTo<'info>> {
-        return CpiContext::new(
-            self.token_program.to_account_info(),
-            MintTo {
-                mint: self.synthetic_mint.to_account_info(),
-                to: self.synthetic_account.to_account_info(),
+                from: self.collateral_vault.to_account_info(),
+                to: self.collateral_account.to_account_info(),
                 authority: self.asset_authority.to_account_info(),
             },
         );
     }
 
-    pub fn process(ctx: Context<Self>, collateral_amount: u64, mint_amount: u64) -> Result<()> {
+    /// CPI context to mint synthetic tokens to the owners token account
+    pub fn burn_synthetic_context(&self) -> CpiContext<'_, '_, '_, 'info, Burn<'info>> {
+        return CpiContext::new(
+            self.token_program.to_account_info(),
+            Burn {
+                mint: self.synthetic_mint.to_account_info(),
+                from: self.synthetic_account.to_account_info(),
+                authority: self.owner.to_account_info(),
+            },
+        );
+    }
+
+    pub fn process(ctx: Context<Self>, collateral_amount: u64, burn_amount: u64) -> Result<()> {
         let synthetic_asset = ctx.accounts.synthetic_asset.load()?;
         let mut margin_account = ctx.accounts.margin_account.load_mut()?;
 
@@ -96,25 +99,22 @@ impl<'info> MintSyntheticAsset<'info> {
             .get_price_unchecked();
 
         // Update the margin account balances
-        margin_account.mint_synthetic_asset(collateral_amount, mint_amount);
+        margin_account.burn_synthetic_asset(collateral_amount, burn_amount);
 
         // Verify minting does not make the margin account unhealthy
         margin_account.verify_healthy(oracle_price)?;
 
-        // Transfer collateral from the user to the vault
+        // Transfer collateral from the vault to the user
+        let signer_seeds: &[&[&[u8]]] = &[&synthetic_asset.signer_seeds()];
         transfer(
-            ctx.accounts.collateral_transfer_context(),
+            ctx.accounts
+                .collateral_transfer_context()
+                .with_signer(signer_seeds),
             collateral_amount,
         )?;
 
-        // Mint the synthetic asset to the user token account
-        let signer_seeds: &[&[&[u8]]] = &[&synthetic_asset.signer_seeds()];
-        mint_to(
-            ctx.accounts
-                .mint_synthetic_context()
-                .with_signer(signer_seeds),
-            mint_amount,
-        )?;
+        // Burn the synthetic asset from the user token account
+        burn(ctx.accounts.burn_synthetic_context(), burn_amount)?;
 
         Ok(())
     }

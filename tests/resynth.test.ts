@@ -201,4 +201,30 @@ describe("resynth", () => {
       signers: [userB.wallet],
     });
   });
+
+  it("User A burns synthetic gold", async () => {
+    await pyth.setPrice({
+      price: new BN(1_800 * 10 ** goldDecimals),
+      oracle: goldOracle,
+    });
+    await resynth.burnSyntheticAsset({
+      owner: userA.wallet.publicKey,
+      syntheticOracle: goldOracle,
+      collateralMint: stablecoinMint,
+      collateralAmount: new BN(2000 * 10 ** stablecoinDecimals),
+      burnAmount: new BN(0.1 * 10 ** goldDecimals),
+      signers: [userA.wallet],
+    });
+  });
+
+  it("User B burns synthetic gold", async () => {
+    await resynth.burnSyntheticAsset({
+      owner: userB.wallet.publicKey,
+      syntheticOracle: goldOracle,
+      collateralMint: stablecoinMint,
+      collateralAmount: new BN(100 * 10 ** stablecoinDecimals),
+      burnAmount: new BN(0.005 * 10 ** goldDecimals),
+      signers: [userB.wallet],
+    });
+  });
 });

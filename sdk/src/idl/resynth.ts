@@ -186,7 +186,7 @@ export type Resynth = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "The synthetic mint of the asset"
+            "The synthetic mint of the synthetic asset"
           ]
         },
         {
@@ -263,6 +263,122 @@ export type Resynth = {
         },
         {
           "name": "mintAmount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "burnSyntheticAsset",
+      "docs": [
+        "Burn a synthetic asset"
+      ],
+      "accounts": [
+        {
+          "name": "syntheticAsset",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The synthetic asset account"
+          ]
+        },
+        {
+          "name": "collateralVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The vault that is receiving collateral"
+          ]
+        },
+        {
+          "name": "collateralMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The collateral mint of the synthetic asset"
+          ]
+        },
+        {
+          "name": "syntheticMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The synthetic mint of the synthetic asset"
+          ]
+        },
+        {
+          "name": "syntheticOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The oracle price feed, to determine margin account health"
+          ]
+        },
+        {
+          "name": "assetAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The mint authority that can mint synthetic assets and transfer vault collateral"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The receiver of the synthetic asset"
+          ]
+        },
+        {
+          "name": "marginAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The margin account of the owner, to track collateral and debt"
+          ]
+        },
+        {
+          "name": "collateralAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The owners account that collateral will be transferred from"
+          ]
+        },
+        {
+          "name": "syntheticAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The owners account that will receive synthetic tokens"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The token program for CPI calls"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "collateralAmount",
+          "type": "u64"
+        },
+        {
+          "name": "burnAmount",
           "type": "u64"
         }
       ]
@@ -547,7 +663,7 @@ export const IDL: Resynth = {
           "isMut": true,
           "isSigner": false,
           "docs": [
-            "The synthetic mint of the asset"
+            "The synthetic mint of the synthetic asset"
           ]
         },
         {
@@ -624,6 +740,122 @@ export const IDL: Resynth = {
         },
         {
           "name": "mintAmount",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "burnSyntheticAsset",
+      "docs": [
+        "Burn a synthetic asset"
+      ],
+      "accounts": [
+        {
+          "name": "syntheticAsset",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The synthetic asset account"
+          ]
+        },
+        {
+          "name": "collateralVault",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The vault that is receiving collateral"
+          ]
+        },
+        {
+          "name": "collateralMint",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The collateral mint of the synthetic asset"
+          ]
+        },
+        {
+          "name": "syntheticMint",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The synthetic mint of the synthetic asset"
+          ]
+        },
+        {
+          "name": "syntheticOracle",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The oracle price feed, to determine margin account health"
+          ]
+        },
+        {
+          "name": "assetAuthority",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The mint authority that can mint synthetic assets and transfer vault collateral"
+          ]
+        },
+        {
+          "name": "owner",
+          "isMut": true,
+          "isSigner": true,
+          "docs": [
+            "The receiver of the synthetic asset"
+          ]
+        },
+        {
+          "name": "marginAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The margin account of the owner, to track collateral and debt"
+          ]
+        },
+        {
+          "name": "collateralAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The owners account that collateral will be transferred from"
+          ]
+        },
+        {
+          "name": "syntheticAccount",
+          "isMut": true,
+          "isSigner": false,
+          "docs": [
+            "The owners account that will receive synthetic tokens"
+          ]
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        },
+        {
+          "name": "tokenProgram",
+          "isMut": false,
+          "isSigner": false,
+          "docs": [
+            "The token program for CPI calls"
+          ]
+        },
+        {
+          "name": "associatedTokenProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "collateralAmount",
+          "type": "u64"
+        },
+        {
+          "name": "burnAmount",
           "type": "u64"
         }
       ]
