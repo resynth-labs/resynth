@@ -160,9 +160,10 @@ describe("token swap", () => {
       feeReceiverWallet: feeReceiverWallet.publicKey,
       mintA,
       mintB,
-      owner: user,
+      owner: user.publicKey,
       sourceA: userAccountA,
       sourceB: userAccountB,
+      signers: [user],
     });
 
     hostFeeReceiver = await createAssociatedTokenAccount(tokenSwap.connection, tokenSwap.wallet.payer, lpmint, hostFeeReceiverWallet.publicKey);
@@ -242,7 +243,7 @@ describe("token swap", () => {
       maximumTokenBAmount: new BN(tokenAmountB),
       swapPool,
       authority,
-      owner: user,
+      owner: user.publicKey,
       tokenA: userAccountA,
       tokenB: userAccountB,
       vaultA,
@@ -251,6 +252,7 @@ describe("token swap", () => {
       lptoken: userPoolTokenAccount,
       mintA,
       mintB,
+      signers: [user],
     });
 
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
@@ -286,7 +288,7 @@ describe("token swap", () => {
       minimumTokenBAmount: new BN(tokenAmountB),
       swapPool,
       authority,
-      owner: user,
+      owner: user.publicKey,
       lpmint,
       lptoken: userPoolTokenAccount,
       vaultA,
@@ -296,6 +298,7 @@ describe("token swap", () => {
       feeReceiver,
       mintA,
       mintB,
+      signers: [user],
     });
 
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) == DEFAULT_POOL_TOKEN_AMOUNT);
@@ -310,18 +313,18 @@ describe("token swap", () => {
   });
 
   it("swap", async () => {
-    const swappper = Keypair.generate();
+    const swapper = Keypair.generate();
 
     console.log('Creating swap token a account');
     const swapperAccountA = await tokenFaucet.airdrop({
       amount: new BN(SWAP_AMOUNT_IN),
       faucet: faucetA,
       mint: mintA,
-      owner: swappper.publicKey,
+      owner: swapper.publicKey,
     });
 
     console.log('Creating swap token b account');
-    const swapperAccountB = await createAssociatedTokenAccount(tokenSwap.connection, tokenSwap.wallet.payer, mintB, swappper.publicKey);
+    const swapperAccountB = await createAssociatedTokenAccount(tokenSwap.connection, tokenSwap.wallet.payer, mintB, swapper.publicKey);
 
     console.log('Swapping');
     await tokenSwap.swap({
@@ -329,7 +332,7 @@ describe("token swap", () => {
       minimumAmountOut: new BN(SWAP_AMOUNT_OUT),
       swapPool,
       authority,
-      owner: swappper,
+      owner: swapper.publicKey,
       sourceToken: swapperAccountA,
       sourceVault: vaultA,
       destVault: vaultB,
@@ -337,6 +340,7 @@ describe("token swap", () => {
       lpmint,
       feeReceiver,
       hostFeeReceiver,
+      signers: [swapper],
     });
 
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(swapperAccountA))!.data).amount) == 0);
@@ -456,7 +460,7 @@ describe("token swap", () => {
       minimumPoolTokenAmount: new BN(poolTokenA),
       swapPool,
       authority,
-      owner: user,
+      owner: user.publicKey,
       tokenA: userAccountA,
       tokenB: null,
       vaultA,
@@ -465,6 +469,7 @@ describe("token swap", () => {
       lptoken: userPoolTokenAccount,
       mintA,
       mintB,
+      signers: [user],
     });
 
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
@@ -477,7 +482,7 @@ describe("token swap", () => {
       minimumPoolTokenAmount: new BN(poolTokenB),
       swapPool,
       authority,
-      owner: user,
+      owner: user.publicKey,
       tokenA: null,
       tokenB: userAccountB,
       vaultA,
@@ -486,6 +491,7 @@ describe("token swap", () => {
       lptoken: userPoolTokenAccount,
       mintA,
       mintB,
+      signers: [user],
     });
 
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
@@ -533,7 +539,7 @@ describe("token swap", () => {
       maximumPoolTokenAmount: new BN(adjustedPoolTokenA),
       swapPool,
       authority,
-      owner: user,
+      owner: user.publicKey,
       lpmint,
       lptoken: userPoolTokenAccount,
       vaultA,
@@ -543,6 +549,7 @@ describe("token swap", () => {
       feeReceiver,
       mintA,
       mintB,
+      signers: [user],
     });
 
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == withdrawAmount);
@@ -556,7 +563,7 @@ describe("token swap", () => {
       maximumPoolTokenAmount: new BN(adjustedPoolTokenB),
       swapPool,
       authority,
-      owner: user,
+      owner: user.publicKey,
       lpmint,
       lptoken: userPoolTokenAccount,
       vaultA,
@@ -566,6 +573,7 @@ describe("token swap", () => {
       feeReceiver,
       mintA,
       mintB,
+      signers: [user],
     });
 
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == withdrawAmount);

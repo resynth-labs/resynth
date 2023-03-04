@@ -80,7 +80,7 @@ export class TokenSwapClient {
     maximumTokenBAmount: BN;
     swapPool: PublicKey;
     authority: PublicKey;
-    owner: Signer;
+    owner: PublicKey;
     tokenA: PublicKey;
     tokenB: PublicKey;
     vaultA: PublicKey;
@@ -89,6 +89,7 @@ export class TokenSwapClient {
     lptoken: PublicKey;
     mintA: PublicKey;
     mintB: PublicKey;
+    signers: Signer[];
   }): Promise<TransactionSignature> {
     const transaction = new Transaction();
 
@@ -97,13 +98,13 @@ export class TokenSwapClient {
       createApproveInstruction(
         params.tokenA,
         userTransferAuthority.publicKey,
-        params.owner.publicKey,
+        params.owner,
         BigInt(Number(params.maximumTokenAAmount)), //TODO this isn't great
       ),
       createApproveInstruction(
         params.tokenB,
         userTransferAuthority.publicKey,
-        params.owner.publicKey,
+        params.owner,
         BigInt(Number(params.maximumTokenBAmount)), //TODO this isn't great
       ),
     );
@@ -114,7 +115,7 @@ export class TokenSwapClient {
         .accounts({
           swapPool: params.swapPool,
           authority: params.authority,
-          owner: params.owner.publicKey,
+          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           tokenA: params.tokenA,
           tokenB: params.tokenB,
@@ -129,7 +130,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async depositAllTokenTypesInstruction(params: {
@@ -179,7 +180,7 @@ export class TokenSwapClient {
     minimumPoolTokenAmount: BN;
     swapPool: PublicKey;
     authority: PublicKey;
-    owner: Signer;
+    owner: PublicKey;
     tokenA: PublicKey | null;
     tokenB: PublicKey | null;
     vaultA: PublicKey;
@@ -188,6 +189,7 @@ export class TokenSwapClient {
     lptoken: PublicKey;
     mintA: PublicKey;
     mintB: PublicKey;
+    signers: Signer[];
   }): Promise<TransactionSignature> {
     const transaction = new Transaction();
 
@@ -198,7 +200,7 @@ export class TokenSwapClient {
       createApproveInstruction(
         sourceToken,
         userTransferAuthority.publicKey,
-        params.owner.publicKey,
+        params.owner,
         BigInt(Number(params.sourceTokenAmount)), //TODO this isn't great
       ),
     );
@@ -209,7 +211,7 @@ export class TokenSwapClient {
         .accounts({
           swapPool: params.swapPool,
           authority: params.authority,
-          owner: params.owner.publicKey,
+          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           tokenA: params.tokenA,
           tokenB: params.tokenB,
@@ -224,7 +226,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async depositSingleTokenTypeExactAmountInInstruction(params: {
@@ -276,14 +278,15 @@ export class TokenSwapClient {
     feeReceiverWallet: PublicKey;
     mintA: PublicKey;
     mintB: PublicKey;
-    owner: Signer;
+    owner: PublicKey;
     sourceA: PublicKey;
     sourceB: PublicKey;
+    signers: Signer[];
   }): Promise<PublicKey> {
     const { swapPool, authority, vaultA, vaultB, lpmint } =
       swapPoolPDA(this.programId, params.mintA, params.mintB);
 
-    const lptoken = getAssociatedTokenAddressSync(lpmint, params.owner.publicKey);
+    const lptoken = getAssociatedTokenAddressSync(lpmint, params.owner);
 
     const transaction = new Transaction();
 
@@ -292,13 +295,13 @@ export class TokenSwapClient {
       createApproveInstruction(
         params.sourceA,
         userTransferAuthority.publicKey,
-        params.owner.publicKey,
+        params.owner,
         BigInt(Number(params.initialTokenAAmount)), //TODO this isn't great
       ),
       createApproveInstruction(
         params.sourceB,
         userTransferAuthority.publicKey,
-        params.owner.publicKey,
+        params.owner,
         BigInt(Number(params.initialTokenBAmount)), //TODO this isn't great
       ),
     );
@@ -316,7 +319,7 @@ export class TokenSwapClient {
           feeReceiverWallet: params.feeReceiverWallet,
           mintA: params.mintA,
           mintB: params.mintB,
-          owner: params.owner.publicKey,
+          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           sourceA: params.sourceA,
           sourceB: params.sourceB,
@@ -329,7 +332,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
     return swapPool;
   }
 
@@ -388,7 +391,7 @@ export class TokenSwapClient {
     minimumAmountOut: BN;
     swapPool: PublicKey;
     authority: PublicKey;
-    owner: Signer;
+    owner: PublicKey;
     sourceToken: PublicKey;
     sourceVault: PublicKey;
     destVault: PublicKey;
@@ -396,6 +399,7 @@ export class TokenSwapClient {
     lpmint: PublicKey;
     feeReceiver: PublicKey;
     hostFeeReceiver: PublicKey | null;
+    signers: Signer[];
   }): Promise<TransactionSignature> {
     const transaction = new Transaction();
 
@@ -404,7 +408,7 @@ export class TokenSwapClient {
       createApproveInstruction(
         params.sourceToken,
         userTransferAuthority.publicKey,
-        params.owner.publicKey,
+        params.owner,
         BigInt(Number(params.amountIn)), //TODO this isn't great
       ),
     );
@@ -415,7 +419,7 @@ export class TokenSwapClient {
         .accounts({
           swapPool: params.swapPool,
           authority: params.authority,
-          owner: params.owner.publicKey,
+          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           sourceToken: params.sourceToken,
           sourceVault: params.sourceVault,
@@ -429,7 +433,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async swapInstruction(params: {
@@ -477,7 +481,7 @@ export class TokenSwapClient {
     minimumTokenBAmount: BN;
     swapPool: PublicKey;
     authority: PublicKey;
-    owner: Signer;
+    owner: PublicKey;
     lpmint: PublicKey;
     lptoken: PublicKey;
     vaultA: PublicKey;
@@ -487,6 +491,7 @@ export class TokenSwapClient {
     feeReceiver: PublicKey;
     mintA: PublicKey;
     mintB: PublicKey;
+    signers: Signer[];
   }): Promise<TransactionSignature> {
     const transaction = new Transaction();
 
@@ -495,7 +500,7 @@ export class TokenSwapClient {
       createApproveInstruction(
         params.lptoken,
         userTransferAuthority.publicKey,
-        params.owner.publicKey,
+        params.owner,
         BigInt(Number(params.poolTokenAmount)), //TODO this isn't great
       ),
     );
@@ -506,7 +511,7 @@ export class TokenSwapClient {
         .accounts({
           swapPool: params.swapPool,
           authority: params.authority,
-          owner: params.owner.publicKey,
+          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           lpmint: params.lpmint,
           lptoken: params.lptoken,
@@ -522,7 +527,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async withdrawAllTokenTypesInstruction(params: {
@@ -573,7 +578,7 @@ export class TokenSwapClient {
     maximumPoolTokenAmount: BN;
     swapPool: PublicKey;
     authority: PublicKey;
-    owner: Signer;
+    owner: PublicKey;
     lpmint: PublicKey;
     lptoken: PublicKey;
     vaultA: PublicKey;
@@ -583,6 +588,7 @@ export class TokenSwapClient {
     feeReceiver: PublicKey;
     mintA: PublicKey;
     mintB: PublicKey;
+    signers: Signer[];
   }): Promise<TransactionSignature> {
     const transaction = new Transaction();
 
@@ -591,7 +597,7 @@ export class TokenSwapClient {
       createApproveInstruction(
         params.lptoken,
         userTransferAuthority.publicKey,
-        params.owner.publicKey,
+        params.owner,
         BigInt(Number(params.maximumPoolTokenAmount)), //TODO this isn't great
       ),
     );
@@ -602,7 +608,7 @@ export class TokenSwapClient {
         .accounts({
           swapPool: params.swapPool,
           authority: params.authority,
-          owner: params.owner.publicKey,
+          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           lpmint: params.lpmint,
           lptoken: params.lptoken,
@@ -618,7 +624,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [params.owner, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async withdrawSingleTokenTypeExactAmountOutInstruction(params: {
