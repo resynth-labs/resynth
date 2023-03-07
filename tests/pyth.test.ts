@@ -38,13 +38,13 @@ describe("pyth", () => {
       conf,
     });
 
-    let priceData = parsePythPriceData((await context.provider.connection.getAccountInfo(oracle))!.data);
+    let priceData = parsePythPriceData((await pyth.connection.getAccountInfo(oracle))!.data);
     assert.ok(priceData.price === price);
     assert.ok(priceData.exponent === expo);
 
     const newPrice = 69000;
     await pyth.setPrice({ price: new BN(newPrice * 10 ** -expo), oracle });
-    priceData = parsePythPriceData((await context.provider.connection.getAccountInfo(oracle))!.data);
+    priceData = parsePythPriceData((await pyth.connection.getAccountInfo(oracle))!.data);
     assert.ok(priceData.price === newPrice);
     assert.ok(priceData.exponent === expo);
   })

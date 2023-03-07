@@ -26,10 +26,10 @@ describe("token faucet", () => {
   it("Create Faucet", async () => {
     [mint, faucet] = await tokenFaucet.createMintAndFaucet(decimals);
 
-    const mintAccountInfo = await context.provider.connection.getAccountInfo(mint);
+    const mintAccountInfo = await tokenFaucet.connection.getAccountInfo(mint);
     assert(mintAccountInfo !== null, "mint does not exist");
 
-    const faucetAccountInfo = await context.provider.connection.getAccountInfo(
+    const faucetAccountInfo = await tokenFaucet.connection.getAccountInfo(
       faucet
     );
     assert(faucetAccountInfo !== null, "faucet does not exist");
@@ -43,10 +43,10 @@ describe("token faucet", () => {
   it("airdrop", async () => {
     const tokenAccount = getAssociatedTokenAddressSync(
       mint,
-      context.provider.wallet.publicKey
+      tokenFaucet.wallet.publicKey
     );
     assert(
-      (await context.provider.connection.getAccountInfo(tokenAccount)) === null,
+      (await tokenFaucet.connection.getAccountInfo(tokenAccount)) === null,
       "token account already exists"
     );
 
@@ -54,11 +54,11 @@ describe("token faucet", () => {
       amount: new BN(1_000_000),
       faucet: faucet,
       mint: mint,
-      owner: context.provider.wallet.publicKey,
+      owner: tokenFaucet.wallet.publicKey,
     });
 
     assert(
-      (await context.provider.connection.getTokenAccountBalance(tokenAccount)).value.uiAmount === 1,
+      (await tokenFaucet.connection.getTokenAccountBalance(tokenAccount)).value.uiAmount === 1,
       "token account balance is not 1"
     );
   });

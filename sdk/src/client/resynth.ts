@@ -2,6 +2,7 @@ import {
   BN,
   Program,
   ProgramAccount,
+  Wallet,
 } from "@coral-xyz/anchor";
 import { ASSOCIATED_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import {
@@ -9,6 +10,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
+  Connection,
   PublicKey,
   Signer,
   SystemProgram,
@@ -18,7 +20,7 @@ import {
 } from "@solana/web3.js";
 import { IDL, Resynth } from "../idl/resynth";
 import { MarginAccount, SyntheticAsset } from "../types";
-import { marginAccountPDA, syntheticAssetPDA } from "../utils";
+import { marginAccountPDA, ResynthConfig, syntheticAssetPDA } from "../utils";
 import { Context } from "./context";
 
 export class ResynthClient {
@@ -30,6 +32,18 @@ export class ResynthClient {
     this.context = context;
     this.programId = new PublicKey(this.context.config.resynthProgramId);
     this.program = new Program<Resynth>(IDL, this.programId, this.context.provider);
+  }
+
+  get config(): ResynthConfig {
+    return this.context.config;
+  }
+
+  get connection(): Connection {
+    return this.context.provider.connection;
+  }
+
+  get wallet(): Wallet {
+    return this.context.provider.wallet as Wallet;
   }
 
   // Accounts -----------------------------------------------------------------

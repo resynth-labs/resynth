@@ -67,7 +67,7 @@ describe("resynth", () => {
 
     // Airdrop the wallet
     const transferInstruction = SystemProgram.transfer({
-      fromPubkey: context.provider.wallet.publicKey,
+      fromPubkey: resynth.wallet.publicKey,
       toPubkey: wallet.publicKey,
       lamports: 0.01 * LAMPORTS_PER_SOL,
     });
@@ -81,11 +81,11 @@ describe("resynth", () => {
   }
 
   before(async () => {
-    const airdropSignature = await context.provider.connection.requestAirdrop(
-      context.provider.wallet.publicKey,
+    const airdropSignature = await resynth.connection.requestAirdrop(
+      resynth.wallet.publicKey,
       2 * LAMPORTS_PER_SOL
     );
-    await context.provider.connection.confirmTransaction(
+    await resynth.connection.confirmTransaction(
       airdropSignature,
       "confirmed"
     );

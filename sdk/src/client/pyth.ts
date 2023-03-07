@@ -23,6 +23,18 @@ export class PythClient {
     this.program = new Program<Pyth>(IDL, this.programId, this.context.provider);
   }
 
+  get config(): ResynthConfig {
+    return this.context.config;
+  }
+
+  get connection(): Connection {
+    return this.context.provider.connection;
+  }
+
+  get wallet(): Wallet {
+    return this.context.provider.wallet as Wallet;
+  }
+
   // Accounts -----------------------------------------------------------------
 
   async getPrice(priceAccount: PublicKey): Promise<number> {

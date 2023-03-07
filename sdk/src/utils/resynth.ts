@@ -122,23 +122,23 @@ export async function fetchSyntheticAsset(
   const walletBalance = walletInfo?.lamports ?? 0;
   const marginAccount = marginAccountInfo
     ? client.program.coder.accounts.decode(
-        "marginAccount",
-        marginAccountInfo.data
-      )
+      "marginAccount",
+      marginAccountInfo.data
+    )
     : undefined;
   const syntheticBalance = syntheticAccountInfo
     ? Number(
-        unpackAccount(syntheticTokenAccountKey, syntheticAccountInfo).amount
-      )
+      unpackAccount(syntheticTokenAccountKey, syntheticAccountInfo).amount
+    )
     : 0;
   const collateralBalance = collateralAccountInfo
     ? Number(
-        unpackAccount(
-          collateralMintAddress,
-          collateralAccountInfo,
-          TOKEN_PROGRAM_ID
-        ).amount
-      )
+      unpackAccount(
+        collateralMintAddress,
+        collateralAccountInfo,
+        TOKEN_PROGRAM_ID
+      ).amount
+    )
     : 0;
 
   return {

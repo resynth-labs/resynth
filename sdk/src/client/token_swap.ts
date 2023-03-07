@@ -30,6 +30,18 @@ export class TokenSwapClient {
     this.program = new Program<TokenSwap>(IDL, this.programId, this.context.provider);
   }
 
+  get config(): ResynthConfig {
+    return this.context.config;
+  }
+
+  get connection(): Connection {
+    return this.context.provider.connection;
+  }
+
+  get wallet(): Wallet {
+    return this.context.provider.wallet as Wallet;
+  }
+
   // Accounts -----------------------------------------------------------------
 
   async fetchAllSwapPools(): Promise<ProgramAccount<SwapPool>[]> {
