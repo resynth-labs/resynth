@@ -5,23 +5,18 @@ import {
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
+  Signer,
   Transaction,
 } from "@solana/web3.js";
 import { assert } from "chai";
-import { Fees, SwapCurveType, swapPoolPDA, TokenFaucetClient, TokenSwapClient } from "../sdk/src";
+import { Context, Fees, SwapCurveType, swapPoolPDA, TokenFaucetClient, TokenSwapClient } from "../sdk/src";
 
 describe("token swap", () => {
-  const tokenSwap = new TokenSwapClient(
-    "localnet",
-    undefined,
-    new NodeWallet(Keypair.generate()),
-  );
+  const context = new Context();
 
-  const tokenFaucet = new TokenFaucetClient(
-    "localnet",
-    tokenSwap.connection,
-    tokenSwap.wallet,
-  );
+  const tokenSwap = new TokenSwapClient(context);
+
+  const tokenFaucet = new TokenFaucetClient(context);
 
   // Hard-coded fee address, for testing production mode
   const SWAP_PROGRAM_OWNER_FEE_ADDRESS = "HfoTxFR1Tm6kGmWgYWD6J7YHVy1UwqSULUGVLXkJqaKN";
@@ -96,20 +91,20 @@ describe("token swap", () => {
   }
 
   before(async () => {
-    let airdropSignature = await tokenSwap.connection.requestAirdrop(
-      tokenSwap.wallet.publicKey,
-      2 * LAMPORTS_PER_SOL
-    );
-    await tokenSwap.connection.confirmTransaction(
-      airdropSignature,
-      "confirmed"
-    );
+    // let airdropSignature = await context.provider.connection.requestAirdrop(
+    //   context.provider.wallet.publicKey,
+    //   2 * LAMPORTS_PER_SOL
+    // );
+    // await context.provider.connection.confirmTransaction(
+    //   airdropSignature,
+    //   "confirmed"
+    // );
 
-    airdropSignature = await tokenSwap.connection.requestAirdrop(
+    const airdropSignature = await context.provider.connection.requestAirdrop(
       user.publicKey,
       2 * LAMPORTS_PER_SOL
     );
-    await tokenSwap.connection.confirmTransaction(
+    await context.provider.connection.confirmTransaction(
       airdropSignature,
       "confirmed"
     );
@@ -166,7 +161,8 @@ describe("token swap", () => {
       signers: [user],
     });
 
-    hostFeeReceiver = await createAssociatedTokenAccount(tokenSwap.connection, tokenSwap.wallet.payer, lpmint, hostFeeReceiverWallet.publicKey);
+    // @ts-ignore
+    hostFeeReceiver = await createAssociatedTokenAccount(context.provider.connection, context.provider.wallet.payer, lpmint, hostFeeReceiverWallet.publicKey);
 
     const fetchedSwapPool = (await tokenSwap.fetchSwapPool(swapPool)).account;
 
@@ -205,32 +201,32 @@ describe("token swap", () => {
     );
     assert('constantProductCurve' in fetchedSwapPool.swapCurveType);
 
-    assert(Number(MintLayout.decode((await tokenSwap.connection.getAccountInfo(lpmint))!.data).supply) == DEFAULT_POOL_TOKEN_AMOUNT);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) == DEFAULT_POOL_TOKEN_AMOUNT);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB);
+    assert(Number(MintLayout.decode((await context.provider.connection.getAccountInfo(lpmint))!.data).supply) == DEFAULT_POOL_TOKEN_AMOUNT);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) == DEFAULT_POOL_TOKEN_AMOUNT);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB);
   });
 
   it("depositAllTokenTypes", async () => {
-    const supply = Number(MintLayout.decode((await tokenSwap.connection.getAccountInfo(lpmint))!.data).supply);
+    const supply = Number(MintLayout.decode((await context.provider.connection.getAccountInfo(lpmint))!.data).supply);
     const tokenAmountA = Math.floor(
-      (Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) * POOL_TOKEN_AMOUNT) / supply,
+      (Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount) * POOL_TOKEN_AMOUNT) / supply,
     );
     const tokenAmountB = Math.floor(
-      (Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) * POOL_TOKEN_AMOUNT) / supply,
+      (Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount) * POOL_TOKEN_AMOUNT) / supply,
     );
 
     console.log(`Depositing ${tokenAmountA} token a and ${tokenAmountB} token b`);
     await tokenFaucet.airdrop({
-      amount: new BN(tokenAmountA - Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount)),
+      amount: new BN(tokenAmountA - Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountA))!.data).amount)),
       faucet: faucetA,
       mint: mintA,
       owner: user.publicKey,
     });
     await tokenFaucet.airdrop({
-      amount: new BN(tokenAmountB - Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount)),
+      amount: new BN(tokenAmountB - Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountB))!.data).amount)),
       faucet: faucetB,
       mint: mintB,
       owner: user.publicKey,
@@ -255,17 +251,17 @@ describe("token swap", () => {
       signers: [user],
     });
 
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA + tokenAmountA);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA + tokenAmountA);
     currentSwapTokenA += tokenAmountA;
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB + tokenAmountB);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB + tokenAmountB);
     currentSwapTokenB += tokenAmountB;
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) == DEFAULT_POOL_TOKEN_AMOUNT + POOL_TOKEN_AMOUNT);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) == DEFAULT_POOL_TOKEN_AMOUNT + POOL_TOKEN_AMOUNT);
   });
 
   it("withdrawAllTokenTypes", async () => {
-    const supply = Number(MintLayout.decode((await tokenSwap.connection.getAccountInfo(lpmint))!.data).supply);
+    const supply = Number(MintLayout.decode((await context.provider.connection.getAccountInfo(lpmint))!.data).supply);
     let feeAmount = 0;
     if (OWNER_WITHDRAW_FEE_NUMERATOR !== 0) {
       feeAmount = Math.floor(
@@ -275,10 +271,10 @@ describe("token swap", () => {
     }
     const poolTokenAmount = POOL_TOKEN_AMOUNT - feeAmount;
     const tokenAmountA = Math.floor(
-      (Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) * poolTokenAmount) / supply,
+      (Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount) * poolTokenAmount) / supply,
     );
     const tokenAmountB = Math.floor(
-      (Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) * poolTokenAmount) / supply,
+      (Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount) * poolTokenAmount) / supply,
     );
 
     console.log('Withdrawing pool tokens for A and B tokens');
@@ -301,14 +297,14 @@ describe("token swap", () => {
       signers: [user],
     });
 
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) == DEFAULT_POOL_TOKEN_AMOUNT);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA - tokenAmountA);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) == DEFAULT_POOL_TOKEN_AMOUNT);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA - tokenAmountA);
     currentSwapTokenA -= tokenAmountA;
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB - tokenAmountB);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB - tokenAmountB);
     currentSwapTokenB -= tokenAmountB;
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == tokenAmountA);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == tokenAmountB);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(feeReceiver))!.data).amount) == feeAmount);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountA))!.data).amount) == tokenAmountA);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountB))!.data).amount) == tokenAmountB);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(feeReceiver))!.data).amount) == feeAmount);
     currentFeeAmount = feeAmount;
   });
 
@@ -324,7 +320,8 @@ describe("token swap", () => {
     });
 
     console.log('Creating swap token b account');
-    const swapperAccountB = await createAssociatedTokenAccount(tokenSwap.connection, tokenSwap.wallet.payer, mintB, swapper.publicKey);
+    // @ts-ignore
+    const swapperAccountB = await createAssociatedTokenAccount(context.provider.connection, context.provider.wallet.payer, mintB, swapper.publicKey);
 
     console.log('Swapping');
     await tokenSwap.swap({
@@ -343,13 +340,13 @@ describe("token swap", () => {
       signers: [swapper],
     });
 
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(swapperAccountA))!.data).amount) == 0);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(swapperAccountB))!.data).amount) == SWAP_AMOUNT_OUT);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(swapperAccountA))!.data).amount) == 0);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(swapperAccountB))!.data).amount) == SWAP_AMOUNT_OUT);
 
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA + SWAP_AMOUNT_IN);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA + SWAP_AMOUNT_IN);
     currentSwapTokenA += SWAP_AMOUNT_IN;
 
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB - SWAP_AMOUNT_OUT);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB - SWAP_AMOUNT_OUT);
     currentSwapTokenB -= SWAP_AMOUNT_OUT;
 
     //TODO these numbers are off
@@ -359,8 +356,8 @@ describe("token swap", () => {
     // console.log(`Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(hostFeeReceiver)).data).amount) = ${Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(hostFeeReceiver)).data).amount)}`);
     // console.log(`HOST_SWAP_FEE = ${HOST_SWAP_FEE}`);
     // //assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(hostFeeReceiver)).data).amount) == HOST_SWAP_FEE);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(feeReceiver))!.data).amount) == 18547);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(hostFeeReceiver))!.data).amount) == 4636);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(feeReceiver))!.data).amount) == 18547);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(hostFeeReceiver))!.data).amount) == 4636);
   });
 
   it("createAccountAndSwapAtomic", async () => {
@@ -379,7 +376,7 @@ describe("token swap", () => {
     const swapperAccountB = getAssociatedTokenAddressSync(mintB, swappper.publicKey);
     transaction.add(
       createAssociatedTokenAccountInstruction(
-        tokenSwap.wallet.payer.publicKey,
+        context.provider.wallet.publicKey,
         swapperAccountB,
         swappper.publicKey,
         mintB,
@@ -416,31 +413,31 @@ describe("token swap", () => {
 
     // Send the instructions
     console.log('sending big instruction');
-    await tokenSwap.provider.sendAndConfirm(transaction, [swappper, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    await context.provider.sendAndConfirm(transaction, [swappper, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
 
-    currentSwapTokenA = Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount);
-    currentSwapTokenB = Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount);
+    currentSwapTokenA = Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount);
+    currentSwapTokenB = Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount);
   });
 
   it("depositSingleTokenTypeExactAmountIn", async () => {
     // Pool token amount to deposit on one side
     const depositAmount = 10000;
 
-    const supply = Number(MintLayout.decode((await tokenSwap.connection.getAccountInfo(lpmint))!.data).supply);
+    const supply = Number(MintLayout.decode((await context.provider.connection.getAccountInfo(lpmint))!.data).supply);
     const poolTokenA = tradingTokensToPoolTokens(
       depositAmount,
-      Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount),
+      Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount),
       supply,
     );
     const poolTokenB = tradingTokensToPoolTokens(
       depositAmount,
-      Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount),
+      Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount),
       supply,
     );
 
     console.log('Creating depositor token a account');
     await tokenFaucet.airdrop({
-      amount: new BN(depositAmount - Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount)),
+      amount: new BN(depositAmount - Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountA))!.data).amount)),
       faucet: faucetA,
       mint: mintA,
       owner: user.publicKey,
@@ -448,7 +445,7 @@ describe("token swap", () => {
 
     console.log('Creating depositor token b account');
     await tokenFaucet.airdrop({
-      amount: new BN(depositAmount - Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount)),
+      amount: new BN(depositAmount - Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountB))!.data).amount)),
       faucet: faucetB,
       mint: mintB,
       owner: user.publicKey,
@@ -472,8 +469,8 @@ describe("token swap", () => {
       signers: [user],
     });
 
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA + depositAmount);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA + depositAmount);
     currentSwapTokenA += depositAmount;
 
     console.log('Depositing token B into swap');
@@ -494,10 +491,10 @@ describe("token swap", () => {
       signers: [user],
     });
 
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB + depositAmount);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB + depositAmount);
     currentSwapTokenB += depositAmount;
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) >= poolTokenA + poolTokenB);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) >= poolTokenA + poolTokenB);
   });
 
   it("withdrawSingleTokenTypeExactAmountOut", async () => {
@@ -505,9 +502,9 @@ describe("token swap", () => {
     const withdrawAmount = 50000;
     const roundingAmount = 1.0001; // make math a little easier
 
-    const supply = Number(MintLayout.decode((await tokenSwap.connection.getAccountInfo(lpmint))!.data).supply);
+    const supply = Number(MintLayout.decode((await context.provider.connection.getAccountInfo(lpmint))!.data).supply);
 
-    const swapTokenAPost = Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) - withdrawAmount;
+    const swapTokenAPost = Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount) - withdrawAmount;
     const poolTokenA = tradingTokensToPoolTokens(
       withdrawAmount,
       swapTokenAPost,
@@ -519,7 +516,7 @@ describe("token swap", () => {
         1 + OWNER_WITHDRAW_FEE_NUMERATOR / OWNER_WITHDRAW_FEE_DENOMINATOR;
     }
 
-    const swapTokenBPost = Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) - withdrawAmount;
+    const swapTokenBPost = Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount) - withdrawAmount;
     const poolTokenB = tradingTokensToPoolTokens(
       withdrawAmount,
       swapTokenBPost,
@@ -531,7 +528,7 @@ describe("token swap", () => {
         1 + OWNER_WITHDRAW_FEE_NUMERATOR / OWNER_WITHDRAW_FEE_DENOMINATOR;
     }
 
-    const poolTokenAmount = Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount);
+    const poolTokenAmount = Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userPoolTokenAccount))!.data).amount);
 
     console.log('Withdrawing token A only');
     await tokenSwap.withdrawSingleTokenTypeExactAmountOut({
@@ -552,10 +549,10 @@ describe("token swap", () => {
       signers: [user],
     });
 
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == withdrawAmount);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA - withdrawAmount);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountA))!.data).amount) == withdrawAmount);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA - withdrawAmount);
     currentSwapTokenA += withdrawAmount;
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) >= poolTokenAmount - adjustedPoolTokenA);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) >= poolTokenAmount - adjustedPoolTokenA);
 
     console.log('Withdrawing token B only');
     await tokenSwap.withdrawSingleTokenTypeExactAmountOut({
@@ -576,10 +573,10 @@ describe("token swap", () => {
       signers: [user],
     });
 
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == withdrawAmount);
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB - withdrawAmount);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userAccountB))!.data).amount) == withdrawAmount);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB - withdrawAmount);
     currentSwapTokenB += withdrawAmount;
-    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) >= poolTokenAmount - adjustedPoolTokenA - adjustedPoolTokenB);
+    assert(Number(AccountLayout.decode((await context.provider.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) >= poolTokenAmount - adjustedPoolTokenA - adjustedPoolTokenB);
   });
 
 });

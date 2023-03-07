@@ -9,38 +9,27 @@ import {
   PublicKey,
 } from "@solana/web3.js";
 import { assert } from "chai";
-import { TokenFaucetClient } from "../sdk/src";
+import { Context, TokenFaucetClient } from "../sdk/src";
 
 describe("token faucet", () => {
+  let context: Context;
   let tokenFaucet: TokenFaucetClient;
   const decimals = 6;
   let mint: PublicKey;
   let faucet: PublicKey;
 
   before(async () => {
-    tokenFaucet = new TokenFaucetClient(
-      "localnet",
-      undefined,
-      new NodeWallet(Keypair.generate())
-    );
-
-    const airdropSignature = await tokenFaucet.connection.requestAirdrop(
-      tokenFaucet.wallet.publicKey,
-      2 * LAMPORTS_PER_SOL
-    );
-    await tokenFaucet.connection.confirmTransaction(
-      airdropSignature,
-      "confirmed"
-    );
+    context = new Context();
+    tokenFaucet = new TokenFaucetClient(context);
   });
 
   it("Create Faucet", async () => {
     [mint, faucet] = await tokenFaucet.createMintAndFaucet(decimals);
 
-    const mintAccountInfo = await tokenFaucet.connection.getAccountInfo(mint);
+    const mintAccountInfo = await context.provider.connection.getAccountInfo(mint);
     assert(mintAccountInfo !== null, "mint does not exist");
 
-    const faucetAccountInfo = await tokenFaucet.connection.getAccountInfo(
+    const faucetAccountInfo = await context.provider.connection.getAccountInfo(
       faucet
     );
     assert(faucetAccountInfo !== null, "faucet does not exist");
@@ -51,13 +40,13 @@ describe("token faucet", () => {
     );
   });
 
-  it("Airdrop", async () => {
+  it("airdrop", async () => {
     const tokenAccount = getAssociatedTokenAddressSync(
       mint,
-      tokenFaucet.wallet.publicKey
+      context.provider.wallet.publicKey
     );
     assert(
-      (await tokenFaucet.connection.getAccountInfo(tokenAccount)) === null,
+      (await context.provider.connection.getAccountInfo(tokenAccount)) === null,
       "token account already exists"
     );
 
@@ -65,11 +54,11 @@ describe("token faucet", () => {
       amount: new BN(1_000_000),
       faucet: faucet,
       mint: mint,
-      owner: tokenFaucet.wallet.publicKey,
+      owner: context.provider.wallet.publicKey,
     });
 
     assert(
-      (await tokenFaucet.connection.getTokenAccountBalance(tokenAccount)).value.uiAmount === 1,
+      (await context.provider.connection.getTokenAccountBalance(tokenAccount)).value.uiAmount === 1,
       "token account balance is not 1"
     );
   });

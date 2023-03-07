@@ -1,56 +1,32 @@
 import {
-  AnchorProvider,
   BN,
   Program,
-  Wallet,
 } from "@coral-xyz/anchor";
 import {
-  Connection,
   Keypair,
   PublicKey,
   SystemProgram,
   TransactionInstruction,
   TransactionSignature,
 } from "@solana/web3.js";
-import CONFIG from "../config.json";
 import { IDL, Pyth } from "../idl/pyth";
-import { ResynthConfig } from "../utils";
+import { Context } from "./context";
 
 export class PythClient {
-  cluster: "devnet" | "localnet" | "mainnet";
-  config: ResynthConfig;
-  connection: Connection;
+  context: Context;
   program: Program<Pyth>;
   programId: PublicKey;
-  provider: AnchorProvider;
-  url: string;
-  wallet: Wallet;
 
-  constructor(
-    cluster: "devnet" | "localnet" | "mainnet",
-    connection?: Connection,
-    wallet?: Wallet
-  ) {
-    this.cluster = cluster;
-    this.config = CONFIG[this.cluster] as ResynthConfig;
-    this.programId = new PublicKey(this.config.pythProgramId);
-    this.url = this.config.url;
-
-    this.connection = connection
-      ? connection
-      : new Connection(this.url, "confirmed");
-
-    this.wallet = wallet ? wallet : ({} as unknown as any);
-
-    const opts = AnchorProvider.defaultOptions();
-    this.provider = new AnchorProvider(this.connection, this.wallet, opts);
-    this.program = new Program<Pyth>(IDL, this.programId, this.provider);
+  constructor(context: Context) {
+    this.context = context;
+    this.programId = new PublicKey(this.context.config.pythProgramId);
+    this.program = new Program<Pyth>(IDL, this.programId, this.context.provider);
   }
 
   // Accounts -----------------------------------------------------------------
 
   async getPrice(priceAccount: PublicKey): Promise<number> {
-    const priceData = parsePythPriceData((await this.connection.getAccountInfo(priceAccount))!.data);
+    const priceData = parsePythPriceData((await this.context.provider.connection.getAccountInfo(priceAccount))!.data);
     return priceData.price;
   }
 
@@ -79,11 +55,11 @@ export class PythClient {
       .preInstructions([
         SystemProgram.createAccount({
           /** The account that will transfer lamports to the created account */
-          fromPubkey: this.wallet.publicKey,
+          fromPubkey: this.context.provider.wallet.publicKey,
           /** Public key of the created account */
           newAccountPubkey: oracleKeypair.publicKey,
           /** Amount of lamports to transfer to the created account */
-          lamports: await this.connection.getMinimumBalanceForRentExemption(
+          lamports: await this.context.provider.connection.getMinimumBalanceForRentExemption(
             PYTH_PRICE_SIZE
           ),
           /** Amount of space in bytes to allocate to the created account */

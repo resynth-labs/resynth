@@ -1,13 +1,10 @@
 import {
-  AnchorProvider,
   BN,
   Program,
   ProgramAccount,
-  Wallet,
 } from "@coral-xyz/anchor";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, createApproveInstruction, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
-  Connection,
   Keypair,
   PublicKey,
   Signer,
@@ -16,42 +13,21 @@ import {
   TransactionInstruction,
   TransactionSignature,
 } from "@solana/web3.js";
-import CONFIG from "../config.json";
 import { IDL, TokenSwap } from "../idl/token_swap";
 import { SwapPool } from "../types";
 import { Fees, SwapCurveType } from "../types";
-import { ResynthConfig, swapPoolPDA } from "../utils";
-import assert from "assert";
+import { swapPoolPDA } from "../utils";
+import { Context } from "./context";
 
 export class TokenSwapClient {
-  cluster: "devnet" | "localnet" | "mainnet";
-  config: ResynthConfig;
-  connection: Connection;
+  context: Context;
   program: Program<TokenSwap>;
   programId: PublicKey;
-  provider: AnchorProvider;
-  url: string;
-  wallet: Wallet;
 
-  constructor(
-    cluster: "devnet" | "localnet" | "mainnet",
-    connection?: Connection,
-    wallet?: Wallet
-  ) {
-    this.cluster = cluster;
-    this.config = CONFIG[this.cluster] as ResynthConfig;
-    this.programId = new PublicKey(this.config.tokenSwapProgramId);
-    this.url = this.config.url;
-
-    this.connection = connection
-      ? connection
-      : new Connection(this.url, "confirmed");
-
-    this.wallet = wallet ? wallet : ({} as unknown as any);
-
-    const opts = AnchorProvider.defaultOptions();
-    this.provider = new AnchorProvider(this.connection, this.wallet, opts);
-    this.program = new Program<TokenSwap>(IDL, this.programId, this.provider);
+  constructor(context: Context) {
+    this.context = context;
+    this.programId = new PublicKey(this.context.config.tokenSwapProgramId);
+    this.program = new Program<TokenSwap>(IDL, this.programId, this.context.provider);
   }
 
   // Accounts -----------------------------------------------------------------
@@ -130,7 +106,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.context.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async depositAllTokenTypesInstruction(params: {
@@ -195,10 +171,9 @@ export class TokenSwapClient {
 
     const userTransferAuthority = Keypair.generate();
     const sourceToken = params.tokenA !== null ? params.tokenA : params.tokenB;
-    assert(sourceToken);
     transaction.add(
       createApproveInstruction(
-        sourceToken,
+        sourceToken!,
         userTransferAuthority.publicKey,
         params.owner,
         BigInt(Number(params.sourceTokenAmount)), //TODO this isn't great
@@ -226,7 +201,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.context.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async depositSingleTokenTypeExactAmountInInstruction(params: {
@@ -324,7 +299,7 @@ export class TokenSwapClient {
           sourceA: params.sourceA,
           sourceB: params.sourceB,
           lptoken: lptoken,
-          payer: this.wallet.publicKey,
+          payer: this.context.provider.wallet.publicKey,
           systemProgram: SystemProgram.programId,
           tokenProgram: TOKEN_PROGRAM_ID,
           associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -332,7 +307,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    await this.context.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
     return swapPool;
   }
 
@@ -375,7 +350,7 @@ export class TokenSwapClient {
         sourceA: params.sourceA,
         sourceB: params.sourceB,
         lptoken: params.lptoken,
-        payer: this.wallet.publicKey,
+        payer: this.context.provider.wallet.publicKey,
         systemProgram: SystemProgram.programId,
         tokenProgram: TOKEN_PROGRAM_ID,
         associatedTokenProgram: ASSOCIATED_TOKEN_PROGRAM_ID,
@@ -433,7 +408,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.context.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async swapInstruction(params: {
@@ -527,7 +502,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.context.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async withdrawAllTokenTypesInstruction(params: {
@@ -624,7 +599,7 @@ export class TokenSwapClient {
         .instruction(),
     );
 
-    return await this.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
+    return await this.context.provider.sendAndConfirm(transaction, [...params.signers, userTransferAuthority], { commitment: "confirmed", skipPreflight: true });
   }
 
   async withdrawSingleTokenTypeExactAmountOutInstruction(params: {

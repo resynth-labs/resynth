@@ -1,18 +1,14 @@
 import {
-  AnchorProvider,
   BN,
   Program,
   ProgramAccount,
-  Wallet,
 } from "@coral-xyz/anchor";
 import { ASSOCIATED_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import {
-  ASSOCIATED_TOKEN_PROGRAM_ID,
   getAssociatedTokenAddressSync,
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
-  Connection,
   PublicKey,
   Signer,
   SystemProgram,
@@ -20,40 +16,20 @@ import {
   TransactionInstruction,
   TransactionSignature,
 } from "@solana/web3.js";
-import CONFIG from "../config.json";
 import { IDL, Resynth } from "../idl/resynth";
 import { MarginAccount, SyntheticAsset } from "../types";
-import { marginAccountPDA, ResynthConfig, syntheticAssetPDA } from "../utils";
+import { marginAccountPDA, syntheticAssetPDA } from "../utils";
+import { Context } from "./context";
 
 export class ResynthClient {
-  cluster: "devnet" | "localnet" | "mainnet";
-  config: ResynthConfig;
-  connection: Connection;
+  context: Context;
   program: Program<Resynth>;
   programId: PublicKey;
-  provider: AnchorProvider;
-  url: string;
-  wallet: Wallet;
 
-  constructor(
-    cluster: "devnet" | "localnet" | "mainnet",
-    connection?: Connection,
-    wallet?: Wallet
-  ) {
-    this.cluster = cluster;
-    this.config = CONFIG[this.cluster] as ResynthConfig;
-    this.programId = new PublicKey(this.config.resynthProgramId);
-    this.url = this.config.url;
-
-    this.connection = connection
-      ? connection
-      : new Connection(this.url, "confirmed");
-
-    this.wallet = wallet ? wallet : ({} as unknown as any);
-
-    const opts = AnchorProvider.defaultOptions();
-    this.provider = new AnchorProvider(this.connection, this.wallet, opts);
-    this.program = new Program<Resynth>(IDL, this.programId, this.provider);
+  constructor(context: Context) {
+    this.context = context;
+    this.programId = new PublicKey(this.context.config.resynthProgramId);
+    this.program = new Program<Resynth>(IDL, this.programId, this.context.provider);
   }
 
   // Accounts -----------------------------------------------------------------
@@ -102,7 +78,7 @@ export class ResynthClient {
         syntheticMint: syntheticMint,
         syntheticOracle: params.syntheticOracle,
         assetAuthority: assetAuthority,
-        payer: this.wallet.publicKey,
+        payer: this.context.provider.wallet.publicKey,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
       })
@@ -126,7 +102,7 @@ export class ResynthClient {
         syntheticMint: params.syntheticMint,
         syntheticOracle: params.syntheticOracle,
         assetAuthority: params.assetAuthority,
-        payer: this.wallet.publicKey,
+        payer: this.context.provider.wallet.publicKey,
         tokenProgram: TOKEN_PROGRAM_ID,
         systemProgram: SystemProgram.programId,
       })
@@ -170,7 +146,7 @@ export class ResynthClient {
     return this.program.methods
       .initializeMarginAccount()
       .accountsStrict({
-        payer: this.wallet.publicKey,
+        payer: this.context.provider.wallet.publicKey,
         owner: params.owner,
         syntheticAsset: params.syntheticAsset,
         marginAccount: params.marginAccount,
@@ -209,7 +185,7 @@ export class ResynthClient {
       syntheticAccount: params.syntheticAccount,
     });
     const transaction = new Transaction().add(instruction);
-    return await this.provider.sendAndConfirm(transaction, params.signers, {
+    return await this.context.provider.sendAndConfirm(transaction, params.signers, {
       commitment: "confirmed",
       skipPreflight: true,
     });
@@ -290,7 +266,7 @@ export class ResynthClient {
       syntheticAccount: params.syntheticAccount,
     });
     const transaction = new Transaction().add(instruction);
-    return await this.provider.sendAndConfirm(transaction, params.signers, {
+    return await this.context.provider.sendAndConfirm(transaction, params.signers, {
       commitment: "confirmed",
       skipPreflight: true,
     });

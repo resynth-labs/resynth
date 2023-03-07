@@ -1,5 +1,4 @@
-import { AnchorProvider, BN, setProvider } from "@coral-xyz/anchor";
-import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
+import { BN } from "@coral-xyz/anchor";
 import {
   PublicKey,
   Keypair,
@@ -10,6 +9,7 @@ import {
 import { use as chaiUse } from "chai";
 import * as chaiAsPromised from "chai-as-promised";
 import {
+  Context,
   PythClient,
   ResynthClient,
   syntheticAssetPDA,
@@ -20,38 +20,17 @@ import {
 chaiUse(chaiAsPromised.default);
 
 describe("resynth", () => {
-  // Configure the client to use the local cluster.
-  const provider = AnchorProvider.env();
-
-  // Deconstruct web3 objects for convenience
-  const { connection, wallet } = provider;
-  const payer = (wallet as NodeWallet).payer;
-
-  provider.opts.skipPreflight = true;
-  provider.opts.commitment = "processed";
-  setProvider(provider);
+  const context = new Context();
 
   // // The mock pyth program, from Drift-v2 repo
-  const pyth = new PythClient("localnet", connection, wallet as NodeWallet);
+  const pyth = new PythClient(context);
 
   // The main synthetic asset program
-  const resynth = new ResynthClient(
-    "localnet",
-    connection,
-    wallet as NodeWallet
-  );
+  const resynth = new ResynthClient(context);
 
-  const tokenFaucet = new TokenFaucetClient(
-    "localnet",
-    connection,
-    wallet as NodeWallet
-  );
+  const tokenFaucet = new TokenFaucetClient(context);
 
-  const tokenSwap = new TokenSwapClient(
-    "localnet",
-    connection,
-    wallet as NodeWallet
-  );
+  const tokenSwap = new TokenSwapClient(context);
 
   // The stablecoin as the base pair of the amm
   let stablecoinMint: PublicKey;
@@ -88,12 +67,12 @@ describe("resynth", () => {
 
     // Airdrop the wallet
     const transferInstruction = SystemProgram.transfer({
-      fromPubkey: payer.publicKey,
+      fromPubkey: context.provider.wallet.publicKey,
       toPubkey: wallet.publicKey,
       lamports: 0.01 * LAMPORTS_PER_SOL,
     });
     const transaction = new Transaction().add(transferInstruction);
-    await provider.sendAndConfirm(transaction);
+    await context.provider.sendAndConfirm(transaction);
 
     return {
       wallet,
@@ -102,11 +81,11 @@ describe("resynth", () => {
   }
 
   before(async () => {
-    const airdropSignature = await tokenFaucet.connection.requestAirdrop(
-      wallet.publicKey,
+    const airdropSignature = await context.provider.connection.requestAirdrop(
+      context.provider.wallet.publicKey,
       2 * LAMPORTS_PER_SOL
     );
-    await tokenFaucet.connection.confirmTransaction(
+    await context.provider.connection.confirmTransaction(
       airdropSignature,
       "confirmed"
     );

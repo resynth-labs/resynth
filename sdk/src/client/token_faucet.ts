@@ -1,9 +1,7 @@
 import {
-  AnchorProvider,
   BN,
   Program,
   ProgramAccount,
-  Wallet,
 } from "@coral-xyz/anchor";
 import {
   createAssociatedTokenAccountInstruction,
@@ -12,7 +10,6 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
-  Connection,
   Keypair,
   PublicKey,
   SystemProgram,
@@ -21,42 +18,21 @@ import {
   TransactionInstruction,
   TransactionSignature,
 } from "@solana/web3.js";
-import CONFIG from "../config.json";
 import { IDL, TokenFaucet } from "../idl/token_faucet";
 import { Faucet } from "../types";
-import { ResynthConfig } from "../utils";
+import { Context } from "./context";
 
 export class TokenFaucetClient {
-  cluster: "devnet" | "localnet" | "mainnet";
-  config: ResynthConfig;
-  connection: Connection;
+  context: Context;
   program: Program<TokenFaucet>;
   programId: PublicKey;
-  provider: AnchorProvider;
-  url: string;
-  wallet: Wallet;
 
   private existing_accounts = new Set<PublicKey>();
 
-  constructor(
-    cluster: "devnet" | "localnet" | "mainnet",
-    connection?: Connection,
-    wallet?: Wallet
-  ) {
-    this.cluster = cluster;
-    this.config = CONFIG[this.cluster] as ResynthConfig;
-    this.programId = this.config.tokenFaucetProgramId ? new PublicKey(this.config.tokenFaucetProgramId) : PublicKey.default;
-    this.url = this.config.url;
-
-    this.connection = connection
-      ? connection
-      : new Connection(this.url, "confirmed");
-
-    this.wallet = wallet ? wallet : ({} as unknown as any);
-
-    const opts = AnchorProvider.defaultOptions();
-    this.provider = new AnchorProvider(this.connection, this.wallet, opts);
-    this.program = new Program<TokenFaucet>(IDL, this.programId, this.provider);
+  constructor(context: Context) {
+    this.context = context;
+    this.programId = this.context.config.tokenFaucetProgramId ? new PublicKey(this.context.config.tokenFaucetProgramId) : PublicKey.default;
+    this.program = new Program<TokenFaucet>(IDL, this.programId, this.context.provider);
   }
 
   // Accounts -----------------------------------------------------------------
@@ -81,12 +57,12 @@ export class TokenFaucetClient {
     owner: PublicKey;
   }): Promise<PublicKey> {
     const tokenAccount = getAssociatedTokenAddressSync(params.mint, params.owner);
-    const exists = this.existing_accounts.has(tokenAccount) ? true : (await this.connection.getAccountInfo(tokenAccount)) !== null;
+    const exists = this.existing_accounts.has(tokenAccount) ? true : (await this.context.provider.connection.getAccountInfo(tokenAccount)) !== null;
     const transaction = new Transaction();
     if (!exists) {
       transaction.add(
         createAssociatedTokenAccountInstruction(
-          this.wallet.publicKey,
+          this.context.provider.wallet.publicKey,
           tokenAccount,
           params.owner,
           params.mint
@@ -107,7 +83,7 @@ export class TokenFaucetClient {
       );
     }
     if (transaction.instructions.length > 0) {
-      const txid = await this.provider.sendAndConfirm(transaction, [], { commitment: "confirmed", skipPreflight: true });
+      const txid = await this.context.provider.sendAndConfirm(transaction, [], { commitment: "confirmed", skipPreflight: true });
       this.existing_accounts.add(tokenAccount);
     }
     return tokenAccount;
@@ -140,23 +116,23 @@ export class TokenFaucetClient {
     const transaction = new Transaction();
     transaction.add(
       SystemProgram.createAccount({
-        fromPubkey: this.wallet.publicKey,
+        fromPubkey: this.context.provider.wallet.publicKey,
         newAccountPubkey: mint.publicKey,
         space: 82,
-        lamports: await this.connection.getMinimumBalanceForRentExemption(82),
+        lamports: await this.context.provider.connection.getMinimumBalanceForRentExemption(82),
         programId: TOKEN_PROGRAM_ID,
       }),
       createInitializeMintInstruction(
         mint.publicKey,
         decimals,
-        this.wallet.publicKey,
+        this.context.provider.wallet.publicKey,
         null
       ),
       await this.program.methods
         .initializeFaucet()
         .accounts({
           faucet,
-          payer: this.wallet.publicKey,
+          payer: this.context.provider.wallet.publicKey,
           mint: mint.publicKey,
           rent: SYSVAR_RENT_PUBKEY,
           systemProgram: SystemProgram.programId,
@@ -164,7 +140,7 @@ export class TokenFaucetClient {
         })
         .instruction()
     );
-    await this.provider.sendAndConfirm(transaction, [mint], {
+    await this.context.provider.sendAndConfirm(transaction, [mint], {
       commitment: "confirmed",
     });
 
@@ -179,7 +155,7 @@ export class TokenFaucetClient {
       .initializeFaucet()
       .accountsStrict({
         faucet: params.faucet,
-        payer: this.wallet.publicKey,
+        payer: this.context.provider.wallet.publicKey,
         mint: params.mint,
         rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
@@ -196,7 +172,7 @@ export class TokenFaucetClient {
       .initializeFaucet()
       .accountsStrict({
         faucet: params.faucet,
-        payer: this.wallet.publicKey,
+        payer: this.context.provider.wallet.publicKey,
         mint: params.mint,
         rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
