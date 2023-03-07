@@ -2,9 +2,11 @@ import {
   BN,
   Program,
   ProgramAccount,
+  Wallet,
 } from "@coral-xyz/anchor";
 import { ASSOCIATED_TOKEN_PROGRAM_ID, createApproveInstruction, getAssociatedTokenAddressSync, TOKEN_PROGRAM_ID } from "@solana/spl-token";
 import {
+  Connection,
   Keypair,
   PublicKey,
   Signer,
@@ -16,7 +18,7 @@ import {
 import { IDL, TokenSwap } from "../idl/token_swap";
 import { SwapPool } from "../types";
 import { Fees, SwapCurveType } from "../types";
-import { swapPoolPDA } from "../utils";
+import { ResynthConfig, swapPoolPDA } from "../utils";
 import { Context } from "./context";
 
 export class TokenSwapClient {

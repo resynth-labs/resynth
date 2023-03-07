@@ -1,6 +1,6 @@
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
-import { ResynthClient } from "../client";
+import { Context, ResynthClient } from "../client";
 import configs from "../config.json";
 import { syntheticAssetPDA } from "../utils";
 
@@ -10,23 +10,8 @@ async function main() {
   const config = configs.mainnet;
   const oracles = config.oracles;
 
-  const connection = new Connection("https://api.mainnet-beta.solana.com");
-  const client = new ResynthClient(
-    "mainnet",
-    connection,
-    new NodeWallet(
-      Keypair.fromSecretKey(
-        new Uint8Array(
-          JSON.parse(
-            require("fs").readFileSync(
-              process.env.HOME + "/.config/solana/id.json",
-              "utf-8"
-            )
-          )
-        )
-      )
-    )
-  );
+  const context = new Context("mainnet");
+  const client = new ResynthClient(context);
 
   const syntheticAssets = Object.entries(oracles).map((entry) => {
     return {
@@ -42,7 +27,7 @@ async function main() {
 
   for (let i = 0; i < syntheticAssets.length; i++) {
     const keys = syntheticAssets[i];
-    const info = await connection.getAccountInfo(keys.syntheticAsset);
+    const info = await client.connection.getAccountInfo(keys.syntheticAsset);
 
     if (info && info.owner.toBase58() == config.resynthProgramId) {
       // it already exists
@@ -52,7 +37,7 @@ async function main() {
 
     console.log(
       `initializing ${keys.oracleSymbol}`.padEnd(24) +
-        `- ${keys.syntheticAsset}`
+      `- ${keys.syntheticAsset}`
     );
     await client.initializeSyntheticAsset({
       collateralMint: new PublicKey(config.collateralMint),

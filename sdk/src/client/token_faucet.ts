@@ -2,6 +2,7 @@ import {
   BN,
   Program,
   ProgramAccount,
+  Wallet,
 } from "@coral-xyz/anchor";
 import {
   createAssociatedTokenAccountInstruction,
@@ -10,6 +11,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from "@solana/spl-token";
 import {
+  Connection,
   Keypair,
   PublicKey,
   SystemProgram,
@@ -20,6 +22,7 @@ import {
 } from "@solana/web3.js";
 import { IDL, TokenFaucet } from "../idl/token_faucet";
 import { Faucet } from "../types";
+import { ResynthConfig } from "../utils";
 import { Context } from "./context";
 
 export class TokenFaucetClient {

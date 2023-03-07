@@ -1,8 +1,10 @@
 import {
   BN,
   Program,
+  Wallet,
 } from "@coral-xyz/anchor";
 import {
+  Connection,
   Keypair,
   PublicKey,
   SystemProgram,
@@ -10,6 +12,7 @@ import {
   TransactionSignature,
 } from "@solana/web3.js";
 import { IDL, Pyth } from "../idl/pyth";
+import { ResynthConfig } from "../utils";
 import { Context } from "./context";
 
 export class PythClient {
