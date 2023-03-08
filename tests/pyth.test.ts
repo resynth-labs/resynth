@@ -9,7 +9,7 @@ describe("pyth", () => {
   let pyth: PythClient;
 
   before(async () => {
-    context = new Context();
+    context = new Context('localnet', undefined, NodeWallet.local());
     pyth = new PythClient(context);
   });
 

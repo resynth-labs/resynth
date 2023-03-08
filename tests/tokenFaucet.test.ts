@@ -19,7 +19,7 @@ describe("token faucet", () => {
   let faucet: PublicKey;
 
   before(async () => {
-    context = new Context();
+    context = new Context('localnet', undefined, NodeWallet.local());
     tokenFaucet = new TokenFaucetClient(context);
   });
 

@@ -12,7 +12,7 @@ import { assert } from "chai";
 import { Context, Fees, SwapCurveType, swapPoolPDA, TokenFaucetClient, TokenSwapClient } from "../sdk/src";
 
 describe("token swap", () => {
-  const context = new Context();
+  const context = new Context('localnet', undefined, NodeWallet.local());
 
   const tokenSwap = new TokenSwapClient(context);
 

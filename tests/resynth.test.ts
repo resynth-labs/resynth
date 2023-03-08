@@ -1,4 +1,5 @@
 import { BN } from "@coral-xyz/anchor";
+import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import {
   PublicKey,
   Keypair,
@@ -20,7 +21,7 @@ import {
 chaiUse(chaiAsPromised.default);
 
 describe("resynth", () => {
-  const context = new Context();
+  const context = new Context('localnet', undefined, NodeWallet.local());
 
   // // The mock pyth program, from Drift-v2 repo
   const pyth = new PythClient(context);

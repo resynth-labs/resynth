@@ -39,11 +39,11 @@ export class ResynthClient {
   }
 
   get connection(): Connection {
-    return this.context.provider.connection;
+    return this.context.connection;
   }
 
   get wallet(): Wallet {
-    return this.context.provider.wallet as Wallet;
+    return this.context.wallet;
   }
 
   // Accounts -----------------------------------------------------------------
