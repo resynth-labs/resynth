@@ -55,15 +55,29 @@ export function marginAccountPDA(
   )[0];
 }
 
+const USDC = new PublicKey("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+
 export function swapPoolPDA(
   programId: PublicKey,
   mint1: Address,
   mint2: Address
 ) {
-  const { mintA, mintB } = lexicographicalOrder(
-    translateAddress(mint1),
-    translateAddress(mint2)
-  );
+  let mintA: PublicKey;
+  let mintB: PublicKey;
+  mint1 = translateAddress(mint1);
+  mint2 = translateAddress(mint2);
+  if (mint1.equals(USDC)) {
+    mintA = mint2;
+    mintB = mint1;
+  } else if (mint2.equals(USDC)) {
+    mintA = mint1;
+    mintB = mint2;
+  } else {
+    ({ mintA, mintB } = sortedOrder(
+      translateAddress(mint1),
+      translateAddress(mint2)
+    ));
+  }
 
   const swapPool = PublicKey.findProgramAddressSync(
     [
@@ -107,7 +121,7 @@ export function swapPoolPDA(
  * If mintB < mintA, the mints must be swapped.
  * @returns
  */
-function lexicographicalOrder(mint1: PublicKey, mint2: PublicKey) {
+function sortedOrder(mint1: PublicKey, mint2: PublicKey) {
   let bytes1 = mint1.toBytes();
   let bytes2 = mint2.toBytes();
   let len = Math.min(bytes1.length, bytes2.length);

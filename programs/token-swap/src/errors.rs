@@ -73,7 +73,7 @@ pub enum TokenSwapError {
     ZeroTradingTokens, // 22
 
     #[msg(
-        "Mint B and A must switch places, because A must have lower lexicographical order than B (A < B)"
+        "Mint B and A must switch places. USDC is always mint B, and otherwise the tokens are in sorted order (A < B)"
     )]
     IncorrectMintOrder, // 23
 }

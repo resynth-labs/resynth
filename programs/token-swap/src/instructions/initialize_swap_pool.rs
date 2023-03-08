@@ -9,6 +9,12 @@ use crate::errors::*;
 use crate::state::*;
 use crate::types::*;
 
+mod usdc {
+    use anchor_lang::declare_id;
+
+    declare_id!("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+}
+
 #[derive(Accounts)]
 pub struct InitializeSwapPool<'info> {
     /// New Token-swap to create.
@@ -177,10 +183,16 @@ pub fn execute(
     if *ctx.accounts.authority.key != ctx.accounts.lpmint.mint_authority.unwrap() {
         return Err(TokenSwapError::InvalidOwner.into());
     }
-    if ctx.accounts.vault_a.mint == ctx.accounts.vault_b.mint {
+    if ctx.accounts.mint_a.key() == ctx.accounts.mint_b.key() {
         return Err(error!(TokenSwapError::RepeatedMint));
     }
-    if ctx.accounts.mint_a.key().as_ref() >= ctx.accounts.mint_b.key().as_ref() {
+    // USDC is always mint B. If USDC is not present, mints are in sorted order
+    if ctx.accounts.mint_a.key() == usdc::ID {
+        return Err(TokenSwapError::IncorrectMintOrder.into());
+    }
+    if ctx.accounts.mint_b.key() != usdc::ID
+        && ctx.accounts.mint_a.key().as_ref() >= ctx.accounts.mint_b.key().as_ref()
+    {
         return Err(TokenSwapError::IncorrectMintOrder.into());
     }
     if ctx.accounts.vault_a.delegate.is_some() {

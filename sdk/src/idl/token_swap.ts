@@ -1046,7 +1046,7 @@ export type TokenSwap = {
     {
       "code": 6023,
       "name": "IncorrectMintOrder",
-      "msg": "Mint B and A must switch places, because A must have lower lexicographical order than B (A < B)"
+      "msg": "Mint B and A must switch places. USDC is always mint B, and otherwise the tokens are in sorted order (A < B)"
     }
   ]
 };
@@ -2099,7 +2099,7 @@ export const IDL: TokenSwap = {
     {
       "code": 6023,
       "name": "IncorrectMintOrder",
-      "msg": "Mint B and A must switch places, because A must have lower lexicographical order than B (A < B)"
+      "msg": "Mint B and A must switch places. USDC is always mint B, and otherwise the tokens are in sorted order (A < B)"
     }
   ]
 };
