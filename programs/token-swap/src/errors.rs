@@ -71,4 +71,9 @@ pub enum TokenSwapError {
 
     #[msg("Given pool token amount results in zero trading tokens")]
     ZeroTradingTokens, // 22
+
+    #[msg(
+        "Mint B and A must switch places, because A must have lower lexicographical order than B (A < B)"
+    )]
+    IncorrectMintOrder, // 23
 }

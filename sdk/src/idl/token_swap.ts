@@ -1042,6 +1042,11 @@ export type TokenSwap = {
       "code": 6022,
       "name": "ZeroTradingTokens",
       "msg": "Given pool token amount results in zero trading tokens"
+    },
+    {
+      "code": 6023,
+      "name": "IncorrectMintOrder",
+      "msg": "Mint B and A must switch places, because A must have lower lexicographical order than B (A < B)"
     }
   ]
 };
@@ -2090,6 +2095,11 @@ export const IDL: TokenSwap = {
       "code": 6022,
       "name": "ZeroTradingTokens",
       "msg": "Given pool token amount results in zero trading tokens"
+    },
+    {
+      "code": 6023,
+      "name": "IncorrectMintOrder",
+      "msg": "Mint B and A must switch places, because A must have lower lexicographical order than B (A < B)"
     }
   ]
 };

@@ -20,6 +20,7 @@ import { SwapPool } from "../types";
 import { Fees, SwapCurveType } from "../types";
 import { ResynthConfig, swapPoolPDA } from "../utils";
 import { Context } from "./context";
+import assert from "assert";
 
 export class TokenSwapClient {
   context: Context;
@@ -272,9 +273,12 @@ export class TokenSwapClient {
     sourceB: PublicKey;
     signers: Signer[];
   }): Promise<PublicKey> {
-    const { swapPool, authority, vaultA, vaultB, lpmint } =
+    const { mintA, mintB, swapPool, authority, vaultA, vaultB, lpmint } =
       swapPoolPDA(this.programId, params.mintA, params.mintB);
 
+    assert(mintA.equals(params.mintA))
+    assert(mintB.equals(params.mintB))
+    
     const lptoken = getAssociatedTokenAddressSync(lpmint, params.owner);
 
     const transaction = new Transaction();

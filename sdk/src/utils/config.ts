@@ -7,6 +7,7 @@ export interface ResynthConfig {
   tokenFaucetProgramId?: Address;
   tokenSwapProgramId: Address;
   collateralMint: Address;
+  collateralSymbol: string;
   collateralDecimals: number;
   oracles?: Record<string, Oracle>;
 }

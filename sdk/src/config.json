@@ -5,6 +5,7 @@
     "pythProgramId": "FsJ3A3u2vn5cTVofAjvy6y5kwABJAqYWpe4975bi2epH",
     "tokenSwapProgramId": "swapuaCjB4Esqxk3P4Lq9HoHebe7Jj3q8hCe1j5bcay",
     "collateralMint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+    "collateralSymbol": "USDC",
     "collateralDecimals": 6,
     "oracles": {
       "n1INCH": {

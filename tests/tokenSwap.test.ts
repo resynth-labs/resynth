@@ -100,16 +100,25 @@ describe("token swap", () => {
       "confirmed"
     );
 
-    [mintA, faucetA] = await tokenFaucet.createMintAndFaucet(mintADecimals);
-    [mintB, faucetB] = await tokenFaucet.createMintAndFaucet(mintBDecimals);
+    const [mint1, faucet1] = await tokenFaucet.createMintAndFaucet(mintADecimals);
+    const [mint2, faucet2] = await tokenFaucet.createMintAndFaucet(mintBDecimals);
 
-    ({ swapPool, authority, vaultA, vaultB, lpmint } = swapPoolPDA(tokenSwap.program.programId, mintA, mintB));
+    ({ mintA, mintB, swapPool, authority, vaultA, vaultB, lpmint } = swapPoolPDA(tokenSwap.program.programId, mint1, mint2));
 
-    feeReceiver = await getAssociatedTokenAddressSync(lpmint, feeReceiverWallet.publicKey);
+    // Handle lexicographical order
+    if(mintA.equals(mint1)) {
+      faucetA = faucet1;
+      faucetB = faucet2;
+    } else {
+      faucetB = faucet1;
+      faucetA = faucet2;
+    }
 
-    userAccountA = await getAssociatedTokenAddressSync(mintA, user.publicKey);
-    userAccountB = await getAssociatedTokenAddressSync(mintB, user.publicKey);
-    userPoolTokenAccount = await getAssociatedTokenAddressSync(lpmint, user.publicKey);
+    feeReceiver = getAssociatedTokenAddressSync(lpmint, feeReceiverWallet.publicKey);
+
+    userAccountA = getAssociatedTokenAddressSync(mintA, user.publicKey);
+    userAccountB = getAssociatedTokenAddressSync(mintB, user.publicKey);
+    userPoolTokenAccount = getAssociatedTokenAddressSync(lpmint, user.publicKey);
   });
 
   it("createTokenSwap ConstantProductCurve", async () => {

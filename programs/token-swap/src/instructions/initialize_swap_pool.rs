@@ -180,6 +180,9 @@ pub fn execute(
     if ctx.accounts.vault_a.mint == ctx.accounts.vault_b.mint {
         return Err(error!(TokenSwapError::RepeatedMint));
     }
+    if ctx.accounts.mint_a.key().as_ref() >= ctx.accounts.mint_b.key().as_ref() {
+        return Err(TokenSwapError::IncorrectMintOrder.into());
+    }
     if ctx.accounts.vault_a.delegate.is_some() {
         return Err(TokenSwapError::InvalidDelegate.into());
     }
