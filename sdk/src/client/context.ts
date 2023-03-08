@@ -1,4 +1,4 @@
-import { AnchorProvider, setProvider } from "@coral-xyz/anchor";
+import { AnchorProvider, setProvider, Wallet } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { Commitment, Connection } from "@solana/web3.js";
 import { ResynthConfig } from "../utils";
