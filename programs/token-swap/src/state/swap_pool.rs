@@ -28,7 +28,11 @@ pub struct SwapPool {
 
     pub lpmint_bump: u8,
 
-    pub padding: [u8; 2],
+    /// Swap curve parameters, to be unpacked and used by the SwapCurve, which
+    /// calculates swaps, deposits, and withdrawals
+    pub swap_curve_type: SwapCurveType,
+
+    pub padding: [u8; 1],
 
     pub swap_pool: Pubkey,
 
@@ -59,11 +63,11 @@ pub struct SwapPool {
     /// All fee information
     pub fees: Fees,
 
-    /// Swap curve parameters, to be unpacked and used by the SwapCurve, which
-    /// calculates swaps, deposits, and withdrawals
-    pub swap_curve_type: SwapCurveType,
-
     pub token_b_price_or_offset: u64,
+
+    pub vault_a_balance: u64,
+
+    pub vault_b_balance: u64,
 }
 
 impl SwapPool {

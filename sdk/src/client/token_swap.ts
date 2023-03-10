@@ -278,7 +278,7 @@ export class TokenSwapClient {
 
     assert(mintA.equals(params.mintA))
     assert(mintB.equals(params.mintB))
-    
+
     const lptoken = getAssociatedTokenAddressSync(lpmint, params.owner);
 
     const transaction = new Transaction();

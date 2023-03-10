@@ -6,13 +6,16 @@ export interface ResynthConfig {
   pythProgramId: Address;
   tokenFaucetProgramId?: Address;
   tokenSwapProgramId: Address;
-  collateralMint: Address;
-  collateralSymbol: string;
-  collateralDecimals: number;
-  oracles?: Record<string, Oracle>;
+  tokens: Record<string, TokenConfig>;
+  oracles: Record<string, OracleConfig>;
 }
 
-export interface Oracle {
+export interface TokenConfig {
+  mint: Address;
+  decimals: number;
+}
+
+export interface OracleConfig {
   class: "Crypto" | "Equity" | "FX" | "Metal";
   region?: "US" | "GB";
   oracle: Address;

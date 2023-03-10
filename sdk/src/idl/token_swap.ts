@@ -19,7 +19,7 @@ export type TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -108,7 +108,7 @@ export type TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -328,7 +328,7 @@ export type TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -412,7 +412,7 @@ export type TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -505,7 +505,7 @@ export type TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -634,11 +634,21 @@ export type TokenSwap = {
             "type": "u8"
           },
           {
+            "name": "swapCurveType",
+            "docs": [
+              "Swap curve parameters, to be unpacked and used by the SwapCurve, which",
+              "calculates swaps, deposits, and withdrawals"
+            ],
+            "type": {
+              "defined": "SwapCurveType"
+            }
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                2
+                1
               ]
             }
           },
@@ -710,17 +720,15 @@ export type TokenSwap = {
             }
           },
           {
-            "name": "swapCurveType",
-            "docs": [
-              "Swap curve parameters, to be unpacked and used by the SwapCurve, which",
-              "calculates swaps, deposits, and withdrawals"
-            ],
-            "type": {
-              "defined": "SwapCurveType"
-            }
+            "name": "tokenBPriceOrOffset",
+            "type": "u64"
           },
           {
-            "name": "tokenBPriceOrOffset",
+            "name": "vaultABalance",
+            "type": "u64"
+          },
+          {
+            "name": "vaultBBalance",
             "type": "u64"
           }
         ]
@@ -1072,7 +1080,7 @@ export const IDL: TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1161,7 +1169,7 @@ export const IDL: TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1381,7 +1389,7 @@ export const IDL: TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1465,7 +1473,7 @@ export const IDL: TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1558,7 +1566,7 @@ export const IDL: TokenSwap = {
       "accounts": [
         {
           "name": "swapPool",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1687,11 +1695,21 @@ export const IDL: TokenSwap = {
             "type": "u8"
           },
           {
+            "name": "swapCurveType",
+            "docs": [
+              "Swap curve parameters, to be unpacked and used by the SwapCurve, which",
+              "calculates swaps, deposits, and withdrawals"
+            ],
+            "type": {
+              "defined": "SwapCurveType"
+            }
+          },
+          {
             "name": "padding",
             "type": {
               "array": [
                 "u8",
-                2
+                1
               ]
             }
           },
@@ -1763,17 +1781,15 @@ export const IDL: TokenSwap = {
             }
           },
           {
-            "name": "swapCurveType",
-            "docs": [
-              "Swap curve parameters, to be unpacked and used by the SwapCurve, which",
-              "calculates swaps, deposits, and withdrawals"
-            ],
-            "type": {
-              "defined": "SwapCurveType"
-            }
+            "name": "tokenBPriceOrOffset",
+            "type": "u64"
           },
           {
-            "name": "tokenBPriceOrOffset",
+            "name": "vaultABalance",
+            "type": "u64"
+          },
+          {
+            "name": "vaultBBalance",
             "type": "u64"
           }
         ]

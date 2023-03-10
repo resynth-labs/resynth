@@ -1,13 +1,7 @@
 import { BN } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import {
-  getAssociatedTokenAddressSync,
-} from "@solana/spl-token";
-import {
-  Keypair,
-  LAMPORTS_PER_SOL,
-  PublicKey,
-} from "@solana/web3.js";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
+import { PublicKey } from "@solana/web3.js";
 import { assert } from "chai";
 import { Context, TokenFaucetClient } from "../sdk/src";
 

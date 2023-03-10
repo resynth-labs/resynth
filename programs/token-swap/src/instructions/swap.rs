@@ -8,6 +8,7 @@ use crate::types::TradeDirection;
 #[derive(Accounts)]
 pub struct Swap<'info> {
     #[account(
+        mut,
         has_one = token_program @ TokenSwapError::InvalidTokenProgram,
         has_one = fee_receiver @ TokenSwapError::InvalidFeeReceiver,
     )]
@@ -64,7 +65,7 @@ pub struct Swap<'info> {
 
 //#[cfg_attr(feature = "fuzz", derive(arbitrary::Arbitrary))]
 pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> Result<()> {
-    let swap_pool = ctx.accounts.swap_pool.load()?;
+    let mut swap_pool = ctx.accounts.swap_pool.load_mut()?;
 
     let trade_direction = if ctx.accounts.source_token.mint == swap_pool.mint_a {
         TradeDirection::AtoB
@@ -268,6 +269,21 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
         ),
         u64::try_from(result.destination_amount_swapped).unwrap(),
     )?;
+
+    match trade_direction {
+        TradeDirection::AtoB => {
+            ctx.accounts.source_vault.reload()?;
+            swap_pool.vault_a_balance = ctx.accounts.source_vault.amount;
+            ctx.accounts.dest_vault.reload()?;
+            swap_pool.vault_b_balance = ctx.accounts.dest_vault.amount;
+        }
+        TradeDirection::BtoA => {
+            ctx.accounts.dest_vault.reload()?;
+            swap_pool.vault_a_balance = ctx.accounts.dest_vault.amount;
+            ctx.accounts.source_vault.reload()?;
+            swap_pool.vault_b_balance = ctx.accounts.source_vault.amount;
+        }
+    }
 
     Ok(())
 }

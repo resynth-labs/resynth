@@ -40,7 +40,7 @@ async function main() {
       `- ${keys.syntheticAsset}`
     );
     await client.initializeSyntheticAsset({
-      collateralMint: new PublicKey(config.collateralMint),
+      collateralMint: new PublicKey(config.tokens.USDC.mint),
       syntheticOracle: keys.oracle,
     });
   }

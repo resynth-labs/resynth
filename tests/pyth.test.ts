@@ -1,6 +1,5 @@
 import { BN } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
-import { Keypair, LAMPORTS_PER_SOL } from "@solana/web3.js";
 import { assert } from "chai";
 import { Context, parsePythPriceData, PythClient } from "../sdk/src";
 

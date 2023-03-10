@@ -45,6 +45,8 @@ export type SwapPool = {
   // calculates swaps, deposits, and withdrawals
   swapCurveType: SwapCurveType;
   tokenBPriceOrOffset: BN;
+  vaultABalance: BN;
+  vaultBBalance: BN;
 };
 
 // Types --------------------------------------------------------------------

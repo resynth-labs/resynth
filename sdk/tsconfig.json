@@ -1,7 +1,9 @@
 {
   "compilerOptions": {
     "target": "es2018",
-    "lib": ["es2018"],
+    "lib": [
+      "es2018"
+    ],
     "module": "commonjs",
     "resolveJsonModule": true,
     "outDir": "./lib",
@@ -13,6 +15,10 @@
     "declarationMap": true,
     "strict": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": [
+    "src"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
 }

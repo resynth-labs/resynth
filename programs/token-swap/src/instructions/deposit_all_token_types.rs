@@ -10,6 +10,7 @@ use crate::types::*;
 #[derive(Accounts)]
 pub struct DepositAllTokenTypes<'info> {
     #[account(
+        mut,
         seeds = [SWAP_POOL_ACCOUNT_SEED, mint_a.key().as_ref(), mint_b.key().as_ref()],
         bump = swap_pool.load().unwrap().bump,
         constraint = swap_pool.load().unwrap().token_program.key() == token_program.key() @ TokenSwapError::InvalidTokenProgram,
@@ -90,16 +91,16 @@ pub fn execute(
     maximum_token_a_amount: u64,
     maximum_token_b_amount: u64,
 ) -> Result<()> {
-    let pool = ctx.accounts.swap_pool.load()?;
+    let mut swap_pool = ctx.accounts.swap_pool.load_mut()?;
 
     // let curve = build_curve(&pool.curve).unwrap();
     // let calculator = curve.calculator;
-    let calculator = pool.swap_curve()?;
+    let calculator = swap_pool.swap_curve()?;
     if !calculator.allows_deposits() {
         return Err(TokenSwapError::UnsupportedCurveOperation.into());
     }
 
-    pool.check_accounts(
+    swap_pool.check_accounts(
         &ctx.accounts.vault_a.to_account_info(),
         &ctx.accounts.vault_b.to_account_info(),
         &ctx.accounts.lpmint.to_account_info(),
@@ -179,7 +180,12 @@ pub fn execute(
         token_b_amount,
     )?;
 
-    let signer_seeds: &[&[&[u8]]] = &[&pool.signer_seeds()];
+    ctx.accounts.vault_a.reload()?;
+    swap_pool.vault_a_balance = ctx.accounts.vault_a.amount;
+    ctx.accounts.vault_b.reload()?;
+    swap_pool.vault_b_balance = ctx.accounts.vault_b.amount;
+
+    let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
 
     token::mint_to(
         CpiContext::new_with_signer(

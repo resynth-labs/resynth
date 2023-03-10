@@ -5,7 +5,6 @@ import {
   Keypair,
   LAMPORTS_PER_SOL,
   PublicKey,
-  Signer,
   Transaction,
 } from "@solana/web3.js";
 import { assert } from "chai";
@@ -106,7 +105,7 @@ describe("token swap", () => {
     ({ mintA, mintB, swapPool, authority, vaultA, vaultB, lpmint } = swapPoolPDA(tokenSwap.program.programId, mint1, mint2));
 
     // Handle lexicographical order
-    if(mintA.equals(mint1)) {
+    if (mintA.equals(mint1)) {
       faucetA = faucet1;
       faucetB = faucet2;
     } else {
@@ -206,7 +205,9 @@ describe("token swap", () => {
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA);
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultABalance));
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB);
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultBBalance));
   });
 
   it("depositAllTokenTypes", async () => {
@@ -255,8 +256,10 @@ describe("token swap", () => {
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA + tokenAmountA);
     currentSwapTokenA += tokenAmountA;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultABalance));
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB + tokenAmountB);
     currentSwapTokenB += tokenAmountB;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultBBalance));
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) == DEFAULT_POOL_TOKEN_AMOUNT + POOL_TOKEN_AMOUNT);
   });
 
@@ -300,8 +303,10 @@ describe("token swap", () => {
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) == DEFAULT_POOL_TOKEN_AMOUNT);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA - tokenAmountA);
     currentSwapTokenA -= tokenAmountA;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultABalance));
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB - tokenAmountB);
     currentSwapTokenB -= tokenAmountB;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultBBalance));
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == tokenAmountA);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == tokenAmountB);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(feeReceiver))!.data).amount) == feeAmount);
@@ -345,9 +350,11 @@ describe("token swap", () => {
 
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA + SWAP_AMOUNT_IN);
     currentSwapTokenA += SWAP_AMOUNT_IN;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultABalance));
 
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB - SWAP_AMOUNT_OUT);
     currentSwapTokenB -= SWAP_AMOUNT_OUT;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultBBalance));
 
     //TODO these numbers are off
     // console.log(`Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(feeReceiver)).data).amount) = ${Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(feeReceiver)).data).amount)}`);
@@ -472,6 +479,7 @@ describe("token swap", () => {
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == 0);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA + depositAmount);
     currentSwapTokenA += depositAmount;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultABalance));
 
     console.log('Depositing token B into swap');
     await tokenSwap.depositSingleTokenTypeExactAmountIn({
@@ -494,6 +502,7 @@ describe("token swap", () => {
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == 0);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB + depositAmount);
     currentSwapTokenB += depositAmount;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultBBalance));
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) >= poolTokenA + poolTokenB);
   });
 
@@ -552,6 +561,7 @@ describe("token swap", () => {
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountA))!.data).amount) == withdrawAmount);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == currentSwapTokenA - withdrawAmount);
     currentSwapTokenA += withdrawAmount;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultA))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultABalance));
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) >= poolTokenAmount - adjustedPoolTokenA);
 
     console.log('Withdrawing token B only');
@@ -576,6 +586,7 @@ describe("token swap", () => {
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userAccountB))!.data).amount) == withdrawAmount);
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == currentSwapTokenB - withdrawAmount);
     currentSwapTokenB += withdrawAmount;
+    assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(vaultB))!.data).amount) == Number((await tokenSwap.fetchSwapPool(swapPool)).account.vaultBBalance));
     assert(Number(AccountLayout.decode((await tokenSwap.connection.getAccountInfo(userPoolTokenAccount))!.data).amount) >= poolTokenAmount - adjustedPoolTokenA - adjustedPoolTokenB);
   });
 

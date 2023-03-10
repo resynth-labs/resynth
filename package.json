@@ -1,7 +1,7 @@
 {
   "scripts": {
     "clean": "rm target/idl/*.ts; rm target/types/*.ts; rm target/deploy/*.so",
-    "build": "yarn clean && anchor build; yarn type-check",
+    "build": "yarn clean && anchor build; yarn type-check; cp target/types/*.ts sdk/src/idl",
     "lint:fix": "prettier */*.js \"*/**/*{.js,.ts}\" -w",
     "lint": "prettier */*.js \"*/**/*{.js,.ts}\" --check",
     "postinstall": "husky install",

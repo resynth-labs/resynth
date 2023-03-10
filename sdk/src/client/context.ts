@@ -1,5 +1,4 @@
 import { AnchorProvider, setProvider, Wallet } from "@coral-xyz/anchor";
-import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { Commitment, Connection } from "@solana/web3.js";
 import { ResynthConfig } from "../utils";
 
@@ -11,7 +10,6 @@ export class Context {
   connection: Connection;
   readCommitment: Commitment = 'processed';
   writeCommitment: Commitment | undefined = 'confirmed';
-  //writeCommitment: Commitment | undefined = 'undefined';
   provider: AnchorProvider;
   wallet: Wallet;
 
@@ -22,8 +20,6 @@ export class Context {
     this.wallet = wallet ? wallet : ({} as unknown as any);
     this.provider = new AnchorProvider(this.connection, this.wallet, { commitment: this.writeCommitment, skipPreflight: true });
     setProvider(this.provider);
-
-
   }
 
 }

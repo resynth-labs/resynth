@@ -10,6 +10,7 @@ use crate::{
 #[derive(Accounts)]
 pub struct DepositSingleTokenTypeExactAmountIn<'info> {
     #[account(
+        mut,
         seeds = [SWAP_POOL_ACCOUNT_SEED, mint_a.key().as_ref(), mint_b.key().as_ref()],
         bump = swap_pool.load().unwrap().bump,
         constraint = swap_pool.load().unwrap().token_program.key() == token_program.key() @ TokenSwapError::InvalidTokenProgram,
@@ -89,7 +90,7 @@ pub fn execute(
     source_token_amount: u64,
     minimum_pool_token_amount: u64,
 ) -> Result<()> {
-    let swap_pool = ctx.accounts.swap_pool.load()?;
+    let mut swap_pool = ctx.accounts.swap_pool.load_mut()?;
 
     let trade_direction = if ctx.accounts.token_a.is_some() {
         TradeDirection::AtoB
@@ -168,6 +169,9 @@ pub fn execute(
                 ),
                 source_token_amount,
             )?;
+
+            ctx.accounts.vault_a.reload()?;
+            swap_pool.vault_a_balance = ctx.accounts.vault_a.amount;
         }
         TradeDirection::BtoA => {
             token::transfer(
@@ -191,6 +195,9 @@ pub fn execute(
                 ),
                 source_token_amount,
             )?;
+
+            ctx.accounts.vault_b.reload()?;
+            swap_pool.vault_b_balance = ctx.accounts.vault_b.amount;
         }
     }
 

@@ -33,7 +33,7 @@ async function main() {
       console.log(`could not find ${quote}: ${resp.status}`);
       continue;
     }
-    const json = await resp.json();
+    const json: any = await resp.json();
     const imgUrls = [json.image.thumb, json.image.small, json.image.large];
     const imgResp = await fetch(imgUrls[0]);
     if (imgResp.status === 429) {

@@ -230,7 +230,8 @@ pub fn execute(
         vault_a_bump: ctx.bumps["vault_a"],
         vault_b_bump: ctx.bumps["vault_b"],
         lpmint_bump: ctx.bumps["lpmint"],
-        padding: [0; 2],
+        swap_curve_type,
+        padding: [0; 1],
         swap_pool: ctx.accounts.swap_pool.key(),
         authority: ctx.accounts.authority.key(),
         token_program: *ctx.accounts.token_program.key,
@@ -241,8 +242,9 @@ pub fn execute(
         mint_b: ctx.accounts.mint_b.key(),
         fee_receiver: ctx.accounts.fee_receiver.key(),
         fees,
-        swap_curve_type,
         token_b_price_or_offset,
+        vault_a_balance: 0,
+        vault_b_balance: 0,
     };
 
     let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
@@ -258,6 +260,7 @@ pub fn execute(
         ctx.accounts.transfer_source_b_context(),
         initial_token_b_amount,
     )?;
+
     anchor_spl::associated_token::create_idempotent(ctx.accounts.create_lptoken_context())?;
     token::mint_to(
         ctx.accounts
@@ -265,6 +268,23 @@ pub fn execute(
             .with_signer(signer_seeds),
         initial_lp_amount,
     )?;
+
+    ctx.accounts.vault_a.reload()?;
+    swap_pool.vault_a_balance = ctx.accounts.vault_a.amount;
+    ctx.accounts.vault_b.reload()?;
+    swap_pool.vault_b_balance = ctx.accounts.vault_b.amount;
+
+    msg!(
+        "ctx.accounts.vault_a.amount: {}",
+        ctx.accounts.vault_a.amount
+    );
+    msg!("vault_a_balance: {}", swap_pool.vault_a_balance);
+    msg!(
+        "ctx.accounts.vault_b.amount: {}",
+        ctx.accounts.vault_b.amount
+    );
+    msg!("vault_b_balance: {}", swap_pool.vault_b_balance);
+    //panic!("Test");
 
     Ok(())
 }

@@ -59,7 +59,7 @@ export async function fetchSyntheticAsset(
   syntheticAssetLabel: string
 ): Promise<SyntheticAssetQuery> {
   const {
-    config: { oracles, collateralMint },
+    config: { oracles, tokens },
     connection,
     programId,
     wallet: { publicKey },
@@ -78,7 +78,7 @@ export async function fetchSyntheticAsset(
     };
   }
 
-  const collateralMintAddress = translateAddress(collateralMint);
+  const collateralMintAddress = translateAddress(tokens.USDC.mint);
   const { oracle } = oracles[syntheticAssetLabel];
   const { syntheticAsset, collateralVault, syntheticMint } = syntheticAssetPDA(
     client.programId,

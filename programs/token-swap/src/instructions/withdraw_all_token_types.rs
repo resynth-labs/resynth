@@ -10,6 +10,7 @@ use crate::types::RoundDirection;
 #[derive(Accounts)]
 pub struct WithdrawAllTokenTypes<'info> {
     #[account(
+        mut,
         seeds = [SWAP_POOL_ACCOUNT_SEED, mint_a.key().as_ref(), mint_b.key().as_ref()],
         bump = swap_pool.load().unwrap().bump,
         constraint = swap_pool.load().unwrap().token_program.key() == token_program.key() @ TokenSwapError::InvalidTokenProgram,
@@ -99,7 +100,7 @@ pub fn execute(
     minimum_token_a_amount: u64,
     minimum_token_b_amount: u64,
 ) -> Result<()> {
-    let swap_pool = ctx.accounts.swap_pool.load()?;
+    let mut swap_pool = ctx.accounts.swap_pool.load_mut()?;
 
     swap_pool.check_accounts(
         &ctx.accounts.vault_a.to_account_info(),
@@ -219,6 +220,11 @@ pub fn execute(
             token_b_amount,
         )?;
     }
+
+    ctx.accounts.vault_a.reload()?;
+    swap_pool.vault_a_balance = ctx.accounts.vault_a.amount;
+    ctx.accounts.vault_b.reload()?;
+    swap_pool.vault_b_balance = ctx.accounts.vault_b.amount;
 
     Ok(())
 }

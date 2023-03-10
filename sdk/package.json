@@ -16,7 +16,7 @@
     "src"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "yarn clean && tsc",
     "clean": "rm -rf lib/",
     "compile": "tsc --noEmit"
   },
@@ -24,7 +24,8 @@
     "@coral-xyz/anchor": "^0.26.0",
     "@pythnetwork/client": "^2.15.0",
     "@solana/spl-token": "^0.3.7",
-    "@solana/web3.js": "^1.73.3"
+    "@solana/web3.js": "^1.73.3",
+    "node-fetch": "^3.3.0"
   },
   "devDependencies": {
     "@types/bn.js": "^5.1.0",

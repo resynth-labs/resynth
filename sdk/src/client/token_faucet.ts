@@ -170,7 +170,7 @@ export class TokenFaucetClient {
       .initializeFaucet()
       .accountsStrict({
         faucet: params.faucet,
-        payer: this.context.provider.wallet.publicKey,
+        payer: this.context.wallet.publicKey,
         mint: params.mint,
         rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
@@ -187,7 +187,7 @@ export class TokenFaucetClient {
       .initializeFaucet()
       .accountsStrict({
         faucet: params.faucet,
-        payer: this.context.provider.wallet.publicKey,
+        payer: this.context.wallet.publicKey,
         mint: params.mint,
         rent: SYSVAR_RENT_PUBKEY,
         systemProgram: SystemProgram.programId,
