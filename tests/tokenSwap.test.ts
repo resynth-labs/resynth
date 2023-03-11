@@ -58,7 +58,6 @@ describe("token swap", () => {
   let faucetA: PublicKey;
   let faucetB: PublicKey;
 
-  let feeReceiverWallet = Keypair.generate();
   let feeReceiver: PublicKey;
 
   let hostFeeReceiverWallet = Keypair.generate();
@@ -102,7 +101,7 @@ describe("token swap", () => {
     const [mint1, faucet1] = await tokenFaucet.createMintAndFaucet(mintADecimals);
     const [mint2, faucet2] = await tokenFaucet.createMintAndFaucet(mintBDecimals);
 
-    ({ mintA, mintB, swapPool, authority, vaultA, vaultB, lpmint } = swapPoolPDA(tokenSwap.program.programId, mint1, mint2));
+    ({ mintA, mintB, swapPool, authority, vaultA, vaultB, lpmint, feeReceiver } = swapPoolPDA(tokenSwap.program.programId, mint1, mint2));
 
     // Handle lexicographical order
     if (mintA.equals(mint1)) {
@@ -112,8 +111,6 @@ describe("token swap", () => {
       faucetB = faucet1;
       faucetA = faucet2;
     }
-
-    feeReceiver = getAssociatedTokenAddressSync(lpmint, feeReceiverWallet.publicKey);
 
     userAccountA = getAssociatedTokenAddressSync(mintA, user.publicKey);
     userAccountB = getAssociatedTokenAddressSync(mintB, user.publicKey);
@@ -150,8 +147,6 @@ describe("token swap", () => {
       tokenBPriceOrOffset: new BN(0),
       initialTokenAAmount: new BN(currentSwapTokenA),
       initialTokenBAmount: new BN(currentSwapTokenB),
-      feeReceiver,
-      feeReceiverWallet: feeReceiverWallet.publicKey,
       mintA,
       mintB,
       owner: user.publicKey,

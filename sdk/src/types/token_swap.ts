@@ -12,16 +12,18 @@ export const SWAP_POOL_ACCOUNT_SEED: Buffer = Buffer.from("swap_pool");
 //
 export type SwapPool = {
   version: number;
-  bump: number;
-  // Bump seed used in program address.
-  // The program address is created deterministically with the bump seed,
-  // swap program id, and swap account pubkey.  This program address has
-  // authority over the swap's token A account, token B account, and pool
-  // token mint.
+  /** Bump seed used in program address.
+   * The program address is created deterministically with the bump seed,
+   * swap program id, and swap account pubkey.  This program address has
+   * authority over the swap's token A account, token B account, and pool
+   * token mint. */
   authorityBump: number[];
-  vaultABump: number;
-  vaultBBump: number;
-  lpmintBump: number;
+  mintADecimals: number;
+  mintBDecimals: number;
+  lpmintDecimals: number;
+  /** Swap curve parameters, to be unpacked and used by the SwapCurve, which
+   * calculates swaps, deposits, and withdrawals */
+  swapCurveType: SwapCurveType;
   swapPool: PublicKey;
   authority: PublicKey;
   // Mint information for token A
@@ -43,14 +45,10 @@ export type SwapPool = {
   fees: Fees;
   // Swap curve parameters, to be unpacked and used by the SwapCurve, which
   // calculates swaps, deposits, and withdrawals
-  swapCurveType: SwapCurveType;
-  lpmintDecimals: number;
   tokenBPriceOrOffset: BN;
   vaultABalance: BN;
   vaultBBalance: BN;
   lpmintSupply: BN;
-  mintADecimals: number;
-  mintBDecimals: number;
 };
 
 // Types --------------------------------------------------------------------

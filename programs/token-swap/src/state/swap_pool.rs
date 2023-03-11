@@ -8,14 +8,12 @@ use crate::{
     },
 };
 
-pub const LPMINT_DECIMALS: u8 = 6;
+pub const DEFAULT_LPMINT_DECIMALS: u8 = 6;
 
 /// A token swap pool.
 #[account(zero_copy)]
 pub struct SwapPool {
     pub version: u8,
-
-    pub bump: u8,
 
     /// Bump seed used in program address.
     /// The program address is created deterministically with the bump seed,
@@ -24,17 +22,17 @@ pub struct SwapPool {
     /// token mint.
     pub authority_bump: [u8; 1],
 
-    pub vault_a_bump: u8,
+    pub mint_a_decimals: u8,
 
-    pub vault_b_bump: u8,
+    pub mint_b_decimals: u8,
 
-    pub lpmint_bump: u8,
+    pub lpmint_decimals: u8,
 
     /// Swap curve parameters, to be unpacked and used by the SwapCurve, which
     /// calculates swaps, deposits, and withdrawals
     pub swap_curve_type: SwapCurveType,
 
-    pub lpmint_decimals: u8,
+    pub padding: [u8; 2],
 
     pub swap_pool: Pubkey,
 
@@ -72,10 +70,6 @@ pub struct SwapPool {
     pub vault_b_balance: u64,
 
     pub lpmint_supply: u64,
-
-    pub mint_a_decimals: u8,
-
-    pub mint_b_decimals: u8,
 }
 
 impl SwapPool {

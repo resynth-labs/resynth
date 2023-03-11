@@ -10,9 +10,15 @@ use crate::state::*;
 use crate::types::*;
 
 mod usdc {
-    use anchor_lang::declare_id;
+    use anchor_lang::prelude::*;
 
     declare_id!("EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v");
+}
+
+mod fee_receiver_wallet {
+    use anchor_lang::prelude::*;
+
+    declare_id!("HjnXUGGMgtN9WaPAJxzdwnWip6f76xGp4rUMRoVicsLr");
 }
 
 #[derive(Accounts)]
@@ -67,7 +73,7 @@ pub struct InitializeSwapPool<'info> {
         ],
         bump,
         mint::authority = authority,
-        mint::decimals = LPMINT_DECIMALS,
+        mint::decimals = DEFAULT_LPMINT_DECIMALS,
     )]
     pub lpmint: Box<Account<'info, Mint>>,
 
@@ -83,6 +89,7 @@ pub struct InitializeSwapPool<'info> {
     pub fee_receiver: Box<Account<'info, TokenAccount>>,
 
     /// CHECK:
+    #[account(address = fee_receiver_wallet::ID)]
     pub fee_receiver_wallet: AccountInfo<'info>,
 
     pub mint_a: Box<Account<'info, Mint>>,
@@ -224,30 +231,27 @@ pub fn execute(
 
     let mut swap_pool = ctx.accounts.swap_pool.load_init()?;
     *swap_pool = SwapPool {
-        version: 1,
-        bump: ctx.bumps["swap_pool"],
+        version: 2,
         authority_bump: [ctx.bumps["authority"]],
-        vault_a_bump: ctx.bumps["vault_a"],
-        vault_b_bump: ctx.bumps["vault_b"],
-        lpmint_bump: ctx.bumps["lpmint"],
-        swap_curve_type,
+        mint_a_decimals: ctx.accounts.mint_a.decimals,
+        mint_b_decimals: ctx.accounts.mint_b.decimals,
         lpmint_decimals: ctx.accounts.lpmint.decimals,
+        swap_curve_type,
+        padding: [0; 2],
         swap_pool: ctx.accounts.swap_pool.key(),
         authority: ctx.accounts.authority.key(),
-        token_program: *ctx.accounts.token_program.key,
-        vault_a: ctx.accounts.vault_a.key(),
-        vault_b: ctx.accounts.vault_b.key(),
-        lpmint: ctx.accounts.lpmint.key(),
         mint_a: ctx.accounts.mint_a.key(),
         mint_b: ctx.accounts.mint_b.key(),
+        lpmint: ctx.accounts.lpmint.key(),
+        vault_a: ctx.accounts.vault_a.key(),
+        vault_b: ctx.accounts.vault_b.key(),
         fee_receiver: ctx.accounts.fee_receiver.key(),
+        token_program: *ctx.accounts.token_program.key,
         fees,
         token_b_price_or_offset,
         vault_a_balance: 0,
         vault_b_balance: 0,
         lpmint_supply: initial_lpmint_supply,
-        mint_a_decimals: ctx.accounts.mint_a.decimals,
-        mint_b_decimals: ctx.accounts.mint_b.decimals,
     };
 
     let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];

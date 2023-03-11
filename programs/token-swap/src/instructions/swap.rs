@@ -9,23 +9,19 @@ use crate::types::TradeDirection;
 pub struct Swap<'info> {
     #[account(
         mut,
-        has_one = token_program @ TokenSwapError::InvalidTokenProgram,
+        has_one = authority,
+        has_one = lpmint,
         has_one = fee_receiver @ TokenSwapError::InvalidFeeReceiver,
+        has_one = token_program @ TokenSwapError::InvalidTokenProgram,
     )]
     pub swap_pool: AccountLoader<'info, SwapPool>,
 
-    #[account(
-        seeds = [swap_pool.key().as_ref()],
-        bump = swap_pool.load().unwrap().authority_bump[0],
-    )]
     /// CHECK:
     pub authority: UncheckedAccount<'info>,
 
-    #[account()]
     /// CHECK:
     pub owner: UncheckedAccount<'info>,
 
-    #[account()]
     pub user_transfer_authority: Signer<'info>,
 
     #[account(mut,

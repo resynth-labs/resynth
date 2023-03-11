@@ -1,17 +1,16 @@
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { Connection, Keypair, PublicKey } from "@solana/web3.js";
 import { Context, ResynthClient } from "../client";
-import configs from "../config.json";
 import { syntheticAssetPDA } from "../utils";
 
 // Run with ts-node -T ..
 
 async function main() {
-  const config = configs.mainnet;
-  const oracles = config.oracles;
-
   const context = new Context("mainnet");
   const client = new ResynthClient(context);
+
+  const config = client.config;
+  const oracles = config.oracles;
 
   const syntheticAssets = Object.entries(oracles).map((entry) => {
     return {
@@ -37,7 +36,7 @@ async function main() {
 
     console.log(
       `initializing ${keys.oracleSymbol}`.padEnd(24) +
-      `- ${keys.syntheticAsset}`
+        `- ${keys.syntheticAsset}`
     );
     await client.initializeSyntheticAsset({
       collateralMint: new PublicKey(config.tokens.USDC.mint),

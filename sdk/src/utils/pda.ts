@@ -1,5 +1,10 @@
 import { Address, translateAddress } from "@coral-xyz/anchor";
+import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
+
+const FEE_RECEIVER_WALLET = new PublicKey(
+  "HjnXUGGMgtN9WaPAJxzdwnWip6f76xGp4rUMRoVicsLr"
+);
 
 export function syntheticAssetPDA(
   programId: PublicKey,
@@ -81,7 +86,7 @@ export function swapPoolPDA(
 
   const swapPool = PublicKey.findProgramAddressSync(
     [
-      Buffer.from("swap_pool"),
+      Buffer.from("swap_pool2"),
       translateAddress(mintA).toBuffer(),
       translateAddress(mintB).toBuffer(),
     ],
@@ -103,6 +108,11 @@ export function swapPoolPDA(
     [Buffer.from("lpmint"), swapPool.toBuffer()],
     programId
   )[0];
+  const feeReceiver = getAssociatedTokenAddressSync(
+    lpmint,
+    FEE_RECEIVER_WALLET,
+    true
+  );
 
   return {
     mintA,
@@ -112,6 +122,8 @@ export function swapPoolPDA(
     vaultA,
     vaultB,
     lpmint,
+    feeReceiver,
+    feeReceiverWallet: FEE_RECEIVER_WALLET,
   };
 }
 

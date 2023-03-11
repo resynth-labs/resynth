@@ -1,7 +1,6 @@
 use anchor_lang::prelude::*;
 use anchor_spl::token::{self, Burn, Mint, Token, TokenAccount, Transfer};
 
-use crate::constants::*;
 use crate::errors::*;
 use crate::state::*;
 use crate::types::TradeDirection;
@@ -10,30 +9,27 @@ use crate::types::TradeDirection;
 pub struct WithdrawSingleTokenTypeExactAmountOut<'info> {
     #[account(
       mut,
-      seeds = [SWAP_POOL_ACCOUNT_SEED, mint_a.key().as_ref(), mint_b.key().as_ref()],
-      bump = swap_pool.load().unwrap().bump,
-      constraint = swap_pool.load().unwrap().token_program.key() == token_program.key() @ TokenSwapError::InvalidTokenProgram,
+      has_one = authority,
+      has_one = lpmint,
+      has_one = vault_a,
+      has_one = vault_b,
+      has_one = fee_receiver @ TokenSwapError::InvalidFeeReceiver,
+      has_one = mint_a,
+      has_one = mint_b,
+      has_one = token_program @ TokenSwapError::InvalidTokenProgram,
     )]
     pub swap_pool: AccountLoader<'info, SwapPool>,
 
-    #[account(
-        seeds = [swap_pool.key().as_ref()],
-        bump = swap_pool.load().unwrap().authority_bump[0],
-    )]
     /// CHECK:
     pub authority: UncheckedAccount<'info>,
 
-    #[account()]
     /// CHECK:
     pub owner: UncheckedAccount<'info>,
 
-    #[account()]
     pub user_transfer_authority: Signer<'info>,
 
     #[account(
         mut,
-        seeds = [b"lpmint", swap_pool.key().as_ref()],
-        bump = swap_pool.load().unwrap().lpmint_bump,
         mint::authority = authority,
     )]
     pub lpmint: Box<Account<'info, Mint>>,
@@ -47,8 +43,6 @@ pub struct WithdrawSingleTokenTypeExactAmountOut<'info> {
 
     #[account(
         mut,
-        seeds = [b"vault_a", swap_pool.key().as_ref()],
-        bump = swap_pool.load().unwrap().vault_a_bump,
         token::authority = authority,
         token::mint = swap_pool.load().unwrap().mint_a,
     )]
@@ -56,8 +50,6 @@ pub struct WithdrawSingleTokenTypeExactAmountOut<'info> {
 
     #[account(
         mut,
-        seeds = [b"vault_b", swap_pool.key().as_ref()],
-        bump = swap_pool.load().unwrap().vault_b_bump,
         token::authority = authority,
         token::mint = swap_pool.load().unwrap().mint_b,
     )]
@@ -77,14 +69,11 @@ pub struct WithdrawSingleTokenTypeExactAmountOut<'info> {
 
     #[account(
         token::mint = swap_pool.load().unwrap().lpmint,
-        constraint = swap_pool.load().unwrap().fee_receiver.key() == fee_receiver.key() @ TokenSwapError::InvalidFeeReceiver,
     )]
     pub fee_receiver: Box<Account<'info, TokenAccount>>,
 
-    #[account()]
     pub mint_a: Box<Account<'info, Mint>>,
 
-    #[account()]
     pub mint_b: Box<Account<'info, Mint>>,
 
     pub token_program: Program<'info, Token>,

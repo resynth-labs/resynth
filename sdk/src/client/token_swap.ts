@@ -264,8 +264,6 @@ export class TokenSwapClient {
     tokenBPriceOrOffset: BN;
     initialTokenAAmount: BN;
     initialTokenBAmount: BN;
-    feeReceiver: PublicKey;
-    feeReceiverWallet: PublicKey;
     mintA: PublicKey;
     mintB: PublicKey;
     owner: PublicKey;
@@ -273,7 +271,7 @@ export class TokenSwapClient {
     sourceB: PublicKey;
     signers: Signer[];
   }): Promise<PublicKey> {
-    const { mintA, mintB, swapPool, authority, vaultA, vaultB, lpmint } =
+    const { mintA, mintB, swapPool, authority, vaultA, vaultB, lpmint, feeReceiver, feeReceiverWallet } =
       swapPoolPDA(this.programId, params.mintA, params.mintB);
 
     assert(mintA.equals(params.mintA))
@@ -308,8 +306,8 @@ export class TokenSwapClient {
           vaultA,
           vaultB,
           lpmint,
-          feeReceiver: params.feeReceiver,
-          feeReceiverWallet: params.feeReceiverWallet,
+          feeReceiver,
+          feeReceiverWallet,
           mintA: params.mintA,
           mintB: params.mintB,
           owner: params.owner,

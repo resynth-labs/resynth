@@ -5,7 +5,7 @@ export type TokenSwap = {
     {
       "name": "SWAP_POOL_ACCOUNT_SEED",
       "type": "bytes",
-      "value": "[115, 119, 97, 112, 95, 112, 111, 111, 108]"
+      "value": "[115, 119, 97, 112, 95, 112, 111, 111, 108, 50]"
     }
   ],
   "instructions": [
@@ -602,10 +602,6 @@ export type TokenSwap = {
             "type": "u8"
           },
           {
-            "name": "bump",
-            "type": "u8"
-          },
-          {
             "name": "authorityBump",
             "docs": [
               "Bump seed used in program address.",
@@ -622,15 +618,15 @@ export type TokenSwap = {
             }
           },
           {
-            "name": "vaultABump",
+            "name": "mintADecimals",
             "type": "u8"
           },
           {
-            "name": "vaultBBump",
+            "name": "mintBDecimals",
             "type": "u8"
           },
           {
-            "name": "lpmintBump",
+            "name": "lpmintDecimals",
             "type": "u8"
           },
           {
@@ -644,8 +640,13 @@ export type TokenSwap = {
             }
           },
           {
-            "name": "lpmintDecimals",
-            "type": "u8"
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                2
+              ]
+            }
           },
           {
             "name": "swapPool",
@@ -729,14 +730,6 @@ export type TokenSwap = {
           {
             "name": "lpmintSupply",
             "type": "u64"
-          },
-          {
-            "name": "mintADecimals",
-            "type": "u8"
-          },
-          {
-            "name": "mintBDecimals",
-            "type": "u8"
           }
         ]
       }
@@ -1073,7 +1066,7 @@ export const IDL: TokenSwap = {
     {
       "name": "SWAP_POOL_ACCOUNT_SEED",
       "type": "bytes",
-      "value": "[115, 119, 97, 112, 95, 112, 111, 111, 108]"
+      "value": "[115, 119, 97, 112, 95, 112, 111, 111, 108, 50]"
     }
   ],
   "instructions": [
@@ -1670,10 +1663,6 @@ export const IDL: TokenSwap = {
             "type": "u8"
           },
           {
-            "name": "bump",
-            "type": "u8"
-          },
-          {
             "name": "authorityBump",
             "docs": [
               "Bump seed used in program address.",
@@ -1690,15 +1679,15 @@ export const IDL: TokenSwap = {
             }
           },
           {
-            "name": "vaultABump",
+            "name": "mintADecimals",
             "type": "u8"
           },
           {
-            "name": "vaultBBump",
+            "name": "mintBDecimals",
             "type": "u8"
           },
           {
-            "name": "lpmintBump",
+            "name": "lpmintDecimals",
             "type": "u8"
           },
           {
@@ -1712,8 +1701,13 @@ export const IDL: TokenSwap = {
             }
           },
           {
-            "name": "lpmintDecimals",
-            "type": "u8"
+            "name": "padding",
+            "type": {
+              "array": [
+                "u8",
+                2
+              ]
+            }
           },
           {
             "name": "swapPool",
@@ -1797,14 +1791,6 @@ export const IDL: TokenSwap = {
           {
             "name": "lpmintSupply",
             "type": "u64"
-          },
-          {
-            "name": "mintADecimals",
-            "type": "u8"
-          },
-          {
-            "name": "mintBDecimals",
-            "type": "u8"
           }
         ]
       }
