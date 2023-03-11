@@ -1,9 +1,4 @@
-import {
-  BN,
-  Program,
-  ProgramAccount,
-  Wallet,
-} from "@coral-xyz/anchor";
+import { BN, Program, ProgramAccount, Wallet } from "@coral-xyz/anchor";
 import { ASSOCIATED_PROGRAM_ID } from "@coral-xyz/anchor/dist/cjs/utils/token";
 import {
   getAssociatedTokenAddressSync,
@@ -22,11 +17,14 @@ import { IDL, Resynth } from "../idl/resynth";
 import { MarginAccount, SyntheticAsset } from "../types";
 import { marginAccountPDA, ResynthConfig, syntheticAssetPDA } from "../utils";
 import { Context } from "./context";
+import CONFIG from "../config.json";
 
 export class ResynthClient {
   context: Context;
   program: Program<Resynth>;
   programId: PublicKey;
+
+  static config: ResynthConfig = CONFIG.mainnet as ResynthConfig;
 
   constructor(context: Context) {
     this.context = context;
