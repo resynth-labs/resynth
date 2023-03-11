@@ -67,7 +67,7 @@ pub struct InitializeSwapPool<'info> {
         ],
         bump,
         mint::authority = authority,
-        mint::decimals = 2 //TODO we should probably increase this to 6
+        mint::decimals = LPMINT_DECIMALS,
     )]
     pub lpmint: Box<Account<'info, Mint>>,
 
@@ -220,7 +220,7 @@ pub fn execute(
     fees.validate()?;
     swap_curve.validate()?;
 
-    let initial_lp_amount = u64::try_from(swap_curve.new_pool_supply()).unwrap();
+    let initial_lpmint_supply = u64::try_from(swap_curve.new_pool_supply()).unwrap();
 
     let mut swap_pool = ctx.accounts.swap_pool.load_init()?;
     *swap_pool = SwapPool {
@@ -231,7 +231,7 @@ pub fn execute(
         vault_b_bump: ctx.bumps["vault_b"],
         lpmint_bump: ctx.bumps["lpmint"],
         swap_curve_type,
-        padding: [0; 1],
+        lpmint_decimals: ctx.accounts.lpmint.decimals,
         swap_pool: ctx.accounts.swap_pool.key(),
         authority: ctx.accounts.authority.key(),
         token_program: *ctx.accounts.token_program.key,
@@ -245,6 +245,9 @@ pub fn execute(
         token_b_price_or_offset,
         vault_a_balance: 0,
         vault_b_balance: 0,
+        lpmint_supply: initial_lpmint_supply,
+        mint_a_decimals: ctx.accounts.mint_a.decimals,
+        mint_b_decimals: ctx.accounts.mint_b.decimals,
     };
 
     let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
@@ -266,7 +269,7 @@ pub fn execute(
         ctx.accounts
             .mint_to_lptoken_context()
             .with_signer(signer_seeds),
-        initial_lp_amount,
+        initial_lpmint_supply,
     )?;
 
     ctx.accounts.vault_a.reload()?;
@@ -284,7 +287,6 @@ pub fn execute(
         ctx.accounts.vault_b.amount
     );
     msg!("vault_b_balance: {}", swap_pool.vault_b_balance);
-    //panic!("Test");
 
     Ok(())
 }

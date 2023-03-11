@@ -8,6 +8,8 @@ use crate::{
     },
 };
 
+pub const LPMINT_DECIMALS: u8 = 6;
+
 /// A token swap pool.
 #[account(zero_copy)]
 pub struct SwapPool {
@@ -32,7 +34,7 @@ pub struct SwapPool {
     /// calculates swaps, deposits, and withdrawals
     pub swap_curve_type: SwapCurveType,
 
-    pub padding: [u8; 1],
+    pub lpmint_decimals: u8,
 
     pub swap_pool: Pubkey,
 
@@ -68,6 +70,12 @@ pub struct SwapPool {
     pub vault_a_balance: u64,
 
     pub vault_b_balance: u64,
+
+    pub lpmint_supply: u64,
+
+    pub mint_a_decimals: u8,
+
+    pub mint_b_decimals: u8,
 }
 
 impl SwapPool {

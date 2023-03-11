@@ -644,13 +644,8 @@ export type TokenSwap = {
             }
           },
           {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                1
-              ]
-            }
+            "name": "lpmintDecimals",
+            "type": "u8"
           },
           {
             "name": "swapPool",
@@ -730,6 +725,18 @@ export type TokenSwap = {
           {
             "name": "vaultBBalance",
             "type": "u64"
+          },
+          {
+            "name": "lpmintSupply",
+            "type": "u64"
+          },
+          {
+            "name": "mintADecimals",
+            "type": "u8"
+          },
+          {
+            "name": "mintBDecimals",
+            "type": "u8"
           }
         ]
       }
@@ -1705,13 +1712,8 @@ export const IDL: TokenSwap = {
             }
           },
           {
-            "name": "padding",
-            "type": {
-              "array": [
-                "u8",
-                1
-              ]
-            }
+            "name": "lpmintDecimals",
+            "type": "u8"
           },
           {
             "name": "swapPool",
@@ -1791,6 +1793,18 @@ export const IDL: TokenSwap = {
           {
             "name": "vaultBBalance",
             "type": "u64"
+          },
+          {
+            "name": "lpmintSupply",
+            "type": "u64"
+          },
+          {
+            "name": "mintADecimals",
+            "type": "u8"
+          },
+          {
+            "name": "mintBDecimals",
+            "type": "u8"
           }
         ]
       }

@@ -44,9 +44,13 @@ export type SwapPool = {
   // Swap curve parameters, to be unpacked and used by the SwapCurve, which
   // calculates swaps, deposits, and withdrawals
   swapCurveType: SwapCurveType;
+  lpmintDecimals: number;
   tokenBPriceOrOffset: BN;
   vaultABalance: BN;
   vaultBBalance: BN;
+  lpmintSupply: BN;
+  mintADecimals: number;
+  mintBDecimals: number;
 };
 
 // Types --------------------------------------------------------------------
