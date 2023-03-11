@@ -136,6 +136,7 @@ pub fn execute(
     }
 
     let pool_token_amount = u64::try_from(pool_token_amount).unwrap();
+    let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
 
     token::transfer(
         CpiContext::new(
@@ -169,13 +170,6 @@ pub fn execute(
         token_b_amount,
     )?;
 
-    ctx.accounts.vault_a.reload()?;
-    swap_pool.vault_a_balance = ctx.accounts.vault_a.amount;
-    ctx.accounts.vault_b.reload()?;
-    swap_pool.vault_b_balance = ctx.accounts.vault_b.amount;
-
-    let signer_seeds: &[&[&[u8]]] = &[&swap_pool.signer_seeds()];
-
     token::mint_to(
         CpiContext::new_with_signer(
             ctx.accounts.token_program.to_account_info().clone(),
@@ -188,6 +182,13 @@ pub fn execute(
         ),
         u64::try_from(pool_token_amount).unwrap(),
     )?;
+
+    ctx.accounts.vault_a.reload()?;
+    swap_pool.vault_a_balance = ctx.accounts.vault_a.amount;
+    ctx.accounts.vault_b.reload()?;
+    swap_pool.vault_b_balance = ctx.accounts.vault_b.amount;
+    ctx.accounts.lpmint.reload()?;
+    swap_pool.lpmint_supply = ctx.accounts.lpmint.supply;
 
     Ok(())
 }

@@ -203,5 +203,8 @@ pub fn execute(
         u64::try_from(pool_token_amount).unwrap(),
     )?;
 
+    ctx.accounts.lpmint.reload()?;
+    swap_pool.lpmint_supply = ctx.accounts.lpmint.supply;
+
     Ok(())
 }

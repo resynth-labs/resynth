@@ -281,5 +281,8 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
         }
     }
 
+    ctx.accounts.lpmint.reload()?;
+    swap_pool.lpmint_supply = ctx.accounts.lpmint.supply;
+
     Ok(())
 }

@@ -238,5 +238,8 @@ pub fn execute(
         }
     }
 
+    ctx.accounts.lpmint.reload()?;
+    swap_pool.lpmint_supply = ctx.accounts.lpmint.supply;
+
     Ok(())
 }
