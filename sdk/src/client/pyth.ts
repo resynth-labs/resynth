@@ -120,7 +120,7 @@ export class PythClient {
       .accountsStrict({
         oracle: params.oracle,
       })
-      .rpc({ commitment: "confirmed", skipPreflight: true });
+      .rpc({ commitment: "processed", skipPreflight: true });
   }
 
   async setPriceInstruction(params: {
@@ -148,7 +148,7 @@ export class PythClient {
       .accountsStrict({
         oracle: params.oracle,
       })
-      .rpc({ commitment: "confirmed", skipPreflight: true });
+      .rpc({ commitment: "processed", skipPreflight: true });
   }
 
   async setPriceInfoInstruction(params: {
@@ -174,7 +174,7 @@ export class PythClient {
       .accountsStrict({
         oracle: params.oracle,
       })
-      .rpc({ commitment: "confirmed", skipPreflight: true });
+      .rpc({ commitment: "processed", skipPreflight: true });
   }
 
   async setTwapInstruction(params: {
