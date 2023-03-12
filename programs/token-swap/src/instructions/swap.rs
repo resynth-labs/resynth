@@ -29,7 +29,9 @@ pub struct Swap<'info> {
     )]
     pub source_token: Box<Account<'info, TokenAccount>>,
 
-    #[account(mut)]
+    #[account(mut,
+        token::authority = authority,
+    )]
     pub source_vault: Box<Account<'info, TokenAccount>>,
 
     #[account(mut,
@@ -37,7 +39,9 @@ pub struct Swap<'info> {
     )]
     pub dest_vault: Box<Account<'info, TokenAccount>>,
 
-    #[account(mut)]
+    #[account(mut,
+        token::authority = owner,
+    )]
     pub dest_token: Box<Account<'info, TokenAccount>>,
 
     #[account(mut,
@@ -68,6 +72,7 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
     } else if ctx.accounts.source_token.mint == swap_pool.mint_b {
         TradeDirection::BtoA
     } else {
+        msg!("Unknown trade direction.");
         return Err(error!(TokenSwapError::IncorrectSwapAccount));
     };
 

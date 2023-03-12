@@ -84,9 +84,11 @@ impl SwapPool {
         fee_receiver_info: Option<AccountInfo>,
     ) -> Result<()> {
         if *vault_a_info.key != self.vault_a {
+            msg!("Incorrect vault A");
             return Err(TokenSwapError::IncorrectSwapAccount.into());
         }
         if *vault_b_info.key != self.vault_b {
+            msg!("Incorrect vault B");
             return Err(TokenSwapError::IncorrectSwapAccount.into());
         }
         if *pool_mint_info.key != self.lpmint {
