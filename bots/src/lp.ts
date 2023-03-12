@@ -13,7 +13,7 @@ const OWNER_WITHDRAW_FEE_DENOMINATOR = 0;
 const HOST_FEE_NUMERATOR = 20;
 const HOST_FEE_DENOMINATOR = 100;
 
-const max_lp_portfolio_amount = 2_000;
+const max_lp_portfolio_amount = 20_000;
 
 async function lp(): Promise<void> {
   const cluster = "localnet";
@@ -78,8 +78,8 @@ async function lp(): Promise<void> {
         owner: context.wallet.publicKey,
         syntheticOracle: address,
         collateralMint: collateralMint,
-        collateralAmount: new BN(1_000 * 10 ** 6),
-        mintAmount: new BN((1_000 / price) * 10 ** 9),
+        collateralAmount: new BN(10_000 * 10 ** 6),
+        mintAmount: new BN((10_000 / price) * 10 ** 9),
       });
 
       const synthTokens = AccountLayout.decode((await context.connection.getAccountInfo(synthTokenAccount))!.data).amount;
@@ -103,7 +103,7 @@ async function lp(): Promise<void> {
           tokenBPriceOrOffset: new BN(0),
 
           initialTokenAAmount: new BN(Number(synthTokens)),
-          initialTokenBAmount: new BN(1_000 * 10 ** 6),
+          initialTokenBAmount: new BN(10_000 * 10 ** 6),
           mintA,
           mintB,
           owner: context.wallet.publicKey,

@@ -1,12 +1,12 @@
 import { BN } from "@coral-xyz/anchor";
-import { Commitment, Connection, PublicKey } from "@solana/web3.js";
+import { Commitment, Connection, PublicKey, Transaction } from "@solana/web3.js";
 import { Context, parsePythPriceData, PythClient } from "../client";
 import { ResynthConfig } from "../utils";
 
 import CONFIG from "../config.json";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 
-const interval = 4_000;
+const interval = 1_000;
 let isRunning = true;
 
 export class PythCrank {
@@ -25,30 +25,34 @@ export class PythCrank {
 
     const subscriptions: number[] = [];
 
+    const prices: Record<string, any> = {};
+
     for (const [symbol, oracle] of Object.entries(this.pythnetConfig.oracles)) {
       if (this.pythClient.config.oracles[symbol]) {
         const address = new PublicKey(oracle.oracle);
-        const localnetAddress = new PublicKey(this.pythClient.config.oracles[symbol].oracle);
         subscriptions.push(this.pythnetConnection.onAccountChange(
           address,
-          account => {
-            (async () => {
-              const pythPrice = parsePythPriceData(account.data)
-              await this.pythClient.setPrice({
-                price: pythPrice.price,
-                expo: pythPrice.exponent,
-                conf: pythPrice.confidence,
-                oracle: localnetAddress,
-              });
-              console.log(`symbol: ${symbol} price: ${pythPrice.price} oracle: ${localnetAddress.toBase58()}`);
-            })();
-          },
+          account => { prices[symbol] = parsePythPriceData(account.data); },
           'processed' as Commitment
         ));
       }
     }
 
     while (isRunning) {
+      for (const [symbol, price] of Object.entries(prices)) {
+        try {
+          const address = new PublicKey(this.pythClient.config.oracles[symbol].oracle);
+          await this.pythClient.setPrice({
+            price: price.price,
+            expo: price.exponent,
+            conf: price.confidence,
+            oracle: address,
+          });
+          console.log(`symbol: ${symbol} price: ${price.price} oracle: ${address.toBase58()}`);
+        } catch (e) {
+          console.log(e)
+        }
+      }
       await sleep(interval);
     }
 
