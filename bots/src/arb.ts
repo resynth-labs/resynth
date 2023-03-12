@@ -73,9 +73,9 @@ async function arb(): Promise<void> {
               const pythPrice = parsePythPriceData(account.data);
               const poolPrice = (Number(swapPool.account.vaultBBalance) / 10 ** swapPool.account.mintBDecimals) / (Number(swapPool.account.vaultABalance) / 10 ** swapPool.account.mintADecimals);
               const arb = ((pythPrice.price / poolPrice) - 1) * 10_000;
-              if (arb > 3) {
+              if (arb > 30) {
                 await swap(context, tokenSwap, symbol, 'buy', pythPrice.price, swapPool);
-              } else if (arb < -3) {
+              } else if (arb < -30) {
                 await swap(context, tokenSwap, symbol, 'sell', pythPrice.price, swapPool);
               }
             }
