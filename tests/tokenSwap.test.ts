@@ -230,20 +230,13 @@ describe("token swap", () => {
 
     console.log('Depositing into swap');
     await tokenSwap.depositAllTokenTypes({
-      poolTokenAmount: new BN(POOL_TOKEN_AMOUNT),
       maximumTokenAAmount: new BN(tokenAmountA),
       maximumTokenBAmount: new BN(tokenAmountB),
-      swapPool,
-      authority,
+      swapPool: await tokenSwap.fetchSwapPool(swapPool),
       owner: user.publicKey,
       tokenA: userAccountA,
       tokenB: userAccountB,
-      vaultA,
-      vaultB,
-      lpmint,
       lptoken: userPoolTokenAccount,
-      mintA,
-      mintB,
       signers: [user],
     });
 

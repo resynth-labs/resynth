@@ -66,22 +66,20 @@ export class TokenSwapClient {
   // the current ratio.
   //
   async depositAllTokenTypes(params: {
-    poolTokenAmount: BN;
     maximumTokenAAmount: BN;
     maximumTokenBAmount: BN;
-    swapPool: PublicKey;
-    authority: PublicKey;
+    swapPool: ProgramAccount<SwapPool>;
     owner: PublicKey;
     tokenA: PublicKey;
     tokenB: PublicKey;
-    vaultA: PublicKey;
-    vaultB: PublicKey;
-    lpmint: PublicKey;
     lptoken: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
     signers: Signer[];
   }): Promise<TransactionSignature> {
+    const poolTokenAmount = BN.min(
+      params.maximumTokenAAmount.mul(params.swapPool.account.lpmintSupply).div(params.swapPool.account.vaultABalance),
+      params.maximumTokenBAmount.mul(params.swapPool.account.lpmintSupply).div(params.swapPool.account.vaultBBalance),
+    );
+
     const transaction = new Transaction();
 
     const userTransferAuthority = Keypair.generate();
@@ -90,32 +88,32 @@ export class TokenSwapClient {
         params.tokenA,
         userTransferAuthority.publicKey,
         params.owner,
-        BigInt(Number(params.maximumTokenAAmount)), //TODO this isn't great
+        BigInt(Number(params.maximumTokenAAmount)), //TODO this isn't great. we should probable convert everything to bigint
       ),
       createApproveInstruction(
         params.tokenB,
         userTransferAuthority.publicKey,
         params.owner,
-        BigInt(Number(params.maximumTokenBAmount)), //TODO this isn't great
+        BigInt(Number(params.maximumTokenBAmount)), //TODO this isn't great. we should probable convert everything to bigint
       ),
     );
 
     transaction.add(
       await this.program.methods
-        .depositAllTokenTypes(params.poolTokenAmount, params.maximumTokenAAmount, params.maximumTokenBAmount)
+        .depositAllTokenTypes(poolTokenAmount, params.maximumTokenAAmount, params.maximumTokenBAmount)
         .accounts({
-          swapPool: params.swapPool,
-          authority: params.authority,
+          swapPool: params.swapPool.publicKey,
+          authority: params.swapPool.account.authority,
           owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           tokenA: params.tokenA,
           tokenB: params.tokenB,
-          vaultA: params.vaultA,
-          vaultB: params.vaultB,
-          lpmint: params.lpmint,
+          vaultA: params.swapPool.account.vaultA,
+          vaultB: params.swapPool.account.vaultB,
+          lpmint: params.swapPool.account.lpmint,
           lptoken: params.lptoken,
-          mintA: params.mintA,
-          mintB: params.mintB,
+          mintA: params.swapPool.account.mintA,
+          mintB: params.swapPool.account.mintB,
           tokenProgram: TOKEN_PROGRAM_ID,
         })
         .instruction(),

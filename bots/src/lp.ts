@@ -19,9 +19,9 @@ async function lp(): Promise<void> {
   const cluster = "localnet";
   const context = new Context(cluster, undefined, NodeWallet.local());
   const client = new ResynthClient(context);
-  const collateralMint = new PublicKey(client.config.tokens["USDC"].mint);
   const tokenSwap = new TokenSwapClient(context);
 
+  const collateralMint = new PublicKey(client.config.tokens.USDC.mint);
   const collateralTokenAccount = getAssociatedTokenAddressSync(collateralMint, context.wallet.publicKey);
 
   if (cluster == "localnet") {
@@ -31,7 +31,7 @@ async function lp(): Promise<void> {
       try {
         await tokenFaucet.airdrop({
           amount: new BN(max_lp_portfolio_amount * 10 ** 6),
-          faucet: new PublicKey(client.config.tokens["USDC"].faucet!),
+          faucet: new PublicKey(client.config.tokens.USDC.faucet!),
           mint: collateralMint,
           owner: tokenFaucet.wallet.publicKey,
         });
@@ -113,9 +113,17 @@ async function lp(): Promise<void> {
         });
       }
 
-      //TODO Deposit the synthetic asset and USDC into the swap pool.
+      // await tokenSwap.depositAllTokenTypes({
+      //   maximumTokenAAmount: new BN(Number(synthTokens)),
+      //   maximumTokenBAmount: new BN(1_000 * 10 ** 6),
+      //   swapPool: await tokenSwap.fetchSwapPool(swapPool),
+      //   owner: context.wallet.publicKey,
+      //   tokenA: synthTokenAccount,
+      //   tokenB: collateralTokenAccount,
+      //   lptoken: getAssociatedTokenAddressSync(lpmint, context.wallet.publicKey),
+      //   signers: [],
+      // });
     }
-
   }
 }
 

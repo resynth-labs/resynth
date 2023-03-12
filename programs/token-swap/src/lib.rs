@@ -7,9 +7,6 @@ pub mod instructions;
 pub mod state;
 pub mod types;
 
-#[cfg(test)]
-pub mod tests;
-
 use instructions::*;
 use types::*;
 
