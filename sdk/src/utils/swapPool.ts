@@ -1,18 +1,22 @@
 import { BN } from "@coral-xyz/anchor";
-import { unpackAccount, unpackMint } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import assert from "assert";
 import { TokenSwapClient } from "../client";
 import { Fees, SwapPool } from "../types";
 import { swapPoolPDA } from "./pda";
 
 export interface SwapPoolQuery {
-  swapPoolData: any;
-  mintADecimals: number;
-  mintBDecimals: number;
-  vaultAAmount: number;
-  vaultBAmount: number;
-  lpmintDecimals: number;
+  swapPool: SwapPool | undefined;
+  swapWithoutFees: (
+    amount: BN,
+    mint: PublicKey
+  ) =>
+    | {
+        /** Amount of source token swapped */
+        sourceAmountSwapped: BN;
+        /** Amount of destination token swapped */
+        destinationAmountSwapped: BN;
+      }
+    | undefined;
 }
 
 export async function fetchSwapPool(
@@ -22,50 +26,33 @@ export async function fetchSwapPool(
 ): Promise<SwapPoolQuery> {
   const { connection, programId } = tokenSwap;
 
-  const { mintA, mintB, swapPool, authority, vaultA, vaultB, lpmint } =
-    swapPoolPDA(programId, mint1, mint2);
+  const { swapPool } = swapPoolPDA(programId, mint1, mint2);
 
-  const [
-    swapPoolInfo,
-    mintAInfo,
-    mintBInfo,
-    vaultAInfo,
-    vaultBInfo,
-    lpmintInfo,
-  ] = await connection.getMultipleAccountsInfo([
-    swapPool,
-    mintA,
-    mintB,
-    vaultA,
-    vaultB,
-    lpmint,
-  ]);
-
-  assert(mintAInfo);
-  assert(mintBInfo);
+  const swapPoolInfo = await connection.getAccountInfo(swapPool);
 
   const swapPoolData = swapPoolInfo
-    ? tokenSwap.program.coder.accounts.decode("swapPool", swapPoolInfo.data)
+    ? (tokenSwap.program.coder.accounts.decode(
+        "swapPool",
+        swapPoolInfo.data
+      ) as SwapPool)
     : undefined;
-  const mintADecimals = unpackMint(mintA, mintAInfo).decimals;
-  const mintBDecimals = unpackMint(mintB, mintBInfo).decimals;
-  const vaultAAmount = vaultAInfo
-    ? Number(unpackAccount(vaultA, vaultAInfo).amount)
-    : 0;
-  const vaultBAmount = vaultBInfo
-    ? Number(unpackAccount(vaultB, vaultBInfo).amount)
-    : 0;
-  const lpmintDecimals = lpmintInfo
-    ? unpackMint(lpmint, lpmintInfo).decimals
-    : 0;
+
+  function calculateSwapWithoutFees(amount: BN, mint: PublicKey) {
+    if (!swapPoolData) {
+      return undefined;
+    }
+    const sourceVaultAmount = mint.equals(swapPoolData.mintA)
+      ? swapPoolData.vaultABalance
+      : swapPoolData.vaultBBalance;
+    const destVaultAmount = mint.equals(swapPoolData.mintA)
+      ? swapPoolData.vaultBBalance
+      : swapPoolData.vaultABalance;
+    return swapWithoutFees(amount, sourceVaultAmount, destVaultAmount);
+  }
 
   return {
-    swapPoolData,
-    mintADecimals,
-    mintBDecimals,
-    vaultAAmount,
-    vaultBAmount,
-    lpmintDecimals,
+    swapPool: swapPoolData,
+    swapWithoutFees: calculateSwapWithoutFees,
   };
 }
 
@@ -102,18 +89,19 @@ export function tradingTokensToPoolTokens(
  */
 export function swapWithoutFees(
   sourceAmount: BN,
-  swapSourceAmount: BN,
-  swapDestinationAmount: BN
-): {
-  ok: boolean;
-  /** Amount of source token swapped */
-  sourceAmountSwapped: BN;
-  /** Amount of destination token swapped */
-  destinationAmountSwapped: BN;
-} {
-  const invariant = swapSourceAmount.mul(swapDestinationAmount);
+  sourceVaultAmount: BN,
+  destVaultAmount: BN
+):
+  | {
+      /** Amount of source token swapped */
+      sourceAmountSwapped: BN;
+      /** Amount of destination token swapped */
+      destinationAmountSwapped: BN;
+    }
+  | undefined {
+  const invariant = sourceVaultAmount.mul(destVaultAmount);
 
-  let newSwapSourceAmount = swapSourceAmount.add(sourceAmount);
+  let newSwapSourceAmount = sourceVaultAmount.add(sourceAmount);
   let {
     ok,
     quotient: newSwapDestinationAmount,
@@ -121,8 +109,8 @@ export function swapWithoutFees(
   } = checkedCeilDiv(invariant, newSwapSourceAmount);
   newSwapSourceAmount = b;
 
-  const sourceAmountSwapped = newSwapSourceAmount.sub(swapSourceAmount);
-  const destinationAmountSwapped = swapDestinationAmount.sub(
+  const sourceAmountSwapped = newSwapSourceAmount.sub(sourceVaultAmount);
+  const destinationAmountSwapped = destVaultAmount.sub(
     newSwapDestinationAmount
   );
 
@@ -131,15 +119,10 @@ export function swapWithoutFees(
     sourceAmountSwapped.lt(new BN(0)) ||
     destinationAmountSwapped.lt(new BN(1))
   ) {
-    return {
-      ok: false,
-      sourceAmountSwapped: new BN(0),
-      destinationAmountSwapped: new BN(0),
-    };
+    return undefined;
   }
 
   return {
-    ok: true,
     sourceAmountSwapped,
     destinationAmountSwapped,
   };
