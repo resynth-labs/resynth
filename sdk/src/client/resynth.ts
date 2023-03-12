@@ -17,12 +17,15 @@ import { IDL, Resynth } from "../idl/resynth";
 import { MarginAccount, SyntheticAsset } from "../types";
 import { marginAccountPDA, ResynthConfig, syntheticAssetPDA } from "../utils";
 import { Context } from "./context";
+import { PythClient } from "./pyth";
+
 import CONFIG from "../config.json";
 
 export class ResynthClient {
   context: Context;
   program: Program<Resynth>;
   programId: PublicKey;
+  pyth: PythClient;
 
   static config: ResynthConfig = CONFIG.mainnet as ResynthConfig;
 
@@ -30,6 +33,7 @@ export class ResynthClient {
     this.context = context;
     this.programId = new PublicKey(this.context.config.resynthProgramId);
     this.program = new Program<Resynth>(IDL, this.programId, this.context.provider);
+    this.pyth = new PythClient(this.context);
   }
 
   get config(): ResynthConfig {
@@ -42,6 +46,10 @@ export class ResynthClient {
 
   get wallet(): Wallet {
     return this.context.wallet;
+  }
+
+  async getOraclePrice(oracle: PublicKey): Promise<number> {
+    return await this.pyth.getPrice(oracle);
   }
 
   // Accounts -----------------------------------------------------------------

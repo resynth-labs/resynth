@@ -1,4 +1,3 @@
-import { BN } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { assert } from "chai";
 import { Context, parsePythPriceData, PythClient } from "../sdk/src";
@@ -42,7 +41,7 @@ describe("pyth", () => {
     assert.ok(priceData.exponent === expo);
 
     const newPrice = 69000;
-    await pyth.setPrice({ price: new BN(newPrice * 10 ** -expo), oracle });
+    await pyth.setPrice({ price: newPrice, expo, conf, oracle });
     priceData = parsePythPriceData((await pyth.connection.getAccountInfo(oracle))!.data);
     assert.ok(priceData.price === newPrice);
     assert.ok(priceData.exponent === expo);

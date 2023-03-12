@@ -15,7 +15,6 @@ import {
   ResynthClient,
   syntheticAssetPDA,
   TokenFaucetClient,
-  TokenSwapClient,
 } from "../sdk/src";
 
 chaiUse(chaiAsPromised.default);
@@ -31,14 +30,12 @@ describe("resynth", () => {
 
   const tokenFaucet = new TokenFaucetClient(context);
 
-  const tokenSwap = new TokenSwapClient(context);
-
   // The stablecoin as the base pair of the amm
-  let stablecoinMint: PublicKey;
+  let stablecoinMint: PublicKey = new PublicKey(context.config.tokens.USDC.mint);
 
   const stablecoinDecimals: number = 6;
 
-  let stablecoinFaucet: PublicKey;
+  let stablecoinFaucet: PublicKey = new PublicKey(context.config.tokens.USDC.faucet!);
 
   const goldDecimals: number = 9;
 
@@ -92,12 +89,6 @@ describe("resynth", () => {
     );
   });
 
-  it("Create stablecoin", async () => {
-    [stablecoinMint, stablecoinFaucet] = await tokenFaucet.createMintAndFaucet(
-      stablecoinDecimals
-    );
-  });
-
   it("Create users", async () => {
     userA = await createTestUser();
     userB = await createTestUser();
@@ -123,7 +114,7 @@ describe("resynth", () => {
     ));
   });
 
-  it("Mint stablecoins", async () => {
+  it("Airdrop stablecoins", async () => {
     await tokenFaucet.airdrop({
       amount: new BN(2500 * 10 ** stablecoinDecimals),
       faucet: stablecoinFaucet,
@@ -151,7 +142,9 @@ describe("resynth", () => {
 
   it("User A mints synthetic gold", async () => {
     await pyth.setPrice({
-      price: new BN(1_800 * 10 ** goldDecimals),
+      price: 1_800,
+      expo: -goldDecimals,
+      conf: 1,
       oracle: goldOracle,
     });
     await resynth.mintSyntheticAsset({
@@ -184,7 +177,9 @@ describe("resynth", () => {
 
   it("User A burns synthetic gold", async () => {
     await pyth.setPrice({
-      price: new BN(1_800 * 10 ** goldDecimals),
+      price: 1_800,
+      expo: -goldDecimals,
+      conf: 1,
       oracle: goldOracle,
     });
     await resynth.burnSyntheticAsset({

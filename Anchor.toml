@@ -26,3 +26,15 @@ types = "sdk/src/idl/"
 
 [scripts]
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.test.ts"
+
+[[test.validator.account]]
+address = "9QhFb6usvzYXYNJtKqE1vzCemWVtpNCUmDSVZ66cJeYM"
+filename = "./tests/accounts/faucet.json"
+
+[[test.validator.account]]
+address = "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v"
+filename = "./tests/accounts/mint.json"
+
+[[test.validator.account]]
+address = "BynJzBW8CjEn4F1cwcR8mHrCSgfFHgGZfWpJMcmkGPi7"
+filename = "./tests/accounts/oracle.json"

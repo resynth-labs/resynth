@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "target": "es2018",
+    "lib": [
+      "es2018"
+    ],
+    "module": "commonjs",
+    "resolveJsonModule": true,
+    "outDir": "./lib",
+    "esModuleInterop": true,
+    "noImplicitAny": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "strict": true
+  },
+  "include": [
+    "src",
+    "../sdk/src/cranks/pyth.ts"
+  ],
+  "exclude": [
+    "node_modules"
+  ]
+}

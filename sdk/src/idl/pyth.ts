@@ -39,6 +39,14 @@ export type Pyth = {
         {
           "name": "price",
           "type": "i64"
+        },
+        {
+          "name": "expo",
+          "type": "i32"
+        },
+        {
+          "name": "conf",
+          "type": "u64"
         }
       ]
     },
@@ -179,6 +187,14 @@ export const IDL: Pyth = {
         {
           "name": "price",
           "type": "i64"
+        },
+        {
+          "name": "expo",
+          "type": "i32"
+        },
+        {
+          "name": "conf",
+          "type": "u64"
         }
       ]
     },

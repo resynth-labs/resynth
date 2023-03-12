@@ -2902,7 +2902,21 @@
     "pythProgramId": "HVKkrPBatCq4KkEo2j92o273xTw596hhUoFsMNnNbUfM",
     "tokenFaucetProgramId": "73ZZXhTSpH2nrm347fzoaRcjyCuMJ3u4jPq9jsrotin2",
     "tokenSwapProgramId": "swapuaCjB4Esqxk3P4Lq9HoHebe7Jj3q8hCe1j5bcay",
-    "tokens": {},
-    "oracles": {}
+    "tokens": {
+      "USDC": {
+        "mint": "EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v",
+        "faucet": "9QhFb6usvzYXYNJtKqE1vzCemWVtpNCUmDSVZ66cJeYM",
+        "decimals": 6
+      }
+    },
+    "oracles": {
+      "nSOL": {
+        "class": "Crypto",
+        "oracle": "BynJzBW8CjEn4F1cwcR8mHrCSgfFHgGZfWpJMcmkGPi7",
+        "pair": "SOL/USD",
+        "base": "USD",
+        "quote": "SOL"
+      }
+    }
   }
 }

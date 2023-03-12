@@ -12,6 +12,7 @@ export interface ResynthConfig {
 
 export interface TokenConfig {
   mint: Address;
+  faucet?: Address;
   decimals: number;
 }
 

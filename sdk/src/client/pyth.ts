@@ -110,11 +110,13 @@ export class PythClient {
    * @returns {Promise<TransactionSignature>}
    */
   async setPrice(params: {
-    price: BN;
+    price: number;
+    expo: number;
+    conf: number;
     oracle: PublicKey;
   }): Promise<TransactionSignature> {
     return this.program.methods
-      .setPrice(params.price)
+      .setPrice(new BN(params.price * 10 ** -params.expo), params.expo, new BN(params.conf * 10 ** -params.expo))
       .accountsStrict({
         oracle: params.oracle,
       })
@@ -122,11 +124,13 @@ export class PythClient {
   }
 
   async setPriceInstruction(params: {
-    price: BN;
+    price: number;
+    expo: number;
+    conf: number;
     oracle: PublicKey;
   }): Promise<TransactionInstruction> {
     return this.program.methods
-      .setPrice(params.price)
+      .setPrice(new BN(params.price * 10 ** -params.expo), params.expo, new BN(params.conf * 10 ** -params.expo))
       .accountsStrict({
         oracle: params.oracle,
       })
