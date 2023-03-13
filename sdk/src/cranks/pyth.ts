@@ -48,7 +48,7 @@ export class PythCrank {
             conf: price.confidence,
             oracle: address,
           });
-          console.log(`symbol: ${symbol} price: ${price.price} oracle: ${address.toBase58()}`);
+          console.log(`symbol: ${symbol} price: ${price.price.toFixed(8)} oracle: ${address.toBase58()}`);
         } catch (e) {
           console.log(e)
         }

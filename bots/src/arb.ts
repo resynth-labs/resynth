@@ -118,7 +118,7 @@ async function swap(context: Context, tokenSwap: TokenSwapClient, symbol: string
       const usdcBalance = await context.getTokenBalance(swapPool.account.mintB, usdcTokenAccount);
       const quantity = Math.min(usdcBalance, Math.sqrt(Number(swapPool.account.vaultABalance) / 10 ** swapPool.account.mintADecimals * Number(swapPool.account.vaultBBalance) / 10 ** swapPool.account.mintBDecimals * price) - Number(swapPool.account.vaultBBalance) / 10 ** swapPool.account.mintBDecimals);
       if (quantity > 1) {
-        console.log(`${side.toUpperCase()}   symbol: ${symbol}   price: ${price.toFixed(2)}   quantity: ${quantity.toFixed(2)}   usdcBalance: ${usdcBalance.toFixed(2)}`);
+        console.log(`${side.toUpperCase().padEnd(4)}   symbol: ${symbol}   price: ${price.toFixed(2)}   quantity: ${quantity.toFixed(2)}   usdcBalance: ${usdcBalance.toFixed(2)}`);
         await tokenSwap.swap({
           amountIn: new BN(Math.floor(quantity * 10 ** swapPool.account.mintBDecimals)),
           minimumAmountOut: new BN(0),
