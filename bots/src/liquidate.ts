@@ -1,3 +1,4 @@
+import chalk from 'chalk';
 import { Context } from "../../sdk/src";
 
 async function liquidate(): Promise<void> {

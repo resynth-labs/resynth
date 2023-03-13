@@ -2,7 +2,8 @@ import { BN } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { AccountLayout, getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { PublicKey } from "@solana/web3.js";
-import { Context, marginAccountPDA, ResynthClient, SwapCurveType, swapPoolPDA, syntheticAssetPDA, TokenFaucetClient, TokenSwapClient } from "../../sdk/src";
+import chalk from 'chalk';
+import { Context, marginAccountPDA, ResynthClient, swapPoolPDA, syntheticAssetPDA, TokenFaucetClient, TokenSwapClient } from "../../sdk/src";
 
 const max_lp_portfolio_amount = 20_000;
 

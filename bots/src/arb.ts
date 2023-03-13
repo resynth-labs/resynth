@@ -2,6 +2,7 @@ import { BN, ProgramAccount } from "@coral-xyz/anchor";
 import NodeWallet from "@coral-xyz/anchor/dist/cjs/nodewallet";
 import { getAssociatedTokenAddressSync } from "@solana/spl-token";
 import { Commitment, Connection, PublicKey } from "@solana/web3.js";
+import chalk from 'chalk';
 import { Context, ResynthClient, TokenFaucetClient, RESYNTH_CONFIG, ResynthConfig, parsePythPriceData, SwapPool, swapPoolPDA, TokenSwapClient, syntheticAssetPDA, marginAccountPDA } from "../../sdk/src";
 
 async function arb(): Promise<void> {
@@ -73,9 +74,9 @@ async function arb(): Promise<void> {
               const pythPrice = parsePythPriceData(account.data);
               const poolPrice = (Number(swapPool.account.vaultBBalance) / 10 ** swapPool.account.mintBDecimals) / (Number(swapPool.account.vaultABalance) / 10 ** swapPool.account.mintADecimals);
               const arb = ((pythPrice.price / poolPrice) - 1) * 10_000;
-              if (arb > 3) {
+              if (arb > 30) {
                 await swap(context, tokenSwap, symbol, 'buy', pythPrice.price, swapPool);
-              } else if (arb < -3) {
+              } else if (arb < -30) {
                 await swap(context, tokenSwap, symbol, 'sell', pythPrice.price, swapPool);
               }
             }
@@ -118,7 +119,7 @@ async function swap(context: Context, tokenSwap: TokenSwapClient, symbol: string
       const usdcBalance = await context.getTokenBalance(swapPool.account.mintB, usdcTokenAccount);
       const quantity = Math.min(usdcBalance, Math.sqrt(Number(swapPool.account.vaultABalance) / 10 ** swapPool.account.mintADecimals * Number(swapPool.account.vaultBBalance) / 10 ** swapPool.account.mintBDecimals * price) - Number(swapPool.account.vaultBBalance) / 10 ** swapPool.account.mintBDecimals);
       if (quantity > 1) {
-        console.log(`${side.toUpperCase().padEnd(4)}   symbol: ${symbol}   price: ${price.toFixed(2)}   quantity: ${quantity.toFixed(2)}   usdcBalance: ${usdcBalance.toFixed(2)}`);
+        console.log(chalk.green(`${side.toUpperCase().padEnd(4)}   symbol: ${symbol}   price: ${price.toFixed(2)}   quantity: ${quantity.toFixed(2)}   usdcBalance: ${usdcBalance.toFixed(2)}`));
         await tokenSwap.swap({
           amountIn: new BN(Math.floor(quantity * 10 ** swapPool.account.mintBDecimals)),
           minimumAmountOut: new BN(0),
@@ -141,7 +142,7 @@ async function swap(context: Context, tokenSwap: TokenSwapClient, symbol: string
       const synthBalance = await context.getTokenBalance(swapPool.account.mintA, synthTokenAccount);
       const quantity = Math.min(synthBalance, Math.sqrt(Number(swapPool.account.vaultABalance) / 10 ** swapPool.account.mintADecimals * Number(swapPool.account.vaultBBalance) / 10 ** swapPool.account.mintBDecimals / price) - Number(swapPool.account.vaultABalance) / 10 ** swapPool.account.mintADecimals);
       if (quantity * price > 1) {
-        console.log(`${side.toUpperCase()}   symbol: ${symbol}   price: ${price.toFixed(2)}   quantity: ${quantity.toFixed(2)}   synthBalance: ${synthBalance.toFixed(2)}`);
+        console.log(chalk.red(`${side.toUpperCase()}   symbol: ${symbol}   price: ${price.toFixed(2)}   quantity: ${quantity.toFixed(2)}   synthBalance: ${synthBalance.toFixed(2)}`));
         await tokenSwap.swap({
           amountIn: new BN(Math.floor(quantity * 10 ** swapPool.account.mintADecimals)),
           minimumAmountOut: new BN(0),
