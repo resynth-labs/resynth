@@ -4,15 +4,6 @@ import { AccountLayout, getAssociatedTokenAddressSync } from "@solana/spl-token"
 import { PublicKey } from "@solana/web3.js";
 import { Context, marginAccountPDA, ResynthClient, SwapCurveType, swapPoolPDA, syntheticAssetPDA, TokenFaucetClient, TokenSwapClient } from "../../sdk/src";
 
-const TRADING_FEE_NUMERATOR = 25;
-const TRADING_FEE_DENOMINATOR = 10000;
-const OWNER_TRADING_FEE_NUMERATOR = 5;
-const OWNER_TRADING_FEE_DENOMINATOR = 10000;
-const OWNER_WITHDRAW_FEE_NUMERATOR = 0;
-const OWNER_WITHDRAW_FEE_DENOMINATOR = 0;
-const HOST_FEE_NUMERATOR = 20;
-const HOST_FEE_DENOMINATOR = 100;
-
 const max_lp_portfolio_amount = 20_000;
 
 async function lp(): Promise<void> {
@@ -89,19 +80,6 @@ async function lp(): Promise<void> {
 
       if (await context.connection.getAccountInfo(swapPool) == null) {
         await tokenSwap.initializeSwapPool({
-          fees: {
-            tradeFeeNumerator: new BN(TRADING_FEE_NUMERATOR),
-            tradeFeeDenominator: new BN(TRADING_FEE_DENOMINATOR),
-            ownerTradeFeeNumerator: new BN(OWNER_TRADING_FEE_NUMERATOR),
-            ownerTradeFeeDenominator: new BN(OWNER_TRADING_FEE_DENOMINATOR),
-            ownerWithdrawFeeNumerator: new BN(OWNER_WITHDRAW_FEE_NUMERATOR),
-            ownerWithdrawFeeDenominator: new BN(OWNER_WITHDRAW_FEE_DENOMINATOR),
-            hostFeeNumerator: new BN(HOST_FEE_NUMERATOR),
-            hostFeeDenominator: new BN(HOST_FEE_DENOMINATOR),
-          },
-          swapCurveType: SwapCurveType.ConstantProductCurve,
-          tokenBPriceOrOffset: new BN(0),
-
           initialTokenAAmount: new BN(Number(synthTokens)),
           initialTokenBAmount: new BN(10_000 * 10 ** 6),
           mintA,

@@ -181,9 +181,9 @@ impl<'info> InitializeSwapPool<'info> {
 
 pub fn execute(
     ctx: Context<InitializeSwapPool>,
-    fees: Fees,
-    swap_curve_type: SwapCurveType,
-    token_b_price_or_offset: u64,
+    // fees: Fees,
+    // swap_curve_type: SwapCurveType,
+    // token_b_price_or_offset: u64,
     initial_token_a_amount: u64,
     initial_token_b_amount: u64,
 ) -> Result<()> {
@@ -220,6 +220,19 @@ pub fn execute(
     if ctx.accounts.lpmint.freeze_authority.is_some() {
         return Err(TokenSwapError::InvalidFreezeAuthority.into());
     }
+
+    let fees = Fees {
+        trade_fee_numerator: 25,
+        trade_fee_denominator: 10_000,
+        owner_trade_fee_numerator: 5,
+        owner_trade_fee_denominator: 10_000,
+        owner_withdraw_fee_numerator: 0,
+        owner_withdraw_fee_denominator: 0,
+        host_fee_numerator: 20,
+        host_fee_denominator: 100,
+    };
+    let swap_curve_type = SwapCurveType::ConstantProductCurve;
+    let token_b_price_or_offset: u64 = 0;
 
     let swap_curve = swap_curve_type.try_into_swap_curve(token_b_price_or_offset)?;
 

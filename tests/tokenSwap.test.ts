@@ -133,18 +133,18 @@ describe("token swap", () => {
 
     console.log('creating token swap');
     await tokenSwap.initializeSwapPool({
-      fees: {
-        tradeFeeNumerator: new BN(TRADING_FEE_NUMERATOR),
-        tradeFeeDenominator: new BN(TRADING_FEE_DENOMINATOR),
-        ownerTradeFeeNumerator: new BN(OWNER_TRADING_FEE_NUMERATOR),
-        ownerTradeFeeDenominator: new BN(OWNER_TRADING_FEE_DENOMINATOR),
-        ownerWithdrawFeeNumerator: new BN(OWNER_WITHDRAW_FEE_NUMERATOR),
-        ownerWithdrawFeeDenominator: new BN(OWNER_WITHDRAW_FEE_DENOMINATOR),
-        hostFeeNumerator: new BN(HOST_FEE_NUMERATOR),
-        hostFeeDenominator: new BN(HOST_FEE_DENOMINATOR),
-      },
-      swapCurveType: SwapCurveType.ConstantProductCurve,
-      tokenBPriceOrOffset: new BN(0),
+      // fees: {
+      //   tradeFeeNumerator: new BN(TRADING_FEE_NUMERATOR),
+      //   tradeFeeDenominator: new BN(TRADING_FEE_DENOMINATOR),
+      //   ownerTradeFeeNumerator: new BN(OWNER_TRADING_FEE_NUMERATOR),
+      //   ownerTradeFeeDenominator: new BN(OWNER_TRADING_FEE_DENOMINATOR),
+      //   ownerWithdrawFeeNumerator: new BN(OWNER_WITHDRAW_FEE_NUMERATOR),
+      //   ownerWithdrawFeeDenominator: new BN(OWNER_WITHDRAW_FEE_DENOMINATOR),
+      //   hostFeeNumerator: new BN(HOST_FEE_NUMERATOR),
+      //   hostFeeDenominator: new BN(HOST_FEE_DENOMINATOR),
+      // },
+      // swapCurveType: SwapCurveType.ConstantProductCurve,
+      // tokenBPriceOrOffset: new BN(0),
       initialTokenAAmount: new BN(currentSwapTokenA),
       initialTokenBAmount: new BN(currentSwapTokenB),
       mintA,

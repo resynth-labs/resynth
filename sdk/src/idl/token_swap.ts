@@ -295,22 +295,6 @@ export type TokenSwap = {
       ],
       "args": [
         {
-          "name": "fees",
-          "type": {
-            "defined": "Fees"
-          }
-        },
-        {
-          "name": "swapCurveType",
-          "type": {
-            "defined": "SwapCurveType"
-          }
-        },
-        {
-          "name": "tokenBPriceOrOffset",
-          "type": "u64"
-        },
-        {
           "name": "initialTokenAAmount",
           "type": "u64"
         },
@@ -1355,22 +1339,6 @@ export const IDL: TokenSwap = {
         }
       ],
       "args": [
-        {
-          "name": "fees",
-          "type": {
-            "defined": "Fees"
-          }
-        },
-        {
-          "name": "swapCurveType",
-          "type": {
-            "defined": "SwapCurveType"
-          }
-        },
-        {
-          "name": "tokenBPriceOrOffset",
-          "type": "u64"
-        },
         {
           "name": "initialTokenAAmount",
           "type": "u64"

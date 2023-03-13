@@ -257,9 +257,9 @@ export class TokenSwapClient {
   // Initializes a new swap
   //
   async initializeSwapPool(params: {
-    fees: Fees;
-    swapCurveType: SwapCurveType;
-    tokenBPriceOrOffset: BN;
+    // fees: Fees;
+    // swapCurveType: SwapCurveType;
+    // tokenBPriceOrOffset: BN;
     initialTokenAAmount: BN;
     initialTokenBAmount: BN;
     mintA: PublicKey;
@@ -297,7 +297,7 @@ export class TokenSwapClient {
 
     transaction.add(
       await this.program.methods
-        .initializeSwapPool(params.fees, params.swapCurveType, params.tokenBPriceOrOffset, params.initialTokenAAmount, params.initialTokenBAmount)
+        .initializeSwapPool(params.initialTokenAAmount, params.initialTokenBAmount)
         .accounts({
           swapPool,
           authority,
@@ -326,9 +326,9 @@ export class TokenSwapClient {
   }
 
   async initializeSwapPoolInstruction(params: {
-    fees: Fees;
-    swapCurveType: SwapCurveType;
-    tokenBPriceOrOffset: BN;
+    // fees: Fees;
+    // swapCurveType: SwapCurveType;
+    // tokenBPriceOrOffset: BN;
     initialTokenAAmount: BN;
     initialTokenBAmount: BN;
     swapPool: PublicKey;
@@ -348,7 +348,7 @@ export class TokenSwapClient {
     associatedTokenProgram: PublicKey;
   }): Promise<TransactionInstruction> {
     return this.program.methods
-      .initializeSwapPool(params.fees, params.swapCurveType, params.tokenBPriceOrOffset, params.initialTokenAAmount, params.initialTokenBAmount)
+      .initializeSwapPool(params.initialTokenAAmount, params.initialTokenBAmount)
       .accountsStrict({
         swapPool: params.swapPool,
         authority: params.authority,

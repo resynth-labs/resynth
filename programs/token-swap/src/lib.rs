@@ -8,7 +8,6 @@ pub mod state;
 pub mod types;
 
 use instructions::*;
-use types::*;
 
 declare_id!("swapuaCjB4Esqxk3P4Lq9HoHebe7Jj3q8hCe1j5bcay");
 
@@ -51,17 +50,17 @@ pub mod token_swap {
     /// Initializes a new swap
     pub fn initialize_swap_pool(
         ctx: Context<InitializeSwapPool>,
-        fees: Fees,
-        swap_curve_type: SwapCurveType,
-        token_b_price_or_offset: u64,
+        // fees: Fees,
+        // swap_curve_type: SwapCurveType,
+        // token_b_price_or_offset: u64,
         initial_token_a_amount: u64,
         initial_token_b_amount: u64,
     ) -> Result<()> {
         instructions::initialize_swap_pool::execute(
             ctx,
-            fees,
-            swap_curve_type,
-            token_b_price_or_offset,
+            // fees,
+            // swap_curve_type,
+            // token_b_price_or_offset,
             initial_token_a_amount,
             initial_token_b_amount,
         )
