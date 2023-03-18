@@ -101,10 +101,9 @@ export class TokenSwapClient {
     transaction.add(
       await this.program.methods
         .depositAllTokenTypes(poolTokenAmount, params.maximumTokenAAmount, params.maximumTokenBAmount)
-        .accounts({
+        .accountsStrict({
           swapPool: params.swapPool.publicKey,
           authority: params.swapPool.account.authority,
-          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           tokenA: params.tokenA,
           tokenB: params.tokenB,
@@ -112,8 +111,6 @@ export class TokenSwapClient {
           vaultB: params.swapPool.account.vaultB,
           lpmint: params.swapPool.account.lpmint,
           lptoken: params.lptoken,
-          mintA: params.swapPool.account.mintA,
-          mintB: params.swapPool.account.mintB,
           tokenProgram: TOKEN_PROGRAM_ID,
         })
         .instruction(),
@@ -128,7 +125,6 @@ export class TokenSwapClient {
     maximumTokenBAmount: BN;
     swapPool: PublicKey;
     authority: PublicKey;
-    owner: PublicKey;
     userTransferAuthority: PublicKey;
     tokenA: PublicKey;
     tokenB: PublicKey;
@@ -136,15 +132,12 @@ export class TokenSwapClient {
     vaultB: PublicKey;
     lpmint: PublicKey;
     lptoken: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
   }): Promise<TransactionInstruction> {
     return this.program.methods
       .depositAllTokenTypes(params.poolTokenAmount, params.maximumTokenAAmount, params.maximumTokenBAmount)
       .accountsStrict({
         swapPool: params.swapPool,
         authority: params.authority,
-        owner: params.owner,
         userTransferAuthority: params.userTransferAuthority,
         tokenA: params.tokenA,
         tokenB: params.tokenB,
@@ -152,8 +145,6 @@ export class TokenSwapClient {
         vaultB: params.vaultB,
         lpmint: params.lpmint,
         lptoken: params.lptoken,
-        mintA: params.mintA,
-        mintB: params.mintB,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .instruction();
@@ -176,8 +167,6 @@ export class TokenSwapClient {
     vaultB: PublicKey;
     lpmint: PublicKey;
     lptoken: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
     signers: Signer[];
   }): Promise<TransactionSignature> {
     const transaction = new Transaction();
@@ -196,10 +185,9 @@ export class TokenSwapClient {
     transaction.add(
       await this.program.methods
         .depositSingleTokenTypeExactAmountIn(params.sourceTokenAmount, params.minimumPoolTokenAmount)
-        .accounts({
+        .accountsStrict({
           swapPool: params.swapPool,
           authority: params.authority,
-          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           tokenA: params.tokenA,
           tokenB: params.tokenB,
@@ -207,8 +195,6 @@ export class TokenSwapClient {
           vaultB: params.vaultB,
           lpmint: params.lpmint,
           lptoken: params.lptoken,
-          mintA: params.mintA,
-          mintB: params.mintB,
           tokenProgram: TOKEN_PROGRAM_ID,
         })
         .instruction(),
@@ -222,7 +208,6 @@ export class TokenSwapClient {
     minimumPoolTokenAmount: BN;
     swapPool: PublicKey;
     authority: PublicKey;
-    owner: PublicKey;
     userTransferAuthority: PublicKey;
     tokenA: PublicKey | null;
     tokenB: PublicKey | null;
@@ -230,15 +215,12 @@ export class TokenSwapClient {
     vaultB: PublicKey;
     lpmint: PublicKey;
     lptoken: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
   }): Promise<TransactionInstruction> {
     return this.program.methods
       .depositSingleTokenTypeExactAmountIn(params.sourceTokenAmount, params.minimumPoolTokenAmount)
       .accountsStrict({
         swapPool: params.swapPool,
         authority: params.authority,
-        owner: params.owner,
         userTransferAuthority: params.userTransferAuthority,
         tokenA: params.tokenA,
         tokenB: params.tokenB,
@@ -246,8 +228,6 @@ export class TokenSwapClient {
         vaultB: params.vaultB,
         lpmint: params.lpmint,
         lptoken: params.lptoken,
-        mintA: params.mintA,
-        mintB: params.mintB,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .instruction();
@@ -298,7 +278,7 @@ export class TokenSwapClient {
     transaction.add(
       await this.program.methods
         .initializeSwapPool(params.initialTokenAAmount, params.initialTokenBAmount)
-        .accounts({
+        .accountsStrict({
           swapPool,
           authority,
           vaultA,
@@ -405,10 +385,9 @@ export class TokenSwapClient {
     transaction.add(
       await this.program.methods
         .swap(params.amountIn, params.minimumAmountOut)
-        .accounts({
+        .accountsStrict({
           swapPool: params.swapPool,
           authority: params.authority,
-          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           sourceToken: params.sourceToken,
           sourceVault: params.sourceVault,
@@ -430,7 +409,6 @@ export class TokenSwapClient {
     minimumAmountOut: BN;
     swapPool: PublicKey;
     authority: PublicKey;
-    owner: PublicKey;
     userTransferAuthority: PublicKey;
     sourceTokenAccount: PublicKey;
     sourceVault: PublicKey;
@@ -442,10 +420,9 @@ export class TokenSwapClient {
   }): Promise<TransactionInstruction> {
     return this.program.methods
       .swap(params.amountIn, params.minimumAmountOut)
-      .accounts({
+      .accountsStrict({
         swapPool: params.swapPool,
         authority: params.authority,
-        owner: params.owner,
         userTransferAuthority: params.userTransferAuthority,
         sourceToken: params.sourceTokenAccount,
         sourceVault: params.sourceVault,
@@ -478,8 +455,6 @@ export class TokenSwapClient {
     tokenA: PublicKey;
     tokenB: PublicKey;
     feeReceiver: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
     signers: Signer[];
   }): Promise<TransactionSignature> {
     const transaction = new Transaction();
@@ -497,10 +472,9 @@ export class TokenSwapClient {
     transaction.add(
       await this.program.methods
         .withdrawAllTokenTypes(params.poolTokenAmount, params.minimumTokenAAmount, params.minimumTokenBAmount)
-        .accounts({
+        .accountsStrict({
           swapPool: params.swapPool,
           authority: params.authority,
-          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           lpmint: params.lpmint,
           lptoken: params.lptoken,
@@ -509,8 +483,6 @@ export class TokenSwapClient {
           tokenA: params.tokenA,
           tokenB: params.tokenB,
           feeReceiver: params.feeReceiver,
-          mintA: params.mintA,
-          mintB: params.mintB,
           tokenProgram: TOKEN_PROGRAM_ID,
         })
         .instruction(),
@@ -525,7 +497,6 @@ export class TokenSwapClient {
     minimumTokenBAmount: BN;
     swapPool: PublicKey;
     authority: PublicKey;
-    owner: PublicKey;
     userTransferAuthority: PublicKey;
     lpmint: PublicKey;
     lptoken: PublicKey;
@@ -534,15 +505,12 @@ export class TokenSwapClient {
     tokenA: PublicKey;
     tokenB: PublicKey;
     feeReceiver: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
   }): Promise<TransactionInstruction> {
     return this.program.methods
       .withdrawAllTokenTypes(params.poolTokenAmount, params.minimumTokenAAmount, params.minimumTokenBAmount)
       .accountsStrict({
         swapPool: params.swapPool,
         authority: params.authority,
-        owner: params.owner,
         userTransferAuthority: params.userTransferAuthority,
         lpmint: params.lpmint,
         lptoken: params.lptoken,
@@ -551,8 +519,6 @@ export class TokenSwapClient {
         tokenA: params.tokenA,
         tokenB: params.tokenB,
         feeReceiver: params.feeReceiver,
-        mintA: params.mintA,
-        mintB: params.mintB,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .instruction();
@@ -575,8 +541,6 @@ export class TokenSwapClient {
     tokenA: PublicKey | null;
     tokenB: PublicKey | null;
     feeReceiver: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
     signers: Signer[];
   }): Promise<TransactionSignature> {
     const transaction = new Transaction();
@@ -594,10 +558,9 @@ export class TokenSwapClient {
     transaction.add(
       await this.program.methods
         .withdrawSingleTokenTypeExactAmountOut(params.destinationTokenAmount, params.maximumPoolTokenAmount)
-        .accounts({
+        .accountsStrict({
           swapPool: params.swapPool,
           authority: params.authority,
-          owner: params.owner,
           userTransferAuthority: userTransferAuthority.publicKey,
           lpmint: params.lpmint,
           lptoken: params.lptoken,
@@ -606,8 +569,6 @@ export class TokenSwapClient {
           tokenA: params.tokenA,
           tokenB: params.tokenB,
           feeReceiver: params.feeReceiver,
-          mintA: params.mintA,
-          mintB: params.mintB,
           tokenProgram: TOKEN_PROGRAM_ID,
         })
         .instruction(),
@@ -630,15 +591,12 @@ export class TokenSwapClient {
     tokenA: PublicKey | null;
     tokenB: PublicKey | null;
     feeReceiver: PublicKey;
-    mintA: PublicKey;
-    mintB: PublicKey;
   }): Promise<TransactionInstruction> {
     return this.program.methods
       .withdrawSingleTokenTypeExactAmountOut(params.destinationTokenAmount, params.maximumPoolTokenAmount)
       .accountsStrict({
         swapPool: params.swapPool,
         authority: params.authority,
-        owner: params.owner,
         userTransferAuthority: params.userTransferAuthority,
         lpmint: params.lpmint,
         lptoken: params.lptoken,
@@ -647,8 +605,6 @@ export class TokenSwapClient {
         tokenA: params.tokenA,
         tokenB: params.tokenB,
         feeReceiver: params.feeReceiver,
-        mintA: params.mintA,
-        mintB: params.mintB,
         tokenProgram: TOKEN_PROGRAM_ID,
       })
       .instruction();

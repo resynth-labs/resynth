@@ -19,47 +19,30 @@ pub struct Swap<'info> {
     /// CHECK:
     pub authority: UncheckedAccount<'info>,
 
-    /// CHECK:
-    pub owner: UncheckedAccount<'info>,
-
     pub user_transfer_authority: Signer<'info>,
 
-    #[account(mut,
-        token::authority = owner,
-    )]
+    #[account(mut)]
     pub source_token: Box<Account<'info, TokenAccount>>,
 
-    #[account(mut,
-        token::authority = authority,
-    )]
+    #[account(mut)]
     pub source_vault: Box<Account<'info, TokenAccount>>,
 
-    #[account(mut,
-        token::authority = authority,
-    )]
+    #[account(mut)]
     pub dest_vault: Box<Account<'info, TokenAccount>>,
 
-    #[account(mut,
-        token::authority = owner,
-    )]
+    #[account(mut)]
     pub dest_token: Box<Account<'info, TokenAccount>>,
 
-    #[account(mut,
-        mint::authority = authority,
-    )]
+    #[account(mut)]
     pub lpmint: Box<Account<'info, Mint>>,
 
-    #[account(mut,
-        token::mint = swap_pool.load().unwrap().lpmint,
-    )]
+    #[account(mut)]
     pub fee_receiver: Box<Account<'info, TokenAccount>>,
 
     pub token_program: Program<'info, Token>,
 
     /// Host fee account to receive additional trading fees
-    #[account(mut,
-        token::mint = swap_pool.load().unwrap().lpmint,
-    )]
+    #[account(mut)]
     pub host_fee_receiver: Option<Box<Account<'info, TokenAccount>>>,
 }
 

@@ -283,8 +283,6 @@ describe("token swap", () => {
       tokenA: userAccountA,
       tokenB: userAccountB,
       feeReceiver,
-      mintA,
-      mintB,
       signers: [user],
     });
 
@@ -394,7 +392,6 @@ describe("token swap", () => {
         minimumAmountOut: new BN(0),
         swapPool,
         authority,
-        owner: swappper.publicKey,
         userTransferAuthority: userTransferAuthority.publicKey,
         sourceTokenAccount: swapperAccountA,
         sourceVault: vaultA,
@@ -459,8 +456,6 @@ describe("token swap", () => {
       vaultB,
       lpmint,
       lptoken: userPoolTokenAccount,
-      mintA,
-      mintB,
       signers: [user],
     });
 
@@ -482,8 +477,6 @@ describe("token swap", () => {
       vaultB,
       lpmint,
       lptoken: userPoolTokenAccount,
-      mintA,
-      mintB,
       signers: [user],
     });
 
@@ -541,8 +534,6 @@ describe("token swap", () => {
       tokenA: userAccountA,
       tokenB: null,
       feeReceiver,
-      mintA,
-      mintB,
       signers: [user],
     });
 
@@ -566,8 +557,6 @@ describe("token swap", () => {
       tokenA: null,
       tokenB: userAccountB,
       feeReceiver,
-      mintA,
-      mintB,
       signers: [user],
     });
 

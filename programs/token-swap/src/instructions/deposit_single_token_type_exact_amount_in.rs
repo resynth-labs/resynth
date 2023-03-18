@@ -12,8 +12,6 @@ pub struct DepositSingleTokenTypeExactAmountIn<'info> {
         has_one = vault_a,
         has_one = vault_b,
         has_one = lpmint,
-        has_one = mint_a,
-        has_one = mint_b,
         has_one = token_program @ TokenSwapError::InvalidTokenProgram,
     )]
     pub swap_pool: AccountLoader<'info, SwapPool>,
@@ -21,52 +19,25 @@ pub struct DepositSingleTokenTypeExactAmountIn<'info> {
     /// CHECK:
     pub authority: UncheckedAccount<'info>,
 
-    /// CHECK:
-    pub owner: UncheckedAccount<'info>,
-
     pub user_transfer_authority: Signer<'info>,
 
-    #[account(
-        mut,
-        token::authority = owner,
-        token::mint = swap_pool.load().unwrap().mint_a,
-    )]
+    #[account(mut)]
     pub token_a: Option<Box<Account<'info, TokenAccount>>>,
 
-    #[account(
-        mut,
-        token::authority = owner,
-        token::mint = swap_pool.load().unwrap().mint_b,
-    )]
+    #[account(mut)]
     pub token_b: Option<Box<Account<'info, TokenAccount>>>,
 
-    #[account(
-        mut,
-        token::mint = swap_pool.load().unwrap().mint_a,
-    )]
+    #[account(mut)]
     pub vault_a: Box<Account<'info, TokenAccount>>,
 
-    #[account(
-        mut,
-        token::mint = swap_pool.load().unwrap().mint_b,
-    )]
+    #[account(mut)]
     pub vault_b: Box<Account<'info, TokenAccount>>,
 
-    #[account(
-        mut,
-        mint::authority = authority,
-    )]
+    #[account(mut)]
     pub lpmint: Box<Account<'info, Mint>>,
 
-    #[account(
-        mut,
-        token::mint = swap_pool.load().unwrap().lpmint,
-    )]
+    #[account(mut)]
     pub lptoken: Box<Account<'info, TokenAccount>>,
-
-    pub mint_a: Box<Account<'info, Mint>>,
-
-    pub mint_b: Box<Account<'info, Mint>>,
 
     pub token_program: Program<'info, Token>,
 }

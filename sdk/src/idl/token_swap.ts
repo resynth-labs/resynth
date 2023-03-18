@@ -28,11 +28,6 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -65,16 +60,6 @@ export type TokenSwap = {
         {
           "name": "lptoken",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -117,11 +102,6 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -156,16 +136,6 @@ export type TokenSwap = {
         {
           "name": "lptoken",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -228,8 +198,7 @@ export type TokenSwap = {
           "isSigner": false,
           "docs": [
             "Pool Token Account to deposit trading and withdraw fees.",
-            "Must be empty, not owned by swap authority",
-            "FIXME! Freeze expoit: Nothing is stopping the fee receiver from closing the account, freezing the pool funds"
+            "Must be empty, not owned by swap authority"
           ]
         },
         {
@@ -321,11 +290,6 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -405,11 +369,6 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -446,17 +405,7 @@ export type TokenSwap = {
         },
         {
           "name": "feeReceiver",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -498,11 +447,6 @@ export type TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -541,17 +485,7 @@ export type TokenSwap = {
         },
         {
           "name": "feeReceiver",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1073,11 +1007,6 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -1110,16 +1039,6 @@ export const IDL: TokenSwap = {
         {
           "name": "lptoken",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -1162,11 +1081,6 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -1201,16 +1115,6 @@ export const IDL: TokenSwap = {
         {
           "name": "lptoken",
           "isMut": true,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
           "isSigner": false
         },
         {
@@ -1273,8 +1177,7 @@ export const IDL: TokenSwap = {
           "isSigner": false,
           "docs": [
             "Pool Token Account to deposit trading and withdraw fees.",
-            "Must be empty, not owned by swap authority",
-            "FIXME! Freeze expoit: Nothing is stopping the fee receiver from closing the account, freezing the pool funds"
+            "Must be empty, not owned by swap authority"
           ]
         },
         {
@@ -1366,11 +1269,6 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -1450,11 +1348,6 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -1491,17 +1384,7 @@ export const IDL: TokenSwap = {
         },
         {
           "name": "feeReceiver",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {
@@ -1543,11 +1426,6 @@ export const IDL: TokenSwap = {
           "isSigner": false
         },
         {
-          "name": "owner",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
           "name": "userTransferAuthority",
           "isMut": false,
           "isSigner": true
@@ -1586,17 +1464,7 @@ export const IDL: TokenSwap = {
         },
         {
           "name": "feeReceiver",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintA",
-          "isMut": false,
-          "isSigner": false
-        },
-        {
-          "name": "mintB",
-          "isMut": false,
+          "isMut": true,
           "isSigner": false
         },
         {

@@ -88,7 +88,7 @@ export class TokenFaucetClient {
       transaction.add(
         await this.program.methods
           .airdrop(params.amount)
-          .accounts({
+          .accountsStrict({
             faucet: params.faucet,
             mint: params.mint,
             tokenAccount: tokenAccount,
@@ -145,7 +145,7 @@ export class TokenFaucetClient {
       ),
       await this.program.methods
         .initializeFaucet()
-        .accounts({
+        .accountsStrict({
           faucet,
           payer: this.context.provider.wallet.publicKey,
           mint: mint.publicKey,

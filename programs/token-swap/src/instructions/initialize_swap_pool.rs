@@ -79,7 +79,6 @@ pub struct InitializeSwapPool<'info> {
 
     /// Pool Token Account to deposit trading and withdraw fees.
     /// Must be empty, not owned by swap authority
-    /// FIXME! Freeze expoit: Nothing is stopping the fee receiver from closing the account, freezing the pool funds
     #[account(
       init_if_needed,
       payer = payer,
@@ -96,11 +95,9 @@ pub struct InitializeSwapPool<'info> {
 
     pub mint_b: Box<Account<'info, Mint>>,
 
-    #[account()]
     /// CHECK:
     pub owner: UncheckedAccount<'info>,
 
-    #[account()]
     pub user_transfer_authority: Signer<'info>,
 
     #[account(
