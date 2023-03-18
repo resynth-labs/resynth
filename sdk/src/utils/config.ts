@@ -23,4 +23,5 @@ export interface OracleConfig {
   pair: string;
   base: "USD";
   quote: string;
+  active?: boolean;
 }

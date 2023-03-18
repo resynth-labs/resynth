@@ -34,7 +34,7 @@ async function main() {
   for (const entry of Object.entries(rawOraclesMainnet)) {
     const token = getToken(entry[0], entry[1]);
 
-    console.log(`  "n${token.quote}":${JSON.stringify(token)},`);
+    console.log(`  "rs${token.quote}":${JSON.stringify(token)},`);
   }
   console.log("}");
 }

@@ -11,1001 +11,1004 @@
       }
     },
     "oracles": {
-      "n1INCH": {
+      "rs1INCH": {
         "class": "Crypto",
         "oracle": "7jAVut34sgRj6erznsYvLYvjc9GJwXTpN88ThZSDJ65G",
         "pair": "1INCH/USD",
         "base": "USD",
         "quote": "1INCH"
       },
-      "nAAVE": {
+      "rsAAVE": {
         "class": "Crypto",
         "oracle": "3wDLxH34Yz8tGjwHszQ2MfzHwRoaQgKA32uq2bRpjJBW",
         "pair": "AAVE/USD",
         "base": "USD",
         "quote": "AAVE"
       },
-      "nACM": {
+      "rsACM": {
         "class": "Crypto",
         "oracle": "DkJYJzmWJTM5n6DhpSASSbCbkSZBfBuejGMQgdCSdG6S",
         "pair": "ACM/USD",
         "base": "USD",
         "quote": "ACM"
       },
-      "nADA": {
+      "rsADA": {
         "class": "Crypto",
         "oracle": "3pyn4svBbxJ9Wnn3RVeafyLWfzie6yC5eTig2S62v9SC",
         "pair": "ADA/USD",
         "base": "USD",
         "quote": "ADA"
       },
-      "nALGO": {
+      "rsALGO": {
         "class": "Crypto",
         "oracle": "HqFyq1wh1xKvL7KDqqT7NJeSPdAqsDqnmBisUC2XdXAX",
         "pair": "ALGO/USD",
         "base": "USD",
         "quote": "ALGO"
       },
-      "nALICE": {
+      "rsALICE": {
         "class": "Crypto",
         "oracle": "EnQvR2SDjrZ6KW9vjiiEj858SuJ8GAFZtyEoLiM3KXmR",
         "pair": "ALICE/USD",
         "base": "USD",
         "quote": "ALICE"
       },
-      "nALPACA": {
+      "rsALPACA": {
         "class": "Crypto",
         "oracle": "AjPqQDnU57QmpwrxGMYgrE4gnC9A45foEGhHQ6bksmhw",
         "pair": "ALPACA/USD",
         "base": "USD",
         "quote": "ALPACA"
       },
-      "nALPINE": {
+      "rsALPINE": {
         "class": "Crypto",
         "oracle": "BDjSnCA2KAxT52jBakjqUKYNWuzFcBcAJuswduRxE9YH",
         "pair": "ALPINE/USD",
         "base": "USD",
         "quote": "ALPINE"
       },
-      "nAMB": {
+      "rsAMB": {
         "class": "Crypto",
         "oracle": "DorJuUQkqSLwop7ZgeVgRdCm1UpU6P6PAKHTvc5oCf4e",
         "pair": "AMB/USD",
         "base": "USD",
         "quote": "AMB"
       },
-      "nAMP": {
+      "rsAMP": {
         "class": "Crypto",
         "oracle": "FEahUmcozi3aVvEFGqaKhE7VRN9Kde9sXoFt4vJMu2fx",
         "pair": "AMP/USD",
         "base": "USD",
         "quote": "AMP"
       },
-      "nANC": {
+      "rsANC": {
         "class": "Crypto",
         "oracle": "8Lf8PjxiEV9qtvG2ERmbqiLBmYRYBUhP5bPYYppEraJ7",
         "pair": "ANC/USD",
         "base": "USD",
         "quote": "ANC"
       },
-      "nAPE": {
+      "rsAPE": {
         "class": "Crypto",
         "oracle": "2TdKEvPTKpDtJo6pwxd79atZFQNWiSUT2T47nF9j5qFy",
         "pair": "APE/USD",
         "base": "USD",
         "quote": "APE"
       },
-      "nAPT": {
+      "rsAPT": {
         "class": "Crypto",
         "oracle": "FNNvb1AFDnDVPkocEri8mWbJ1952HQZtFLuwPiUjSJQ",
         "pair": "APT/USD",
         "base": "USD",
         "quote": "APT"
       },
-      "nARG": {
+      "rsARG": {
         "class": "Crypto",
         "oracle": "3Ptsk2n47MdzyWRxxqTmTBPXchSgKeps28DPhfNjmwnt",
         "pair": "ARG/USD",
         "base": "USD",
         "quote": "ARG"
       },
-      "nASR": {
+      "rsASR": {
         "class": "Crypto",
         "oracle": "DREnv2yUicrGMjbWrwfjP2CkTyo9HCX8kxkk93SG1JLB",
         "pair": "ASR/USD",
         "base": "USD",
         "quote": "ASR"
       },
-      "nATLAS": {
+      "rsATLAS": {
         "class": "Crypto",
         "oracle": "81Rz3i7MC9nHYo1vQg6kJM5hepjqb63Y1gnr3AkrD36D",
         "pair": "ATLAS/USD",
         "base": "USD",
         "quote": "ATLAS"
       },
-      "nATM": {
+      "rsATM": {
         "class": "Crypto",
         "oracle": "AgtZ5HDwpEUx7E6HCPj8WuePCQT5CYsXAQunaqPhuaqE",
         "pair": "ATM/USD",
         "base": "USD",
         "quote": "ATM"
       },
-      "nATOM": {
+      "rsATOM": {
         "class": "Crypto",
         "oracle": "CrCpTerNqtZvqLcKqz1k13oVeXV9WkMD2zA9hBKXrsbN",
         "pair": "ATOM/USD",
         "base": "USD",
         "quote": "ATOM"
       },
-      "nAURORA": {
+      "rsAURORA": {
         "class": "Crypto",
         "oracle": "4CN6wptBvspBswRuG4SdCfZ5aLs9QwQW7yMX6mZLER8Q",
         "pair": "AURORA/USD",
         "base": "USD",
         "quote": "AURORA"
       },
-      "nAUTO": {
+      "rsAUTO": {
         "class": "Crypto",
         "oracle": "ESqFGzXe7amt6EjTdcRGwGjs4ZorDJBfpuwzqAHS8hJS",
         "pair": "AUTO/USD",
         "base": "USD",
         "quote": "AUTO"
       },
-      "nAVAX": {
+      "rsAVAX": {
         "class": "Crypto",
         "oracle": "Ax9ujW5B9oqcv59N8m6f1BpTBq2rGeGaBcpKjC5UYsXU",
         "pair": "AVAX/USD",
         "base": "USD",
         "quote": "AVAX"
       },
-      "nAXS": {
+      "rsAXS": {
         "class": "Crypto",
         "oracle": "DNpsJ5PqsYbhN2RCbswBQXgvyywEiVF9VJnszvnkEKVh",
         "pair": "AXS/USD",
         "base": "USD",
         "quote": "AXS"
       },
-      "nBANANA": {
+      "rsBANANA": {
         "class": "Crypto",
         "oracle": "AjKQToyCGpHzA5cm6yqJMLQZAeaV2a7QgrXV48rDpb1b",
         "pair": "BANANA/USD",
         "base": "USD",
         "quote": "BANANA"
       },
-      "nBAR": {
+      "rsBAR": {
         "class": "Crypto",
         "oracle": "BaQXoM8otNhHNzZLc7L8fWruYTtduShr4TMvViWxyyAe",
         "pair": "BAR/USD",
         "base": "USD",
         "quote": "BAR"
       },
-      "nBCH": {
+      "rsBCH": {
         "class": "Crypto",
         "oracle": "5ALDzwcRJfSyGdGyhP3kP628aqBNHZzLuVww7o9kdspe",
         "pair": "BCH/USD",
         "base": "USD",
         "quote": "BCH"
       },
-      "nBETH": {
+      "rsBETH": {
         "class": "Crypto",
         "oracle": "9b5KLoW4BDi3S9A35pKjVpVCAGjxArh6R8H45tqFA4As",
         "pair": "BETH/USD",
         "base": "USD",
         "quote": "BETH"
       },
-      "nBIFI": {
+      "rsBIFI": {
         "class": "Crypto",
         "oracle": "8bKz3jMDqvnbL83ivqovDZqepZkVS9cWgsyBE2csLUti",
         "pair": "BIFI/USD",
         "base": "USD",
         "quote": "BIFI"
       },
-      "nBIT": {
+      "rsBIT": {
         "class": "Crypto",
         "oracle": "8apEP8G5ZThPSXsff11nMoBmwo3nU176EEFZHM6jzLox",
         "pair": "BIT/USD",
         "base": "USD",
         "quote": "BIT"
       },
-      "nBLUR": {
+      "rsBLUR": {
         "class": "Crypto",
         "oracle": "9yoZqrXpNpP8vfE7XhN3jPxzALpFA8C5Nvs1RNXQigCQ",
         "pair": "BLUR/USD",
         "base": "USD",
         "quote": "BLUR"
       },
-      "nBNB": {
+      "rsBNB": {
         "class": "Crypto",
         "oracle": "4CkQJBxhU8EZ2UjhigbtdaPbpTe6mqf811fipYBFbSYN",
         "pair": "BNB/USD",
         "base": "USD",
         "quote": "BNB"
       },
-      "nBNX": {
+      "rsBNX": {
         "class": "Crypto",
         "oracle": "71zVFi5tkWhZraw48Bjx77jGXdGhk5vSDeo2aHDVtY7k",
         "pair": "BNX/USD",
         "base": "USD",
         "quote": "BNX"
       },
-      "nBONK": {
+      "rsBONK": {
         "class": "Crypto",
         "oracle": "8ihFLu5FimgTQ1Unh4dVyEHUGodJ5gJQCrQf4KUVB9bN",
         "pair": "BONK/USD",
         "base": "USD",
         "quote": "BONK"
       },
-      "nBRZ": {
+      "rsBRZ": {
         "class": "Crypto",
         "oracle": "2wrWGm63xWubz7ue4iYR3qvBbaUJhZVi4eSpNuU8k8iF",
         "pair": "BRZ/USD",
         "base": "USD",
         "quote": "BRZ"
       },
-      "nBSW": {
+      "rsBSW": {
         "class": "Crypto",
         "oracle": "5uCb1mZ5YJRVEmfRRAi4pWM7T92eXfeULC4BcmYjwQjF",
         "pair": "BSW/USD",
         "base": "USD",
         "quote": "BSW"
       },
-      "nBTC": {
+      "rsBTC": {
         "class": "Crypto",
         "oracle": "GVXRSBjFk6e6J3NbVPXohDJetcTjaeeuykUpbQF8UoMU",
         "pair": "BTC/USD",
         "base": "USD",
-        "quote": "BTC"
+        "quote": "BTC",
+        "active": true
       },
-      "nBTT": {
+      "rsBTT": {
         "class": "Crypto",
         "oracle": "e3agiUKMg3AW5wNN3sYMDtfzPRdwDfrgdgudyRFUtpk",
         "pair": "BTT/USD",
         "base": "USD",
         "quote": "BTT"
       },
-      "nBUSD": {
+      "rsBUSD": {
         "class": "Crypto",
         "oracle": "7BHyT7XPMSA6LHYTgDTaeTPe3KTkKibMXZNxF5kiVsw1",
         "pair": "BUSD/USD",
         "base": "USD",
         "quote": "BUSD"
       },
-      "nC98": {
+      "rsC98": {
         "class": "Crypto",
         "oracle": "45rTB9ezDcTX5tMZx2uJUBbBEqAWDhXykYbBfaSWUXvD",
         "pair": "C98/USD",
         "base": "USD",
         "quote": "C98"
       },
-      "nCAKE": {
+      "rsCAKE": {
         "class": "Crypto",
         "oracle": "3NwwDpM8EX6vrpogtWVrfE7FvCumLbguXDqVE1NNegbJ",
         "pair": "CAKE/USD",
         "base": "USD",
         "quote": "CAKE"
       },
-      "nCBETH": {
+      "rsCBETH": {
         "class": "Crypto",
         "oracle": "2Ub3m4JoNtLGeb3VaPaJNbG5R2CUA29LkQhaaB5xcpYE",
         "pair": "CBETH/USD",
         "base": "USD",
         "quote": "CBETH"
       },
-      "nCELO": {
+      "rsCELO": {
         "class": "Crypto",
         "oracle": "9SWiag8E2zG3hF4UL8VzXU84hqZwfEVqvCeyqwfTdfAp",
         "pair": "CELO/USD",
         "base": "USD",
         "quote": "CELO"
       },
-      "nCHR": {
+      "rsCHR": {
         "class": "Crypto",
         "oracle": "DjxokrpJxFVU86JhnDv64YUwemQtWdXh7xkpRYVDif7C",
         "pair": "CHR/USD",
         "base": "USD",
         "quote": "CHR"
       },
-      "nCHZ": {
+      "rsCHZ": {
         "class": "Crypto",
         "oracle": "Gb5LWEh4cnm8N6R4CVnnAfstzc6v25PY4noxnjHY6vF5",
         "pair": "CHZ/USD",
         "base": "USD",
         "quote": "CHZ"
       },
-      "nCITY": {
+      "rsCITY": {
         "class": "Crypto",
         "oracle": "BX3vuJjk4KaCRXmT1WcnsNwSjYvV5vk9wMCUR1yF1mT9",
         "pair": "CITY/USD",
         "base": "USD",
         "quote": "CITY"
       },
-      "nCOPE": {
+      "rsCOPE": {
         "class": "Crypto",
         "oracle": "9xYBiDWYsh2fHzpsz3aaCnNHCKWBNtfEDLtU6kS4aFD9",
         "pair": "COPE/USD",
         "base": "USD",
         "quote": "COPE"
       },
-      "nCOW": {
+      "rsCOW": {
         "class": "Crypto",
         "oracle": "6Gktp5YoeA5desPTs8mgPbdsCHVkuYQNVKsjrZuSgdj3",
         "pair": "COW/USD",
         "base": "USD",
         "quote": "COW"
       },
-      "nCRO": {
+      "rsCRO": {
         "class": "Crypto",
         "oracle": "3N1vJmJuhMH86w2P4YvNw9gz3LCrLsyJjnxLE28uUrC5",
         "pair": "CRO/USD",
         "base": "USD",
         "quote": "CRO"
       },
-      "nCRV": {
+      "rsCRV": {
         "class": "Crypto",
         "oracle": "BssWQpang2G5ioc8FVdecffVSTLfQkqyRdgqn3zVnnhV",
         "pair": "CRV/USD",
         "base": "USD",
         "quote": "CRV"
       },
-      "nCUSD": {
+      "rsCUSD": {
         "class": "Crypto",
         "oracle": "Adix7ZMPUXxmbKJxbf4JmgLPfAkM4GbzRxDRPxReKYGA",
         "pair": "CUSD/USD",
         "base": "USD",
         "quote": "CUSD"
       },
-      "nCVX": {
+      "rsCVX": {
         "class": "Crypto",
         "oracle": "8BQg4YBtjuaNcnhhQHfUtrEkR5PMq972pVvEwxov1zMT",
         "pair": "CVX/USD",
         "base": "USD",
         "quote": "CVX"
       },
-      "nDAI": {
+      "rsDAI": {
         "class": "Crypto",
         "oracle": "CtJ8EkqLmeYyGB8s4jevpeNsvmD4dxVR2krfsDLcvV8Y",
         "pair": "DAI/USD",
         "base": "USD",
         "quote": "DAI"
       },
-      "nDAR": {
+      "rsDAR": {
         "class": "Crypto",
         "oracle": "FNNtefq4ugrbxNwk9x1sRtSmY6YVF5w7YYdzd51nTKUZ",
         "pair": "DAR/USD",
         "base": "USD",
         "quote": "DAR"
       },
-      "nDOGE": {
+      "rsDOGE": {
         "class": "Crypto",
         "oracle": "FsSM3s38PX9K7Dn6eGzuE29S2Dsk1Sss1baytTQdCaQj",
         "pair": "DOGE/USD",
         "base": "USD",
         "quote": "DOGE"
       },
-      "nDOT": {
+      "rsDOT": {
         "class": "Crypto",
         "oracle": "EcV1X1gY2yb4KXxjVQtTHTbioum2gvmPnFk4zYAt7zne",
         "pair": "DOT/USD",
         "base": "USD",
         "quote": "DOT"
       },
-      "nDYDX": {
+      "rsDYDX": {
         "class": "Crypto",
         "oracle": "7mTNndBZ47etksui45AHZKPa5wd4vG3kwvUziXNVNF9k",
         "pair": "DYDX/USD",
         "base": "USD",
         "quote": "DYDX"
       },
-      "nETH": {
+      "rsETH": {
         "class": "Crypto",
         "oracle": "JBu1AL4obBcCMqKBBxhpWCNUt136ijcuMZLFvTP7iWdB",
         "pair": "ETH/USD",
         "base": "USD",
-        "quote": "ETH"
+        "quote": "ETH",
+        "active": true
       },
-      "nFET": {
+      "rsFET": {
         "class": "Crypto",
         "oracle": "DVLSBiYJphKBZxJnKwmENeVWnGkh5UdQp9hPhqSZEmE7",
         "pair": "FET/USD",
         "base": "USD",
         "quote": "FET"
       },
-      "nFIDA": {
+      "rsFIDA": {
         "class": "Crypto",
         "oracle": "ETp9eKXVv1dWwHSpsXRUuXHmw24PwRkttCGVgpZEY9zF",
         "pair": "FIDA/USD",
         "base": "USD",
         "quote": "FIDA"
       },
-      "nFIL": {
+      "rsFIL": {
         "class": "Crypto",
         "oracle": "2R96x9iQSB4i4NuYJ57aiv4AeBrcGtKm4yiEN3HM3NxM",
         "pair": "FIL/USD",
         "base": "USD",
         "quote": "FIL"
       },
-      "nFLOKI": {
+      "rsFLOKI": {
         "class": "Crypto",
         "oracle": "8CysoCDUkjFowt4V93Ji8FGyjVw9MhE5eZbEeGvtm1KG",
         "pair": "FLOKI/USD",
         "base": "USD",
         "quote": "FLOKI"
       },
-      "nFLOW": {
+      "rsFLOW": {
         "class": "Crypto",
         "oracle": "4DBpxHBnKFTjq51b4Tz5x82X8xPCnnsnrvUSmXkU1rw1",
         "pair": "FLOW/USD",
         "base": "USD",
         "quote": "FLOW"
       },
-      "nFTM": {
+      "rsFTM": {
         "class": "Crypto",
         "oracle": "7Dn52EY5EGE8Nvvw98KVMGPWTiTGn3PF4y24TVLyXdT9",
         "pair": "FTM/USD",
         "base": "USD",
         "quote": "FTM"
       },
-      "nFTT": {
+      "rsFTT": {
         "class": "Crypto",
         "oracle": "8JPJJkmDScpcNmBRKGZuPuG2GYAveQgP3t5gFuMymwvF",
         "pair": "FTT/USD",
         "base": "USD",
         "quote": "FTT"
       },
-      "nFXS": {
+      "rsFXS": {
         "class": "Crypto",
         "oracle": "8mNDGq7qw8YhqkP93zMFd6Wjg7h2gAG9oUBgadL9eGJL",
         "pair": "FXS/USD",
         "base": "USD",
         "quote": "FXS"
       },
-      "nGAL": {
+      "rsGAL": {
         "class": "Crypto",
         "oracle": "4EfndRZ19jKkYhHq6QA4iSUxDtpGM4sqwC53UrynwBer",
         "pair": "GAL/USD",
         "base": "USD",
         "quote": "GAL"
       },
-      "nGALA": {
+      "rsGALA": {
         "class": "Crypto",
         "oracle": "WJ4BLQwr2i3no5pJXGZgpNRsY5CwHSUpHHpq6JzG5cC",
         "pair": "GALA/USD",
         "base": "USD",
         "quote": "GALA"
       },
-      "nGMT": {
+      "rsGMT": {
         "class": "Crypto",
         "oracle": "DZYZkJcFJThN9nZy4nK3hrHra1LaWeiyoZ9SMdLFEFpY",
         "pair": "GMT/USD",
         "base": "USD",
         "quote": "GMT"
       },
-      "nGOFX": {
+      "rsGOFX": {
         "class": "Crypto",
         "oracle": "7UYk5yhrQtFbZV2bLX1gtqN7QdU9xpBMyAk7tFgoTatk",
         "pair": "GOFX/USD",
         "base": "USD",
         "quote": "GOFX"
       },
-      "nHAY": {
+      "rsHAY": {
         "class": "Crypto",
         "oracle": "5QYZz56i9MBwmRoKwQN1YW1iiwLv1WUZrJdtoh4MHwgY",
         "pair": "HAY/USD",
         "base": "USD",
         "quote": "HAY"
       },
-      "nHNT": {
+      "rsHNT": {
         "class": "Crypto",
         "oracle": "7moA1i5vQUpfDwSpK6Pw9s56ahB7WFGidtbL2ujWrVvm",
         "pair": "HNT/USD",
         "base": "USD",
         "quote": "HNT"
       },
-      "nHXRO": {
+      "rsHXRO": {
         "class": "Crypto",
         "oracle": "B47CC1ULLw1jKTSsr1N1198zrUHp3LPduzepJyzgLn2g",
         "pair": "HXRO/USD",
         "base": "USD",
         "quote": "HXRO"
       },
-      "nINJ": {
+      "rsINJ": {
         "class": "Crypto",
         "oracle": "9EdtbaivHQYA4Nh3XzGR6DwRaoorqXYnmpfsnFhvwuVj",
         "pair": "INJ/USD",
         "base": "USD",
         "quote": "INJ"
       },
-      "nINTER": {
+      "rsINTER": {
         "class": "Crypto",
         "oracle": "C4u5Yffovuukj8FzH5aSRM8qBz2L3t1Pcrgqps4H7kDg",
         "pair": "INTER/USD",
         "base": "USD",
         "quote": "INTER"
       },
-      "nITA": {
+      "rsITA": {
         "class": "Crypto",
         "oracle": "CAgaXU1ZTcRtTMHXA4qcrHmVgb9n99VkRy9KFX74szup",
         "pair": "ITA/USD",
         "base": "USD",
         "quote": "ITA"
       },
-      "nJET": {
+      "rsJET": {
         "class": "Crypto",
         "oracle": "9j2xgDVWMY4WZXSj4AL4asCBtzCXz8jqRcDMbcVeZgNU",
         "pair": "JET/USD",
         "base": "USD",
         "quote": "JET"
       },
-      "nJITOSOL": {
+      "rsJITOSOL": {
         "class": "Crypto",
         "oracle": "7yyaeuJ1GGtVBLT2z2xub5ZWYKaNhF28mj1RdV4VDFVk",
         "pair": "JITOSOL/USD",
         "base": "USD",
         "quote": "JITOSOL"
       },
-      "nJST": {
+      "rsJST": {
         "class": "Crypto",
         "oracle": "H34QeZNfyZvrg6osG7vANdgyZUWfTQPUXHfmziaoMSTx",
         "pair": "JST/USD",
         "base": "USD",
         "quote": "JST"
       },
-      "nJUV": {
+      "rsJUV": {
         "class": "Crypto",
         "oracle": "Ca1CYqcazjiLrxg1wBZcXcCoYuhiHL94yNRxa8EtStXA",
         "pair": "JUV/USD",
         "base": "USD",
         "quote": "JUV"
       },
-      "nKCS": {
+      "rsKCS": {
         "class": "Crypto",
         "oracle": "EWMFtKAoHgkXiQMWHiHFfGhhHpjYocyAFhbuEV98f6CW",
         "pair": "KCS/USD",
         "base": "USD",
         "quote": "KCS"
       },
-      "nLAZIO": {
+      "rsLAZIO": {
         "class": "Crypto",
         "oracle": "F8ARXC8mnUaskDrCN1UgoaN2X1DV7fUKGzDFNCY7xceY",
         "pair": "LAZIO/USD",
         "base": "USD",
         "quote": "LAZIO"
       },
-      "nLINK": {
+      "rsLINK": {
         "class": "Crypto",
         "oracle": "ALdkqQDMfHNg77oCNskfX751kHys4KE7SFuZzuKaN536",
         "pair": "LINK/USD",
         "base": "USD",
         "quote": "LINK"
       },
-      "nLTC": {
+      "rsLTC": {
         "class": "Crypto",
         "oracle": "8RMnV1eD55iqUFJLMguPkYBkq8DCtx81XcmAja93LvRR",
         "pair": "LTC/USD",
         "base": "USD",
         "quote": "LTC"
       },
-      "nLUNA": {
+      "rsLUNA": {
         "class": "Crypto",
         "oracle": "GXwvSeEvZ5a1f1tdNSQBRcmRaQ73AxJTi7w6FmCrdiyn",
         "pair": "LUNA/USD",
         "base": "USD",
         "quote": "LUNA"
       },
-      "nLUNC": {
+      "rsLUNC": {
         "class": "Crypto",
         "oracle": "5bmWuR1dgP4avtGYMNKLuxumZTVKGgoN2BCMXWDNL9nY",
         "pair": "LUNC/USD",
         "base": "USD",
         "quote": "LUNC"
       },
-      "nMATIC": {
+      "rsMATIC": {
         "class": "Crypto",
         "oracle": "7KVswB9vkCgeM3SHP7aGDijvdRAHK8P5wi9JXViCrtYh",
         "pair": "MATIC/USD",
         "base": "USD",
         "quote": "MATIC"
       },
-      "nMBOX": {
+      "rsMBOX": {
         "class": "Crypto",
         "oracle": "2emufxAcbS8VM3J5TMec4Fjx3ums8iKPFrXuUG4FDF3z",
         "pair": "MBOX/USD",
         "base": "USD",
         "quote": "MBOX"
       },
-      "nMDX": {
+      "rsMDX": {
         "class": "Crypto",
         "oracle": "4zPGCR7B6Q18Go6Xak8VT7QZG8zvAcfhw3eBSc3j9fef",
         "pair": "MDX/USD",
         "base": "USD",
         "quote": "MDX"
       },
-      "nMEAN": {
+      "rsMEAN": {
         "class": "Crypto",
         "oracle": "3gRmkxULkty8XmiGidbGT8Kt9EnfsJgruacKA4ykeseC",
         "pair": "MEAN/USD",
         "base": "USD",
         "quote": "MEAN"
       },
-      "nMER": {
+      "rsMER": {
         "class": "Crypto",
         "oracle": "G4AQpTYKH1Fmg38VpFQbv6uKYQMpRhJzNPALhp7hqdrs",
         "pair": "MER/USD",
         "base": "USD",
         "quote": "MER"
       },
-      "nMIR": {
+      "rsMIR": {
         "class": "Crypto",
         "oracle": "m24crrKFG5jw5ySpvb1k83PRFKVUgzTRm4uvK2WYZtX",
         "pair": "MIR/USD",
         "base": "USD",
         "quote": "MIR"
       },
-      "nMNGO": {
+      "rsMNGO": {
         "class": "Crypto",
         "oracle": "79wm3jjcPr6RaNQ4DGvP5KxG1mNd3gEBsg6FsNVFezK4",
         "pair": "MNGO/USD",
         "base": "USD",
         "quote": "MNGO"
       },
-      "nMSOL": {
+      "rsMSOL": {
         "class": "Crypto",
         "oracle": "E4v1BBgoso9s64TQvmyownAVJbhbEPGyzA3qn4n46qj9",
         "pair": "MSOL/USD",
         "base": "USD",
         "quote": "MSOL"
       },
-      "nNEAR": {
+      "rsNEAR": {
         "class": "Crypto",
         "oracle": "ECSFWQ1bnnpqPVvoy9237t2wddZAaHisW88mYxuEHKWf",
         "pair": "NEAR/USD",
         "base": "USD",
         "quote": "NEAR"
       },
-      "nNFT": {
+      "rsNFT": {
         "class": "Crypto",
         "oracle": "FRYvkUuRw72E55NxQEmmyrBSNmFPPurhfSrviVJGxHNe",
         "pair": "NFT/USD",
         "base": "USD",
         "quote": "NFT"
       },
-      "nOG": {
+      "rsOG": {
         "class": "Crypto",
         "oracle": "NmHXWXsierXEpwsvJxjq7Wm3JfVgPwLpgneHmFtojHS",
         "pair": "OG/USD",
         "base": "USD",
         "quote": "OG"
       },
-      "nOMI": {
+      "rsOMI": {
         "class": "Crypto",
         "oracle": "TkEA78PckPktSY43gFvY2VKRM131GSJSHaXs12PmzHi",
         "pair": "OMI/USD",
         "base": "USD",
         "quote": "OMI"
       },
-      "nONE": {
+      "rsONE": {
         "class": "Crypto",
         "oracle": "EHkW5sh588isxidKdTvpmBgRQTg9fta6qQMcWQirPVD2",
         "pair": "ONE/USD",
         "base": "USD",
         "quote": "ONE"
       },
-      "nOP": {
+      "rsOP": {
         "class": "Crypto",
         "oracle": "4o4CUwzFwLqCvmA5x1G4VzoZkAhAcbiuiYyjWX1CVbY2",
         "pair": "OP/USD",
         "base": "USD",
         "quote": "OP"
       },
-      "nORCA": {
+      "rsORCA": {
         "class": "Crypto",
         "oracle": "4ivThkX8uRxBpHsdWSqyXYihzKF3zpRGAUCqyuagnLoV",
         "pair": "ORCA/USD",
         "base": "USD",
         "quote": "ORCA"
       },
-      "nPINKSALE": {
+      "rsPINKSALE": {
         "class": "Crypto",
         "oracle": "7QFhdpnLNUWk97dvbZg1SUm4kvp2KQJZNuMcN5pqZjwb",
         "pair": "PINKSALE/USD",
         "base": "USD",
         "quote": "PINKSALE"
       },
-      "nPOR": {
+      "rsPOR": {
         "class": "Crypto",
         "oracle": "8YUhtrcZ85wXwo58ZGoky2JoLHzN4f9EHofB5hsuYWaz",
         "pair": "POR/USD",
         "base": "USD",
         "quote": "POR"
       },
-      "nPORT": {
+      "rsPORT": {
         "class": "Crypto",
         "oracle": "jrMH4afMEodMqirQ7P89q5bGNJxD8uceELcsZaVBDeh",
         "pair": "PORT/USD",
         "base": "USD",
         "quote": "PORT"
       },
-      "nPORTO": {
+      "rsPORTO": {
         "class": "Crypto",
         "oracle": "ADM4YMVzHeDh41889f6bqzKtYqgL3tAMMWyxiEBYxXQn",
         "pair": "PORTO/USD",
         "base": "USD",
         "quote": "PORTO"
       },
-      "nPSG": {
+      "rsPSG": {
         "class": "Crypto",
         "oracle": "57gm1MSpiFzciPrHtPYeL9SoVw3vavv2bUCLGZkpmxsT",
         "pair": "PSG/USD",
         "base": "USD",
         "quote": "PSG"
       },
-      "nRACA": {
+      "rsRACA": {
         "class": "Crypto",
         "oracle": "J2hxDFKn1h5juw9ewLaCT2i3Kw2GBR2romUFASH9yz9R",
         "pair": "RACA/USD",
         "base": "USD",
         "quote": "RACA"
       },
-      "nRAY": {
+      "rsRAY": {
         "class": "Crypto",
         "oracle": "AnLf8tVYCM816gmBjiy8n53eXKKEDydT5piYjjQDPgTB",
         "pair": "RAY/USD",
         "base": "USD",
         "quote": "RAY"
       },
-      "nRETH": {
+      "rsRETH": {
         "class": "Crypto",
         "oracle": "Bn9Ee7ZY5gxRjkbVDW66X1SSRiuAPGD2Phd1818MpJFC",
         "pair": "RETH/USD",
         "base": "USD",
         "quote": "RETH"
       },
-      "nSAMO": {
+      "rsSAMO": {
         "class": "Crypto",
         "oracle": "5wRjzrwWZG3af3FE26ZrRj3s8A3BVNyeJ9Pt9Uf2ogdf",
         "pair": "SAMO/USD",
         "base": "USD",
         "quote": "SAMO"
       },
-      "nSANTOS": {
+      "rsSANTOS": {
         "class": "Crypto",
         "oracle": "3cb5eWkW5MBKpnv8iyJaftRUzHR8XmLZ7yVMm4FXgvHa",
         "pair": "SANTOS/USD",
         "base": "USD",
         "quote": "SANTOS"
       },
-      "nSBR": {
+      "rsSBR": {
         "class": "Crypto",
         "oracle": "8Td9VML1nHxQK6M8VVyzsHo32D7VBk72jSpa9U861z2A",
         "pair": "SBR/USD",
         "base": "USD",
         "quote": "SBR"
       },
-      "nSCNSOL": {
+      "rsSCNSOL": {
         "class": "Crypto",
         "oracle": "25yGzWV5okF7aLivSCE4xnjVUPowQcThhhx5Q2fgFhkm",
         "pair": "SCNSOL/USD",
         "base": "USD",
         "quote": "SCNSOL"
       },
-      "nSFP": {
+      "rsSFP": {
         "class": "Crypto",
         "oracle": "EbBjuFyFgeYEjGoiT3DwZmqPiXTyUwZ1qTMF3h5Xi5mk",
         "pair": "SFP/USD",
         "base": "USD",
         "quote": "SFP"
       },
-      "nSHIB": {
+      "rsSHIB": {
         "class": "Crypto",
         "oracle": "HD7fKr26unn2521YNNKeV7o45c4qzpzbNMceg2NCysE1",
         "pair": "SHIB/USD",
         "base": "USD",
         "quote": "SHIB"
       },
-      "nSLND": {
+      "rsSLND": {
         "class": "Crypto",
         "oracle": "HkGEau5xY1e8REXUFbwvWWvyJGywkgiAZZFpryyraWqJ",
         "pair": "SLND/USD",
         "base": "USD",
         "quote": "SLND"
       },
-      "nSNY": {
+      "rsSNY": {
         "class": "Crypto",
         "oracle": "BkN8hYgRjhyH5WNBQfDV73ivvdqNKfonCMhiYVJ1D9n9",
         "pair": "SNY/USD",
         "base": "USD",
         "quote": "SNY"
       },
-      "nSOL": {
+      "rsSOL": {
         "class": "Crypto",
         "oracle": "H6ARHf6YXhGYeQfUzQNGk6rDNnLBQKrenN712K4AQJEG",
         "pair": "SOL/USD",
         "base": "USD",
-        "quote": "SOL"
+        "quote": "SOL",
+        "active": true
       },
-      "nSRM": {
+      "rsSRM": {
         "class": "Crypto",
         "oracle": "3NBReDRTLKMQEKiLD5tGcx4kXbTf88b7f2xLS9UuGjym",
         "pair": "SRM/USD",
         "base": "USD",
         "quote": "SRM"
       },
-      "nSTETH": {
+      "rsSTETH": {
         "class": "Crypto",
         "oracle": "9uuLtZ5T4spZacA6gnECzGZwjdTfek9rBpTU3ZqZn4dS",
         "pair": "STETH/USD",
         "base": "USD",
         "quote": "STETH"
       },
-      "nSTNEAR": {
+      "rsSTNEAR": {
         "class": "Crypto",
         "oracle": "B4D4iM5HtEkPkAQuhrbspWY7ySJe1ShyS63nktS4RXoV",
         "pair": "STNEAR/USD",
         "base": "USD",
         "quote": "STNEAR"
       },
-      "nSTRK": {
+      "rsSTRK": {
         "class": "Crypto",
         "oracle": "CWCk1CnNM84uKvuGfq1gdhTjueE69VREPZRthz5y4gXr",
         "pair": "STRK/USD",
         "base": "USD",
         "quote": "STRK"
       },
-      "nSTSOL": {
+      "rsSTSOL": {
         "class": "Crypto",
         "oracle": "Bt1hEbY62aMriY1SyQqbeZbm8VmSbQVGBFzSzMuVNWzN",
         "pair": "STSOL/USD",
         "base": "USD",
         "quote": "STSOL"
       },
-      "nSUN": {
+      "rsSUN": {
         "class": "Crypto",
         "oracle": "2TLgNFV8KCuLy6Bmfk5mcaeTpprZmTw7RexapVq5ujSS",
         "pair": "SUN/USD",
         "base": "USD",
         "quote": "SUN"
       },
-      "nSWEAT": {
+      "rsSWEAT": {
         "class": "Crypto",
         "oracle": "5XBkJbpTwdXKSdLKQX4snSq4emQGpwSH1X87NiBGhJLF",
         "pair": "SWEAT/USD",
         "base": "USD",
         "quote": "SWEAT"
       },
-      "nTAPT": {
+      "rsTAPT": {
         "class": "Crypto",
         "oracle": "7CgRf6kzJfWN3h9bN9BwDoZDoubsQ7FTw2Wg7snWCUTp",
         "pair": "TAPT/USD",
         "base": "USD",
         "quote": "TAPT"
       },
-      "nTHETA": {
+      "rsTHETA": {
         "class": "Crypto",
         "oracle": "H3mXf5d7p2Ha8t6QNJnYAq4SznK13kgXz7c37PRfFtY4",
         "pair": "THETA/USD",
         "base": "USD",
         "quote": "THETA"
       },
-      "nTHG": {
+      "rsTHG": {
         "class": "Crypto",
         "oracle": "CBskgoGVpWFJDvHVh3vU37rjk8HNodztVNe3qC8dhniJ",
         "pair": "THG/USD",
         "base": "USD",
         "quote": "THG"
       },
-      "nTLM": {
+      "rsTLM": {
         "class": "Crypto",
         "oracle": "5bnBjEJTHm4b8j4TbQaXDLhF1RmNgasmJM4J3BghKXor",
         "pair": "TLM/USD",
         "base": "USD",
         "quote": "TLM"
       },
-      "nTUSD": {
+      "rsTUSD": {
         "class": "Crypto",
         "oracle": "5XWd8DwwPy6rbiS4WQaQf3eWctzwzrkUqLjYpRLta2PY",
         "pair": "TUSD/USD",
         "base": "USD",
         "quote": "TUSD"
       },
-      "nTWT": {
+      "rsTWT": {
         "class": "Crypto",
         "oracle": "4daXXmao452ZQkqnorGSFbE8VTjwdFrnnCmN1wPu2AKs",
         "pair": "TWT/USD",
         "base": "USD",
         "quote": "TWT"
       },
-      "nUNI": {
+      "rsUNI": {
         "class": "Crypto",
         "oracle": "98dE7gWsyWggCizXAS4qrSgcRxrYrAXCoZsbJTLVN81W",
         "pair": "UNI/USD",
         "base": "USD",
         "quote": "UNI"
       },
-      "nUSDC": {
+      "rsUSDC": {
         "class": "Crypto",
         "oracle": "Gnt27xtC473ZT2Mw5u8wZ68Z3gULkSTb5DuxJy7eJotD",
         "pair": "USDC/USD",
         "base": "USD",
         "quote": "USDC"
       },
-      "nUSDD": {
+      "rsUSDD": {
         "class": "Crypto",
         "oracle": "8LyrY9KByxdKYjtjcLqHEYgdXLfXjBKtgyrJyY3Q1qGH",
         "pair": "USDD/USD",
         "base": "USD",
         "quote": "USDD"
       },
-      "nUSDT": {
+      "rsUSDT": {
         "class": "Crypto",
         "oracle": "3vxLXJqLqF3JG5TCbYycbKWRBbCJQLxQmBGCkyqEEefL",
         "pair": "USDT/USD",
         "base": "USD",
         "quote": "USDT"
       },
-      "nUSTC": {
+      "rsUSTC": {
         "class": "Crypto",
         "oracle": "H8DvrfSaRfUyP1Ytse1exGf7VSinLWtmKNNaBhA4as9P",
         "pair": "USTC/USD",
         "base": "USD",
         "quote": "USTC"
       },
-      "nVAI": {
+      "rsVAI": {
         "class": "Crypto",
         "oracle": "8sqTeLp6ytuYFkoXodF6xXZoAg2wFQ3EK1npEXuqFU9H",
         "pair": "VAI/USD",
         "base": "USD",
         "quote": "VAI"
       },
-      "nWIN": {
+      "rsWIN": {
         "class": "Crypto",
         "oracle": "CzBtDw4jHB9h5c597u5QB1q2XdhGCaNzVvmYbYwVuDUo",
         "pair": "WIN/USD",
         "base": "USD",
         "quote": "WIN"
       },
-      "nWOM": {
+      "rsWOM": {
         "class": "Crypto",
         "oracle": "5ZgP2BpQ3VnyD84B5eD2ouudNjAdHAPMrsFwbDgVGeW5",
         "pair": "WOM/USD",
         "base": "USD",
         "quote": "WOM"
       },
-      "nWOO": {
+      "rsWOO": {
         "class": "Crypto",
         "oracle": "DPp7R1Mb4bCAa2MVSHnezU8biwrLn4yi5LgSyAnEH9s2",
         "pair": "WOO/USD",
         "base": "USD",
         "quote": "WOO"
       },
-      "nXMR": {
+      "rsXMR": {
         "class": "Crypto",
         "oracle": "5m4ycgV8V6V6ZG7JaHyPZMTcJXj4Ar4qLBCxTCoKquWU",
         "pair": "XMR/USD",
         "base": "USD",
         "quote": "XMR"
       },
-      "nXVS": {
+      "rsXVS": {
         "class": "Crypto",
         "oracle": "9phzbSLLzqRJsZi6JwQXLCeY4kDanak8s6wqx6vUGnji",
         "pair": "XVS/USD",
         "base": "USD",
         "quote": "XVS"
       },
-      "nXWG": {
+      "rsXWG": {
         "class": "Crypto",
         "oracle": "9ruzHUYg3k9bZPrSMBFaSXJsP7AKsq9ahStWbeD15ZdE",
         "pair": "XWG/USD",
         "base": "USD",
         "quote": "XWG"
       },
-      "nZBC": {
+      "rsZBC": {
         "class": "Crypto",
         "oracle": "3bNH7uDsap5nzwhCvv98i7VshjMagtx1NXTDBLbPYD66",
         "pair": "ZBC/USD",
         "base": "USD",
         "quote": "ZBC"
       },
-      "nCSPX": {
+      "rsCSPX": {
         "class": "Equity",
         "oracle": "8NZppuDZ77hSBh532CEruJEXkbkjMsuy1t1HrUP35n88",
         "pair": "CSPX/USD",
@@ -1013,7 +1016,7 @@
         "quote": "CSPX",
         "region": "GB"
       },
-      "nIB01": {
+      "rsIB01": {
         "class": "Equity",
         "oracle": "5h37FZtKo5CzYdyeQWtTxpFePZf4qshFUtRjr6QneZrC",
         "pair": "IB01/USD",
@@ -1021,7 +1024,7 @@
         "quote": "IB01",
         "region": "GB"
       },
-      "nIBTA": {
+      "rsIBTA": {
         "class": "Equity",
         "oracle": "9ehsNJ4feXfvZuJWJgLMZefR53joH9mAf2ZdEey3uUkP",
         "pair": "IBTA/USD",
@@ -1029,7 +1032,7 @@
         "quote": "IBTA",
         "region": "GB"
       },
-      "nAAPL": {
+      "rsAAPL": {
         "class": "Equity",
         "oracle": "5yixRcKtcs5BZ1K2FsLFwmES1MyA92d6efvijjVevQCw",
         "pair": "AAPL/USD",
@@ -1037,7 +1040,7 @@
         "quote": "AAPL",
         "region": "US"
       },
-      "nAMC": {
+      "rsAMC": {
         "class": "Equity",
         "oracle": "78aTPvgWhfRzPcc94bNNdsbB3EiGJpsu1RJp22KbAz1N",
         "pair": "AMC/USD",
@@ -1045,7 +1048,7 @@
         "quote": "AMC",
         "region": "US"
       },
-      "nAMGN": {
+      "rsAMGN": {
         "class": "Equity",
         "oracle": "27inCyLk19JMJnBEwE8wtn6dTDSxp97oTPf9MhvX2H6B",
         "pair": "AMGN/USD",
@@ -1053,7 +1056,7 @@
         "quote": "AMGN",
         "region": "US"
       },
-      "nAMZN": {
+      "rsAMZN": {
         "class": "Equity",
         "oracle": "DEjXZ6W6ymAqtH5MQGhuLGCtbEtVJigDoD5KLQHRiL8H",
         "pair": "AMZN/USD",
@@ -1061,7 +1064,7 @@
         "quote": "AMZN",
         "region": "US"
       },
-      "nAXP": {
+      "rsAXP": {
         "class": "Equity",
         "oracle": "BmSuygV51C6AzzYSgj92iueQnNc2MC6NQ96pViHDsJSs",
         "pair": "AXP/USD",
@@ -1069,7 +1072,7 @@
         "quote": "AXP",
         "region": "US"
       },
-      "nBA": {
+      "rsBA": {
         "class": "Equity",
         "oracle": "9tf9q8qRG7e54jnf5B3JiEU72NCRH4P7iN7iz5Y9Mcrh",
         "pair": "BA/USD",
@@ -1077,7 +1080,7 @@
         "quote": "BA",
         "region": "US"
       },
-      "nCAT": {
+      "rsCAT": {
         "class": "Equity",
         "oracle": "CePNxB9pNFx1T9X9tDNpy6kJRUKVRBZdGQuDjojPiwhV",
         "pair": "CAT/USD",
@@ -1085,7 +1088,7 @@
         "quote": "CAT",
         "region": "US"
       },
-      "nCOIN": {
+      "rsCOIN": {
         "class": "Equity",
         "oracle": "J9yXwNQvsSgNTCZSBN7N2qXJ9nHPCn9wbk4TY2ZSqenG",
         "pair": "COIN/USD",
@@ -1093,7 +1096,7 @@
         "quote": "COIN",
         "region": "US"
       },
-      "nCRM": {
+      "rsCRM": {
         "class": "Equity",
         "oracle": "JAQCd6De3U6rBja3sQYyMczoMjQRsJNJCHySK5z7PfAP",
         "pair": "CRM/USD",
@@ -1101,7 +1104,7 @@
         "quote": "CRM",
         "region": "US"
       },
-      "nCSCO": {
+      "rsCSCO": {
         "class": "Equity",
         "oracle": "5G5RudmNai1xJ7TKLi8GMZLKrrwExMwxzJnk1CTjfjTe",
         "pair": "CSCO/USD",
@@ -1109,7 +1112,7 @@
         "quote": "CSCO",
         "region": "US"
       },
-      "nCHEVRON": {
+      "rsCHEVRON": {
         "class": "Equity",
         "oracle": "HT1hru9DDngH4WBpoJw8ZELexc3JnnXoD8iJ5STaYeAY",
         "pair": "CHEVRON/USD",
@@ -1117,7 +1120,7 @@
         "quote": "CHEVRON",
         "region": "US"
       },
-      "nDIS": {
+      "rsDIS": {
         "class": "Equity",
         "oracle": "8Z9ga6aWkBqLdHYu3TV6yVFSBH9LzUDx4RsJ4u2e7uPd",
         "pair": "DIS/USD",
@@ -1125,7 +1128,7 @@
         "quote": "DIS",
         "region": "US"
       },
-      "nDOW": {
+      "rsDOW": {
         "class": "Equity",
         "oracle": "HQLBTVRdQFpC3YZ7qAhjVUAhreDUwVrATfxRCVgFiA6H",
         "pair": "DOW/USD",
@@ -1133,7 +1136,7 @@
         "quote": "DOW",
         "region": "US"
       },
-      "nEFA": {
+      "rsEFA": {
         "class": "Equity",
         "oracle": "51FLpkn3Q6bkHUTsQX5FH7zrhZhePqWH33wgRWWRwShZ",
         "pair": "EFA/USD",
@@ -1141,7 +1144,7 @@
         "quote": "EFA",
         "region": "US"
       },
-      "nGE": {
+      "rsGE": {
         "class": "Equity",
         "oracle": "GCXQHTQYCpNDyx41kUkxs3S4Vmuoq18rgTjKzc6pWd89",
         "pair": "GE/USD",
@@ -1149,7 +1152,7 @@
         "quote": "GE",
         "region": "US"
       },
-      "nGME": {
+      "rsGME": {
         "class": "Equity",
         "oracle": "8WgyG6Rss2MzHu5bJh7ELxkH6XtwE4wsFouVSb4DvHpR",
         "pair": "GME/USD",
@@ -1157,7 +1160,7 @@
         "quote": "GME",
         "region": "US"
       },
-      "nGOOG": {
+      "rsGOOG": {
         "class": "Equity",
         "oracle": "GWHdhCkwAjghsGPhEnszsPt5AMt5A55KFPLDq2UQBxYH",
         "pair": "GOOG/USD",
@@ -1165,7 +1168,7 @@
         "quote": "GOOG",
         "region": "US"
       },
-      "nGOVT": {
+      "rsGOVT": {
         "class": "Equity",
         "oracle": "G9C5tQhFdvJGMFer6Gh4PnoVChpVLMjCWFJbAizFmbG6",
         "pair": "GOVT/USD",
@@ -1173,7 +1176,7 @@
         "quote": "GOVT",
         "region": "US"
       },
-      "nGS": {
+      "rsGS": {
         "class": "Equity",
         "oracle": "BXZFD411bXg2dHAjMqRyUvU3uZdrSq1mCcqaXxSqhRwR",
         "pair": "GS/USD",
@@ -1181,7 +1184,7 @@
         "quote": "GS",
         "region": "US"
       },
-      "nHD": {
+      "rsHD": {
         "class": "Equity",
         "oracle": "D6JmjWhbuBSwEqDts2KppWbSuggmpbeNUxziZyfXVTcG",
         "pair": "HD/USD",
@@ -1189,7 +1192,7 @@
         "quote": "HD",
         "region": "US"
       },
-      "nHON": {
+      "rsHON": {
         "class": "Equity",
         "oracle": "27Jd46Vegg5A6LZT338h6LvJ5nppNmGEmEjYTja7c2ZF",
         "pair": "HON/USD",
@@ -1197,7 +1200,7 @@
         "quote": "HON",
         "region": "US"
       },
-      "nIBM": {
+      "rsIBM": {
         "class": "Equity",
         "oracle": "EzH8BL1J7dSv5sMLFZCP82bFCqyUdEcnzrybDT51EMK4",
         "pair": "IBM/USD",
@@ -1205,7 +1208,7 @@
         "quote": "IBM",
         "region": "US"
       },
-      "nINTC": {
+      "rsINTC": {
         "class": "Equity",
         "oracle": "E2BGMqdNAgF1u1SvA2J8iximzTPXjbftiV4wn9uQypn2",
         "pair": "INTC/USD",
@@ -1213,7 +1216,7 @@
         "quote": "INTC",
         "region": "US"
       },
-      "nIVV": {
+      "rsIVV": {
         "class": "Equity",
         "oracle": "7213mBWm2D4M3YVbJ2wSGkJw4wohMo7K9otFFGQZyiKr",
         "pair": "IVV/USD",
@@ -1221,7 +1224,7 @@
         "quote": "IVV",
         "region": "US"
       },
-      "nIWM": {
+      "rsIWM": {
         "class": "Equity",
         "oracle": "H9iWBKw64K3wJTgZejyT6kDnTuJFPKJHP5nQBcVPtrP2",
         "pair": "IWM/USD",
@@ -1229,7 +1232,7 @@
         "quote": "IWM",
         "region": "US"
       },
-      "nJNJ": {
+      "rsJNJ": {
         "class": "Equity",
         "oracle": "2FHYjieQsCqfYKwNjXDhYeK1CroFoRhzYaTdKttoySWE",
         "pair": "JNJ/USD",
@@ -1237,7 +1240,7 @@
         "quote": "JNJ",
         "region": "US"
       },
-      "nJPM": {
+      "rsJPM": {
         "class": "Equity",
         "oracle": "9ZxikeH16Kuoqgiu9MhgEdxgXoAWvTvL5EHB7SuATwQZ",
         "pair": "JPM/USD",
@@ -1245,7 +1248,7 @@
         "quote": "JPM",
         "region": "US"
       },
-      "nKO": {
+      "rsKO": {
         "class": "Equity",
         "oracle": "BQfDqHChh8HJmxcGUSWqsH5Fm8VuUbBcBUVG5yfVzKxQ",
         "pair": "KO/USD",
@@ -1253,7 +1256,7 @@
         "quote": "KO",
         "region": "US"
       },
-      "nMCD": {
+      "rsMCD": {
         "class": "Equity",
         "oracle": "FD1p7pUFCD8LWoX5XTpawzURThQ58iMJ54Rd4WZ4QgdX",
         "pair": "MCD/USD",
@@ -1261,7 +1264,7 @@
         "quote": "MCD",
         "region": "US"
       },
-      "nMINT": {
+      "rsMINT": {
         "class": "Equity",
         "oracle": "6zFVj11RZf4vxVU6oBBUSvkaSb5yTrvg8rk57UGFUmCm",
         "pair": "MINT/USD",
@@ -1269,7 +1272,7 @@
         "quote": "MINT",
         "region": "US"
       },
-      "nMMM": {
+      "rsMMM": {
         "class": "Equity",
         "oracle": "J2h8oMCXiBZjpZGUC2N6pK8Q9mcDjPdGcgwEEZ3qbwNQ",
         "pair": "MMM/USD",
@@ -1277,7 +1280,7 @@
         "quote": "MMM",
         "region": "US"
       },
-      "nMRK": {
+      "rsMRK": {
         "class": "Equity",
         "oracle": "ETyeW5VtWJWu5kjmsZ6M7Mvef7hsaNdS4kngaPHB9uPT",
         "pair": "MRK/USD",
@@ -1285,7 +1288,7 @@
         "quote": "MRK",
         "region": "US"
       },
-      "nMSFT": {
+      "rsMSFT": {
         "class": "Equity",
         "oracle": "F42aKaaZR1CCbyiu6PXaz9WAgRUBHhUtSjHSmHwcwjM2",
         "pair": "MSFT/USD",
@@ -1293,7 +1296,7 @@
         "quote": "MSFT",
         "region": "US"
       },
-      "nNFLX": {
+      "rsNFLX": {
         "class": "Equity",
         "oracle": "9rBVCiY1ZjgZo1YqqTc88hQShEfbHTwYcCcx1xx6AntR",
         "pair": "NFLX/USD",
@@ -1301,7 +1304,7 @@
         "quote": "NFLX",
         "region": "US"
       },
-      "nNKE": {
+      "rsNKE": {
         "class": "Equity",
         "oracle": "7xbwrYYdSmJgCDb24dus1eVew6GzU9fWPMc5x2REQfW3",
         "pair": "NKE/USD",
@@ -1309,7 +1312,7 @@
         "quote": "NKE",
         "region": "US"
       },
-      "nPG": {
+      "rsPG": {
         "class": "Equity",
         "oracle": "Cf3rThBTnrkQxb9mp7PKbWapgQDPF4sKw5pfbSXSirqy",
         "pair": "PG/USD",
@@ -1317,7 +1320,7 @@
         "quote": "PG",
         "region": "US"
       },
-      "nQQQ": {
+      "rsQQQ": {
         "class": "Equity",
         "oracle": "B8piRrj78PWq59VL5PJ4fZ8JxbsQB6sFKQTuaEEGsCuz",
         "pair": "QQQ/USD",
@@ -1325,7 +1328,7 @@
         "quote": "QQQ",
         "region": "US"
       },
-      "nSHV": {
+      "rsSHV": {
         "class": "Equity",
         "oracle": "8y5MU4u7HxSJ3rzSzgLv4D93KBtg4D4N3bqWVQFb5ph1",
         "pair": "SHV/USD",
@@ -1333,7 +1336,7 @@
         "quote": "SHV",
         "region": "US"
       },
-      "nSPY": {
+      "rsSPY": {
         "class": "Equity",
         "oracle": "2k1qZ9ZMNUNmpGghq6ZQRj7z2d2ATNnzzYugVhiTDCPn",
         "pair": "SPY/USD",
@@ -1341,7 +1344,7 @@
         "quote": "SPY",
         "region": "US"
       },
-      "nTLT": {
+      "rsTLT": {
         "class": "Equity",
         "oracle": "BiXZdquUPXQ6R1a2dikwKyuWhP4aFTsfb1oK9eFWx6ja",
         "pair": "TLT/USD",
@@ -1349,7 +1352,7 @@
         "quote": "TLT",
         "region": "US"
       },
-      "nTRV": {
+      "rsTRV": {
         "class": "Equity",
         "oracle": "FHqM2TH3dDsCWfnhWDdhCnWBMRxTFvRmLH2qfZx1gDQc",
         "pair": "TRV/USD",
@@ -1357,7 +1360,7 @@
         "quote": "TRV",
         "region": "US"
       },
-      "nTSLA": {
+      "rsTSLA": {
         "class": "Equity",
         "oracle": "2YDWKqoJ1jZgoirNC4c4WLj2JAAf8hxLz5A9HTmPG2AC",
         "pair": "TSLA/USD",
@@ -1365,7 +1368,7 @@
         "quote": "TSLA",
         "region": "US"
       },
-      "nUNH": {
+      "rsUNH": {
         "class": "Equity",
         "oracle": "MNctk8onwrFGk3iub6zT3dZL9KxmUyJyP7vBVoRbYzg",
         "pair": "UNH/USD",
@@ -1373,7 +1376,7 @@
         "quote": "UNH",
         "region": "US"
       },
-      "nUSO": {
+      "rsUSO": {
         "class": "Equity",
         "oracle": "F18GttsJyMSY1MfYUvpfFiRGBwZkUtzzBJPGLninx3Sc",
         "pair": "USO/USD",
@@ -1381,7 +1384,7 @@
         "quote": "USO",
         "region": "US"
       },
-      "nV": {
+      "rsV": {
         "class": "Equity",
         "oracle": "EQD4DixYfkaUcbUn4VCp5Ayc1DXbVGwY3qcx8rHjPej9",
         "pair": "V/USD",
@@ -1389,7 +1392,7 @@
         "quote": "V",
         "region": "US"
       },
-      "nVOO": {
+      "rsVOO": {
         "class": "Equity",
         "oracle": "3PG533WaBTZmtrfxDCXJxYfTLR3XVsSpyZHizvesVpGQ",
         "pair": "VOO/USD",
@@ -1397,7 +1400,7 @@
         "quote": "VOO",
         "region": "US"
       },
-      "nVZ": {
+      "rsVZ": {
         "class": "Equity",
         "oracle": "7tuaiVrQbeYmdkDzM2vGoBXmSNHzKUMDTF29iJGz1Vtj",
         "pair": "VZ/USD",
@@ -1405,7 +1408,7 @@
         "quote": "VZ",
         "region": "US"
       },
-      "nWBA": {
+      "rsWBA": {
         "class": "Equity",
         "oracle": "GyZ8r1zkbpJmRVXcpT1oytsBFqWkuKT3y2hiFhQHXvxk",
         "pair": "WBA/USD",
@@ -1413,7 +1416,7 @@
         "quote": "WBA",
         "region": "US"
       },
-      "nWMT": {
+      "rsWMT": {
         "class": "Equity",
         "oracle": "4Q46APzzWhDrjwKArDFNs4pNeRVFZPF3v9d67FnBMCuh",
         "pair": "WMT/USD",
@@ -1421,7 +1424,7 @@
         "quote": "WMT",
         "region": "US"
       },
-      "nXLE": {
+      "rsXLE": {
         "class": "Equity",
         "oracle": "ARMVMXRxTRDCr2rE9rRWG32wqKNF4pf11WQcBDsKFj23",
         "pair": "XLE/USD",
@@ -1429,47 +1432,49 @@
         "quote": "XLE",
         "region": "US"
       },
-      "nAUD": {
+      "rsAUD": {
         "class": "FX",
         "oracle": "7ycfa1ENNT5dVVoMtiMjsgVbkWKFJbu6nF2h1UVT18Cf",
         "pair": "AUD/USD",
         "base": "USD",
         "quote": "AUD"
       },
-      "nEUR": {
+      "rsEUR": {
         "class": "FX",
         "oracle": "CQzPyC5xVhkuBfWFJiPCvPEnBshmRium4xxUxnX1ober",
         "pair": "EUR/USD",
         "base": "USD",
         "quote": "EUR"
       },
-      "nGBP": {
+      "rsGBP": {
         "class": "FX",
         "oracle": "9wFA8FYZwvBbhE22uvYBZniTXi1KJiN8iNQsegkTWZqS",
         "pair": "GBP/USD",
         "base": "USD",
         "quote": "GBP"
       },
-      "nNZD": {
+      "rsNZD": {
         "class": "FX",
         "oracle": "AtZbXC9LFhSPxYikz78CaLUuDZcmweWLY96eRJbzspB8",
         "pair": "NZD/USD",
         "base": "USD",
         "quote": "NZD"
       },
-      "nXAG": {
+      "rsXAG": {
         "class": "Metal",
         "oracle": "HMVfAm6uuwnPnHRzaqfMhLNyrYHxaczKTbzeDcjBvuDo",
         "pair": "XAG/USD",
         "base": "USD",
-        "quote": "XAG"
+        "quote": "XAG",
+        "active": true
       },
-      "nXAU": {
+      "rsXAU": {
         "class": "Metal",
         "oracle": "8y3WWjvmSmVGWVKH1rCA7VTRmuU7QbJ9axafSsBX5FcD",
         "pair": "XAU/USD",
         "base": "USD",
-        "quote": "XAU"
+        "quote": "XAU",
+        "active": true
       }
     }
   },
