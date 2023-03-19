@@ -427,6 +427,18 @@ export type Resynth = {
             "type": "publicKey"
           },
           {
+            "name": "collateralOracle",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingVault",
+            "type": "publicKey"
+          },
+          {
             "name": "syntheticMint",
             "type": "publicKey"
           },
@@ -439,6 +451,18 @@ export type Resynth = {
             "type": "publicKey"
           },
           {
+            "name": "collateralVaultBalance",
+            "type": "u64"
+          },
+          {
+            "name": "underlyingVaultBalance",
+            "type": "u64"
+          },
+          {
+            "name": "syntheticSupply",
+            "type": "u64"
+          },
+          {
             "name": "assetAuthorityBump",
             "type": {
               "array": [
@@ -446,6 +470,22 @@ export type Resynth = {
                 1
               ]
             }
+          },
+          {
+            "name": "syntheticAssetFlags",
+            "type": "u8"
+          },
+          {
+            "name": "collateralDecimals",
+            "type": "u8"
+          },
+          {
+            "name": "underlyingDecimals",
+            "type": "u8"
+          },
+          {
+            "name": "syntheticDecimals",
+            "type": "u8"
           }
         ]
       }
@@ -904,6 +944,18 @@ export const IDL: Resynth = {
             "type": "publicKey"
           },
           {
+            "name": "collateralOracle",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingMint",
+            "type": "publicKey"
+          },
+          {
+            "name": "underlyingVault",
+            "type": "publicKey"
+          },
+          {
             "name": "syntheticMint",
             "type": "publicKey"
           },
@@ -916,6 +968,18 @@ export const IDL: Resynth = {
             "type": "publicKey"
           },
           {
+            "name": "collateralVaultBalance",
+            "type": "u64"
+          },
+          {
+            "name": "underlyingVaultBalance",
+            "type": "u64"
+          },
+          {
+            "name": "syntheticSupply",
+            "type": "u64"
+          },
+          {
             "name": "assetAuthorityBump",
             "type": {
               "array": [
@@ -923,6 +987,22 @@ export const IDL: Resynth = {
                 1
               ]
             }
+          },
+          {
+            "name": "syntheticAssetFlags",
+            "type": "u8"
+          },
+          {
+            "name": "collateralDecimals",
+            "type": "u8"
+          },
+          {
+            "name": "underlyingDecimals",
+            "type": "u8"
+          },
+          {
+            "name": "syntheticDecimals",
+            "type": "u8"
           }
         ]
       }

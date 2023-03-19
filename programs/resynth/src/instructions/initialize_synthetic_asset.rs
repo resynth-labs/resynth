@@ -96,6 +96,16 @@ impl<'info> InitializeSyntheticAsset<'info> {
             synthetic_oracle: ctx.accounts.synthetic_oracle.key(),
             asset_authority: ctx.accounts.asset_authority.key(),
             asset_authority_bump: [ctx.bumps["asset_authority"]],
+            collateral_oracle: todo!(),
+            underlying_mint: todo!(),
+            underlying_vault: todo!(),
+            collateral_vault_balance: 0,
+            underlying_vault_balance: 0,
+            synthetic_supply: 0,
+            synthetic_asset_flags: todo!(),
+            collateral_decimals: ctx.accounts.collateral_mint.decimals,
+            underlying_decimals: todo!(),
+            synthetic_decimals: ctx.accounts.synthetic_mint.decimals,
         };
 
         Ok(())

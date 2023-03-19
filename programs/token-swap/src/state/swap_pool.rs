@@ -35,7 +35,6 @@ pub struct SwapPool {
     pub padding: [u8; 2],
 
     pub swap_pool: Pubkey,
-
     pub authority: Pubkey,
 
     /// Mint information for token A
@@ -58,7 +57,7 @@ pub struct SwapPool {
     pub fee_receiver: Pubkey,
 
     /// Program ID of the tokens being exchanged.
-    pub token_program: Pubkey,
+    pub token_program: Pubkey, // infer from mints or vaults
 
     /// All fee information
     pub fees: Fees,
