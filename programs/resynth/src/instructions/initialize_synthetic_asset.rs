@@ -99,13 +99,13 @@ impl<'info> InitializeSyntheticAsset<'info> {
             collateral_oracle: todo!(),
             underlying_mint: todo!(),
             underlying_vault: todo!(),
-            collateral_vault_balance: todo!(),
-            underlying_vault_balance: todo!(),
-            synthetic_supply: todo!(),
+            collateral_vault_balance: 0,
+            underlying_vault_balance: 0,
+            synthetic_supply: 0,
             synthetic_asset_flags: todo!(),
-            collateral_decimals: todo!(),
+            collateral_decimals: ctx.accounts.collateral_mint.decimals,
             underlying_decimals: todo!(),
-            synthetic_decimals: todo!(),
+            synthetic_decimals: ctx.accounts.synthetic_mint.decimals,
         };
 
         Ok(())

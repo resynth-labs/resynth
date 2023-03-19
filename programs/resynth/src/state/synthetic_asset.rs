@@ -4,25 +4,19 @@ use crate::seeds;
 
 #[account(zero_copy)]
 pub struct SyntheticAsset {
-    #[deprecated()]
-    pub synthetic_asset: Pubkey, // redundant
+    pub synthetic_asset: Pubkey,
     pub collateral_mint: Pubkey,
-    #[deprecated()]
-    pub collateral_vault: Pubkey, // pda
+    pub collateral_vault: Pubkey,
     pub collateral_oracle: Pubkey,
     pub underlying_mint: Pubkey,
-    #[deprecated()]
-    pub underlying_vault: Pubkey, // pda
-    #[deprecated()]
-    pub synthetic_mint: Pubkey, // pda
+    pub underlying_vault: Pubkey,
+    pub synthetic_mint: Pubkey,
     pub synthetic_oracle: Pubkey,
-    #[deprecated()]
-    pub asset_authority: Pubkey, //pda
+    pub asset_authority: Pubkey,
     pub collateral_vault_balance: u64,
     pub underlying_vault_balance: u64,
     pub synthetic_supply: u64,
-    #[deprecated()]
-    pub asset_authority_bump: [u8; 1], // pda bump
+    pub asset_authority_bump: [u8; 1],
     pub synthetic_asset_flags: u8,
     pub collateral_decimals: u8,
     pub underlying_decimals: u8,

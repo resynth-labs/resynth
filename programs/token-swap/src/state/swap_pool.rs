@@ -20,8 +20,7 @@ pub struct SwapPool {
     /// swap program id, and swap account pubkey.  This program address has
     /// authority over the swap's token A account, token B account, and pool
     /// token mint.
-    #[deprecated()]
-    pub authority_bump: [u8; 1], // pda bump
+    pub authority_bump: [u8; 1],
 
     pub mint_a_decimals: u8,
 
@@ -35,10 +34,8 @@ pub struct SwapPool {
 
     pub padding: [u8; 2],
 
-    #[deprecated()]
-    pub swap_pool: Pubkey, // redundant
-    #[deprecated()]
-    pub authority: Pubkey, //pda
+    pub swap_pool: Pubkey,
+    pub authority: Pubkey,
 
     /// Mint information for token A
     pub mint_a: Pubkey,
@@ -48,23 +45,18 @@ pub struct SwapPool {
 
     /// Pool tokens are issued when A or B tokens are deposited.
     /// Pool tokens can be withdrawn back to the original A or B token.
-    #[deprecated()]
-    pub lpmint: Pubkey, // pda
+    pub lpmint: Pubkey,
 
     /// Token A
-    #[deprecated()]
-    pub vault_a: Pubkey, // pda
+    pub vault_a: Pubkey,
 
     /// Token B
-    #[deprecated()]
-    pub vault_b: Pubkey, // pda
+    pub vault_b: Pubkey,
 
     /// Pool token account to receive trading and / or withdrawal fees
-    #[deprecated()]
-    pub fee_receiver: Pubkey, //pda
+    pub fee_receiver: Pubkey,
 
     /// Program ID of the tokens being exchanged.
-    #[deprecated()]
     pub token_program: Pubkey, // infer from mints or vaults
 
     /// All fee information
