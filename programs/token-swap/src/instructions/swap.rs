@@ -256,16 +256,12 @@ pub fn execute(ctx: Context<Swap>, amount_in: u64, minimum_amount_out: u64) -> R
 
     match trade_direction {
         TradeDirection::AtoB => {
-            ctx.accounts.source_vault.reload()?;
-            swap_pool.vault_a_balance = ctx.accounts.source_vault.amount;
-            ctx.accounts.dest_vault.reload()?;
-            swap_pool.vault_b_balance = ctx.accounts.dest_vault.amount;
+            swap_pool.vault_a_balance = token::accessor::amount(ctx.accounts.source_vault.as_ref().as_ref())?;
+            swap_pool.vault_b_balance = token::accessor::amount(ctx.accounts.dest_vault.as_ref().as_ref())?;
         }
         TradeDirection::BtoA => {
-            ctx.accounts.dest_vault.reload()?;
-            swap_pool.vault_a_balance = ctx.accounts.dest_vault.amount;
-            ctx.accounts.source_vault.reload()?;
-            swap_pool.vault_b_balance = ctx.accounts.source_vault.amount;
+            swap_pool.vault_a_balance = token::accessor::amount(ctx.accounts.dest_vault.as_ref().as_ref())?;
+            swap_pool.vault_b_balance = token::accessor::amount(ctx.accounts.source_vault.as_ref().as_ref())?;
         }
     }
 

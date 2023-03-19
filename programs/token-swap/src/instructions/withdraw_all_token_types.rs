@@ -176,10 +176,8 @@ pub fn execute(
         )?;
     }
 
-    ctx.accounts.vault_a.reload()?;
-    swap_pool.vault_a_balance = ctx.accounts.vault_a.amount;
-    ctx.accounts.vault_b.reload()?;
-    swap_pool.vault_b_balance = ctx.accounts.vault_b.amount;
+    swap_pool.vault_a_balance = token::accessor::amount(ctx.accounts.vault_a.as_ref().as_ref())?;
+    swap_pool.vault_b_balance = token::accessor::amount(ctx.accounts.vault_b.as_ref().as_ref())?;
     ctx.accounts.lpmint.reload()?;
     swap_pool.lpmint_supply = ctx.accounts.lpmint.supply;
 
